@@ -1,0 +1,24 @@
+{
+    "name": "aportela/musicbrainz-wrapper",
+    "description": "Custom musicbrainz api wrapper",
+    "type": "library",
+    "license": "GPL-3.0-only",
+    "authors": [
+        {
+            "name": "alex",
+            "email": "766f6964+github@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "aportela\\MusicBrainzWrapper\\": "src"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "aportela/httprequest-wrapper": "^1.1",
+        "psr/log": "^3.0"
+    }
+}
