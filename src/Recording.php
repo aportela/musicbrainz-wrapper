@@ -2,23 +2,23 @@
 
 namespace aportela\MusicBrainzWrapper;
 
-class Release
+class Recording
 {
 
     protected $logger;
 
-    const XML_API_URL = "https://musicbrainz.org/ws/2/release/%s?inc=aliases%%2Bartist-credits%%2Blabels%%2Bdiscids%%2Brecordings";
-    const JSON_API_URL = "https://musicbrainz.org/ws/2/release/%s?inc=aliases%%2Bartist-credits%%2Blabels%%2Bdiscids%%2Brecordings&fmt=json";
+    const XML_API_URL = "https://musicbrainz.org/ws/2/recording/%s?inc=aliases%%2Bartist-credits%%2Breleases";
+    const JSON_API_URL = "https://musicbrainz.org/ws/2/recording/%s?inc=aliases%%2Bartist-credits%%2Breleases&fmt=json";
 
     public function __construct(\Psr\Log\LoggerInterface $logger)
     {
         $this->logger = $logger;
-        $this->logger->debug("Release::__construct");
+        $this->logger->debug("Recording::__construct");
     }
 
     public function __destruct()
     {
-        $this->logger->debug("Release::__destruct");
+        $this->logger->debug("Recording::__destruct");
     }
 
     public function GETXML(string $mbId): string

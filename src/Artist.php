@@ -27,8 +27,12 @@ class Artist
         $response = $http->GET(sprintf(self::XML_API_URL, $mbId));
         if ($response->code == 200) {
             return ($response->body);
+        } else if ($response->code == 400) {
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
+        } else if ($response->code == 404) {
+            throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($mbId, $response->code);
         } else {
-            throw new \Exception($response->code);
+            throw new \Exception($mbId, $response->code);
         }
     }
 
@@ -38,8 +42,12 @@ class Artist
         $response = $http->GET(sprintf(self::JSON_API_URL, $mbId));
         if ($response->code == 200) {
             return ($response->body);
+        } else if ($response->code == 400) {
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
+        } else if ($response->code == 404) {
+            throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($mbId, $response->code);
         } else {
-            throw new \Exception($response->code);
+            throw new \Exception($mbId, $response->code);
         }
     }
 }
