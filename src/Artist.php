@@ -11,41 +11,49 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
     const XML_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases";
     const JSON_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases&fmt=json";
 
-    public function SEARCHXML(string $name, int $limit = 1): \stdClass
+    public function SEARCHXML(string $name, int $limit = 1): array
     {
         $response = $this->http->GET(sprintf(self::XML_SEARCH_API_URL, urlencode($name), $limit));
         if ($response->code == 200) {
             $xml = simplexml_load_string($response->body);
             if ($xml->{"artist-list"} && $xml->{"artist-list"}['count'] > 0 && $xml->{"artist-list"}->{"artist"}) {
-                return ((object) [
-                    "mbId" => (string) $xml->{"artist-list"}->{"artist"}["id"],
-                    "name" => (string) $xml->{"artist-list"}->{"artist"}->{"name"}[0],
-                    "country" => (string) $xml->{"artist-list"}->{"artist"}->{"country"}[0]
-                ]);
+                $results = [];
+                foreach ($xml->{"artist-list"}->{"artist"} as $artist) {
+                    $results[] = (object) [
+                        "mbId" => (string) isset($artist["id"]) ? $artist["id"] : null,
+                        "name" => (string) isset($artist->{"name"}) ? $artist->{"name"} : null,
+                        "country" => (string) isset($artist->{"country"}) ? $artist->{"country"} : null
+                    ];
+                }
+                return ($results);
             } else {
-                return (null);
+                return ([]);
             }
         } else {
-            return (null);
+            return ([]);
         }
     }
 
-    public function SEARCHJSON(string $name, int $limit = 1): \stdClass
+    public function SEARCHJSON(string $name, int $limit = 1): array
     {
         $response = $this->http->GET(sprintf(self::JSON_SEARCH_API_URL, urlencode($name), $limit));
         if ($response->code == 200) {
             $json = json_decode($response->body);
             if ($json->{"count"} > 0 && is_array($json->{"artists"}) && count($json->{"artists"}) > 0) {
-                return ((object) [
-                    "mbId" => (string) $json->{"artists"}[0]->{"id"},
-                    "name" => (string) $json->{"artists"}[0]->{"name"},
-                    "country" => (string) $json->{"artists"}[0]->{"country"},
-                ]);
+                $results = [];
+                foreach ($json->{"artists"} as $artist) {
+                    $results[] = (object) [
+                        "mbId" => (string) isset($artist->{"id"}) ? $artist->{"id"} : null,
+                        "name" => (string) isset($artist->{"name"}) ? $artist->{"name"} : null,
+                        "country" => (string) isset($artist->{"country"}) ? $artist->{"country"} : null
+                    ];
+                }
+                return ($results);
             } else {
-                return (null);
+                return ([]);
             }
         } else {
-            return (null);
+            return ([]);
         }
     }
 
