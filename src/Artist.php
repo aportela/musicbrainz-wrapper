@@ -19,7 +19,17 @@ class Artist
     {
         $this->logger = $logger;
         $this->logger->debug("Artist::__construct");
-        $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger, \aportela\MusicBrainzWrapper\MusicBrainz::USER_AGENT);
+        $loadedExtensions = get_loaded_extensions();
+        if (! in_array("libxml", $loadedExtensions)) {
+            $this->logger->critical("Artist::__construct ERROR: libxml extension not found");
+            throw new \aportela\MusicBrainzWrapper\Exception\LibXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
+        } else if (! in_array("SimpleXML", $loadedExtensions)) {
+            $this->logger->critical("Artist::__construct ERROR: SimpleXML extension not found");
+            throw new \aportela\MusicBrainzWrapper\Exception\SimpleXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
+        } else {
+            $this->logger->debug("Artist::__construct");
+            $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger, \aportela\MusicBrainzWrapper\MusicBrainz::USER_AGENT);
+        }
     }
 
     public function __destruct()
