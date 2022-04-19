@@ -8,11 +8,12 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
 {
     private const XML_SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=artist:%s&limit=%d";
     private const JSON_SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=artist:%s&limit=%d&fmt=json";
-    private const XML_GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases";
-    private const JSON_GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases&fmt=json";
+    private const XML_GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=genres";
+    private const JSON_GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=genres&fmt=json";
 
     public $name;
     public $country;
+    public $genres;
 
     public function search(string $name, int $limit = 1): array
     {
@@ -64,6 +65,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
     public function get(string $mbId): void
     {
         $this->raw = null;
+        $this->tags = [];
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
             $response = $this->http->GET(sprintf(self::XML_GET_API_URL, $mbId));
             if ($response->code == 200) {
@@ -72,6 +74,13 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 $xml = simplexml_load_string($this->raw);
                 $this->name = isset($xml->{"artist"}->{"name"}) ? (string) $xml->{"artist"}->{"name"}: null;
                 $this->country = isset($xml->{"artist"}->{"country"}) ? (string) $xml->{"artist"}->{"country"}: null;
+                if (isset($xml->{"artist"}->{"genre-list"})) {
+                    foreach($xml->{"artist"}->{"genre-list"}->{"genre"} as $genre) {
+                        $this->genres[] = trim((string) $genre->{"name"});
+                    }
+                } else {
+                    $this->genres = [];
+                }
             } else if ($response->code == 400) {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
             } else if ($response->code == 404) {
@@ -87,6 +96,13 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 $json = json_decode($this->raw);
                 $this->name = isset($json->{"name"}) ? (string) $json->{"name"}: null;
                 $this->country = isset($json->{"country"}) ? (string) $json->{"country"}: null;
+                if (isset($json->{"genres"})) {
+                    foreach($json->{"genres"} as $genre) {
+                        $this->genres[] = trim((string) $genre->{"name"});
+                    }
+                } else {
+                    $this->genres = [];
+                }
             } else if ($response->code == 400) {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
             } else if ($response->code == 404) {
