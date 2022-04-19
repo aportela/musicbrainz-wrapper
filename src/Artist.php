@@ -76,8 +76,9 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 $this->country = isset($xml->{"artist"}->{"country"}) ? (string) $xml->{"artist"}->{"country"}: null;
                 if (isset($xml->{"artist"}->{"genre-list"})) {
                     foreach($xml->{"artist"}->{"genre-list"}->{"genre"} as $genre) {
-                        $this->genres[] = trim((string) $genre->{"name"});
+                        $this->genres[] = trim(mb_strtolower((string) $genre->{"name"}));
                     }
+                    $this->genres = array_unique(($this->genres));
                 } else {
                     $this->genres = [];
                 }
@@ -98,8 +99,9 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 $this->country = isset($json->{"country"}) ? (string) $json->{"country"}: null;
                 if (isset($json->{"genres"})) {
                     foreach($json->{"genres"} as $genre) {
-                        $this->genres[] = trim((string) $genre->{"name"});
+                        $this->genres[] = trim(mb_strtolower((string) $genre->{"name"}));
                     }
+                    $this->genres = array_unique(($this->genres));
                 } else {
                     $this->genres = [];
                 }
