@@ -4,38 +4,12 @@ namespace aportela\MusicBrainzWrapper;
 
 use stdClass;
 
-class Artist
+class Artist extends \aportela\MusicBrainzWrapper\Entity
 {
-
-    protected $logger;
-    protected $http;
-
     const XML_SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=artist:%s&limit=%d";
     const JSON_SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=artist:%s&limit=%d&fmt=json";
     const XML_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases";
     const JSON_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases&fmt=json";
-
-    public function __construct(\Psr\Log\LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-        $this->logger->debug("Artist::__construct");
-        $loadedExtensions = get_loaded_extensions();
-        if (! in_array("libxml", $loadedExtensions)) {
-            $this->logger->critical("Artist::__construct ERROR: libxml extension not found");
-            throw new \aportela\MusicBrainzWrapper\Exception\LibXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
-        } else if (! in_array("SimpleXML", $loadedExtensions)) {
-            $this->logger->critical("Artist::__construct ERROR: SimpleXML extension not found");
-            throw new \aportela\MusicBrainzWrapper\Exception\SimpleXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
-        } else {
-            $this->logger->debug("Artist::__construct");
-            $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger, \aportela\MusicBrainzWrapper\MusicBrainz::USER_AGENT);
-        }
-    }
-
-    public function __destruct()
-    {
-        $this->logger->debug("Artist::__destruct");
-    }
 
     public function SEARCHXML(string $name, int $limit = 1): \stdClass
     {
