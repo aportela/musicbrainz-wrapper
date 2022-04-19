@@ -14,6 +14,9 @@ class Entity
     protected $http;
     protected $apiFormat;
 
+    public $mbId;
+    public $raw;
+
     public function __construct(\Psr\Log\LoggerInterface $logger, string $apiFormat)
     {
         $this->logger = $logger;
