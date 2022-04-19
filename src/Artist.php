@@ -11,6 +11,9 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
     const XML_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases";
     const JSON_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases&fmt=json";
 
+    public $name;
+    public $country;
+
     public function search(string $name, int $limit = 1): array
     {
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
@@ -58,12 +61,17 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         }
     }
 
-    public function get(string $mbId): string
+    public function get(string $mbId): void
     {
+        $this->raw = null;
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
             $response = $this->http->GET(sprintf(self::XML_API_URL, $mbId));
             if ($response->code == 200) {
-                return ($response->body);
+                $this->mbId = $mbId;
+                $this->raw = $response->body;
+                $xml = simplexml_load_string($this->raw);
+                $this->name = isset($xml->{"artist"}->{"name"}) ? (string) $xml->{"artist"}->{"name"}: null;
+                $this->country = isset($xml->{"artist"}->{"country"}) ? (string) $xml->{"artist"}->{"country"}: null;
             } else if ($response->code == 400) {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
             } else if ($response->code == 404) {
@@ -74,7 +82,11 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON) {
             $response = $this->http->GET(sprintf(self::JSON_API_URL, $mbId));
             if ($response->code == 200) {
-                return ($response->body);
+                $this->mbId = $mbId;
+                $this->raw = $response->body;
+                $json = json_decode($this->raw);
+                $this->name = isset($json->{"name"}) ? (string) $json->{"name"}: null;
+                $this->country = isset($json->{"country"}) ? (string) $json->{"country"}: null;
             } else if ($response->code == 400) {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
             } else if ($response->code == 404) {
