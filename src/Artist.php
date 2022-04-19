@@ -6,10 +6,10 @@ use stdClass;
 
 class Artist extends \aportela\MusicBrainzWrapper\Entity
 {
-    const XML_SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=artist:%s&limit=%d";
-    const JSON_SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=artist:%s&limit=%d&fmt=json";
-    const XML_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases";
-    const JSON_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases&fmt=json";
+    private const XML_SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=artist:%s&limit=%d";
+    private const JSON_SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=artist:%s&limit=%d&fmt=json";
+    private const XML_GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases";
+    private const JSON_GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=aliases&fmt=json";
 
     public $name;
     public $country;
@@ -65,7 +65,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
     {
         $this->raw = null;
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
-            $response = $this->http->GET(sprintf(self::XML_API_URL, $mbId));
+            $response = $this->http->GET(sprintf(self::XML_GET_API_URL, $mbId));
             if ($response->code == 200) {
                 $this->mbId = $mbId;
                 $this->raw = $response->body;
@@ -80,7 +80,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 throw new \Exception($mbId, $response->code);
             }
         } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON) {
-            $response = $this->http->GET(sprintf(self::JSON_API_URL, $mbId));
+            $response = $this->http->GET(sprintf(self::JSON_GET_API_URL, $mbId));
             if ($response->code == 200) {
                 $this->mbId = $mbId;
                 $this->raw = $response->body;
