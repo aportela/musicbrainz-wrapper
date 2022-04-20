@@ -32,10 +32,12 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                     }
                     return ($results);
                 } else {
-                    return ([]);
+                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($name, $response->code);
                 }
+            } else if ($response->code == 503) {
+                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($name, $response->code);
             } else {
-                return ([]);
+                throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($name, $response->code);
             }
         } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON) {
             $response = $this->http->GET(sprintf(self::JSON_SEARCH_API_URL, urlencode($name), $limit));
@@ -52,10 +54,12 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                     }
                     return ($results);
                 } else {
-                    return ([]);
+                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($name, $response->code);
                 }
+            } else if ($response->code == 503) {
+                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($name, $response->code);
             } else {
-                return ([]);
+                throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($name, $response->code);
             }
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
@@ -88,8 +92,10 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
             } else if ($response->code == 404) {
                 throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($mbId, $response->code);
+            } else if ($response->code == 503) {
+                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($mbId, $response->code);
             } else {
-                throw new \Exception($mbId, $response->code);
+                throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($mbId, $response->code);
             }
         } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON) {
             $response = $this->http->GET(sprintf(self::JSON_GET_API_URL, $mbId));
@@ -111,8 +117,10 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
             } else if ($response->code == 404) {
                 throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($mbId, $response->code);
+            } else if ($response->code == 503) {
+                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($mbId, $response->code);
             } else {
-                throw new \Exception($mbId, $response->code);
+                throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($mbId, $response->code);
             }
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
