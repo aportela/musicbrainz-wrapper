@@ -65,7 +65,9 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
     public function get(string $mbId): void
     {
         $this->raw = null;
-        $this->tags = [];
+        $this->name = null;
+        $this->country = null;
+        $this->genres = [];
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
             $response = $this->http->GET(sprintf(self::XML_GET_API_URL, $mbId));
             if ($response->code == 200) {
