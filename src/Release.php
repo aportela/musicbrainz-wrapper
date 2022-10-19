@@ -36,7 +36,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                         $results[] = (object) [
                             "mbId" => isset($release["id"]) ? (string) $release["id"] : null,
                             "title" => isset($release->{"title"}) ? (string) $release->{"title"} : null,
-                            "year" => isset($release->{"date"}) && strlen($release->{"date"}) == 10 ? (string) date_format(date_create_from_format('Y-m-d', $release->{"date"}), 'Y') : (strlen($release->{"date"}) == 4 ? (string) $release->{"date"} : null),
+                            "year" => isset($release->{"date"}) && !empty($release->{"date"}) && strlen($release->{"date"}) == 10 ? (string) date_format(date_create_from_format('Y-m-d', $release->{"date"}), 'Y') : (strlen($release->{"date"}) == 4 ? (string) $release->{"date"} : null),
                             "artist" => (object) [
                                 "mbId" => isset($release->{"artist-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}->artist) ? (string) $release->{"artist-credit"}->{"name-credit"}->artist["id"] : null,
                                 "name" => isset($release->{"artist-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}->artist) ? (string) $release->{"artist-credit"}->{"name-credit"}->artist->name : null
@@ -55,7 +55,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                         $results[] = (object) [
                             "mbId" => isset($release->{"id"}) ? (string) $release->{"id"} : null,
                             "title" => isset($release->{"title"}) ? (string) $release->{"title"} : null,
-                            "year" => isset($release->{"date"}) && strlen($release->{"date"}) == 10 ? (string) date_format(date_create_from_format('Y-m-d', $release->{"date"}), 'Y') : (strlen($release->{"date"}) == 4 ? $release->{"date"} : null),
+                            "year" => isset($release->{"date"}) && !empty($release->{"date"}) && strlen($release->{"date"}) == 10 ? (string) date_format(date_create_from_format('Y-m-d', $release->{"date"}), 'Y') : (strlen($release->{"date"}) == 4 ? $release->{"date"} : null),
                             "artist" => (object) [
                                 "mbId" => isset($release->{"artist-credit"}) && is_array($release->{"artist-credit"}) && count($release->{"artist-credit"}) > 0 ? $release->{"artist-credit"}[0]->artist->id : null,
                                 "name" => isset($release->{"artist-credit"}) && is_array($release->{"artist-credit"}) && count($release->{"artist-credit"}) > 0 ? $release->{"artist-credit"}[0]->artist->name : null
