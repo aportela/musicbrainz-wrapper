@@ -76,6 +76,7 @@ final class ReleaseTest extends BaseTest
         $this->assertSame(self::$mbJSON->title, "Piece of Mind");
         $this->assertSame(self::$mbJSON->artist->mbId, "ca891d65-d9b0-4258-89f7-e6ba29d83767");
         $this->assertSame(self::$mbJSON->artist->name, "Iron Maiden");
+        $this->assertEquals(self::$mbJSON->year, 1983);
         $this->assertEquals(self::$mbJSON->trackCount, 9);
     }
 
@@ -86,6 +87,7 @@ final class ReleaseTest extends BaseTest
         $this->assertSame(self::$mbXML->title, "Piece of Mind");
         $this->assertSame(self::$mbXML->artist->mbId, "ca891d65-d9b0-4258-89f7-e6ba29d83767");
         $this->assertSame(self::$mbXML->artist->name, "Iron Maiden");
+        $this->assertEquals(self::$mbJSON->year, 1983);
         $this->assertEquals(self::$mbXML->trackCount, 9);
     }
 }
