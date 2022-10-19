@@ -14,11 +14,22 @@
             "aportela\\MusicBrainzWrapper\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "aportela\\MusicBrainzWrapper\\Test\\": "Test"
+        }
+    },
     "config": {
         "sort-packages": true
     },
     "require": {
         "aportela/httprequest-wrapper": "^1.1",
         "psr/log": "^3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit.bat --colors=always --verbose src/Test/"
     }
 }
