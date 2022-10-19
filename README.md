@@ -5,7 +5,7 @@ Custom musicbrainz api wrapper
 
 ```
 composer require aportela/musicbrainz-wrapper
-composer require monolog/monolog
+composer require psr/log
 ```
 
 # Code example:
@@ -15,7 +15,7 @@ composer require monolog/monolog
 
     require "vendor/autoload.php";
 
-    $logger = new \Monolog\Logger("musicbrainz-log");
+    $logger = new \Psr\Log\NullLogger("");
 
     $mbArtist = new \aportela\MusicBrainzWrapper\Artist($logger);
 
