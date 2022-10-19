@@ -9,8 +9,8 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECT
 final class RecordingTest extends BaseTest
 {
 
-    private static $mbRecordingJSON;
-    private static $mbRecordingXML;
+    private static $mbJSON;
+    private static $mbXML;
 
     /**
      * Called once just like normal constructor
@@ -18,8 +18,8 @@ final class RecordingTest extends BaseTest
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        self::$mbRecordingJSON = new \aportela\MusicBrainzWrapper\Recording(self::$logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
-        self::$mbRecordingXML = new \aportela\MusicBrainzWrapper\Recording(self::$logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML);
+        self::$mbJSON = new \aportela\MusicBrainzWrapper\Recording(self::$logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
+        self::$mbXML = new \aportela\MusicBrainzWrapper\Recording(self::$logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML);
     }
 
     /**
@@ -49,17 +49,17 @@ final class RecordingTest extends BaseTest
 
     public function testGetJSON(): void
     {
-        self::$mbRecordingJSON->get("bd61eda3-eb77-4634-ba66-4a084f7f8455");
-        $this->assertSame(self::$mbRecordingJSON->title, "Radioactive");
-        $this->assertSame(self::$mbRecordingJSON->artist->mbId, "012151a8-0f9a-44c9-997f-ebd68b5389f9");
-        $this->assertSame(self::$mbRecordingJSON->artist->name, "Imagine Dragons");
+        self::$mbJSON->get("bd61eda3-eb77-4634-ba66-4a084f7f8455");
+        $this->assertSame(self::$mbJSON->title, "Radioactive");
+        $this->assertSame(self::$mbJSON->artist->mbId, "012151a8-0f9a-44c9-997f-ebd68b5389f9");
+        $this->assertSame(self::$mbJSON->artist->name, "Imagine Dragons");
     }
 
     public function testGetXML(): void
     {
-        self::$mbRecordingXML->get("bd61eda3-eb77-4634-ba66-4a084f7f8455");
-        $this->assertSame(self::$mbRecordingXML->title, "Radioactive");
-        $this->assertSame(self::$mbRecordingXML->artist->mbId, "012151a8-0f9a-44c9-997f-ebd68b5389f9");
-        $this->assertSame(self::$mbRecordingXML->artist->name, "Imagine Dragons");
+        self::$mbXML->get("bd61eda3-eb77-4634-ba66-4a084f7f8455");
+        $this->assertSame(self::$mbXML->title, "Radioactive");
+        $this->assertSame(self::$mbXML->artist->mbId, "012151a8-0f9a-44c9-997f-ebd68b5389f9");
+        $this->assertSame(self::$mbXML->artist->name, "Imagine Dragons");
     }
 }
