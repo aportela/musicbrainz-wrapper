@@ -67,7 +67,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat);
         $response = $this->http->GET($url);
         if ($response->code == 200) {
-            $this->parse($mbId, $response->body);
+            $this->parse($response->body);
         } else if ($response->code == 400) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
         } else if ($response->code == 404) {
@@ -79,17 +79,17 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         }
     }
 
-    public function parse(string $mbId, string $rawText)
+    public function parse(string $rawText)
     {
-        $this->raw = null;
+        $this->mbId = null;
+        $this->raw = $rawText;
         $this->name = null;
         $this->country = null;
         $this->genres = [];
         $this->relations = [];
-        $this->mbId = $mbId;
-        $this->raw = $rawText;
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
             $xml = simplexml_load_string($this->raw);
+            $this->mbId = isset($xml->{"artist"}->attributes()->{"id"}) ? (string) $xml->{"artist"}->attributes()->{"id"} : null;
             $this->name = isset($xml->{"artist"}->{"name"}) ? (string) $xml->{"artist"}->{"name"} : null;
             $this->country = isset($xml->{"artist"}->{"country"}) ? mb_strtolower((string) $xml->{"artist"}->{"country"}) : null;
             if (isset($xml->{"artist"}->{"genre-list"})) {
@@ -113,6 +113,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
             }
         } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON) {
             $json = json_decode($this->raw);
+            $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
             $this->name = isset($json->{"name"}) ? (string) $json->{"name"} : null;
             $this->country = isset($json->{"country"}) ? mb_strtolower((string) $json->{"country"}) : null;
             if (isset($json->{"genres"})) {

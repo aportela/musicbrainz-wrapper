@@ -84,7 +84,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
         $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat);
         $response = $this->http->GET($url);
         if ($response->code == 200) {
-            $this->parse($mbId, $response->body);
+            $this->parse($response->body);
         } else if ($response->code == 400) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
         } else if ($response->code == 404) {
@@ -96,18 +96,18 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
         }
     }
 
-    public function parse(string $mbId, string $rawText)
+    public function parse(string $rawText)
     {
-        $this->raw = null;
+        $this->mbId = null;
+        $this->raw = $rawText;
         $this->title = null;
         $this->artist = (object) ['mbId' => null, 'name' => null];
         $this->tracks = [];
         $this->trackCount = 0;
         $this->coverArtArchive = (object) ['front' => false, 'back' => false];
-        $this->mbId = $mbId;
-        $this->raw = $rawText;
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
             $xml = simplexml_load_string($this->raw);
+            $this->mbId = isset($xml->{"release"}->attributes()->{"id"}) ? (string) $xml->{"release"}->attributes()->{"id"} : null;
             $this->title = isset($xml->{"release"}->{"title"}) ? (string) $xml->{"release"}->{"title"} : null;
             $this->year = isset($xml->{"release"}->{"date"}) && strlen($xml->{"release"}->{"date"}) == 10 ? (string) date_format(date_create_from_format('Y-m-d', $xml->{"release"}->{"date"}), 'Y') : (strlen($xml->{"release"}->{"date"}) == 4 ? $xml->{"release"}->{"date"} : null);
             $this->artist->mbId = isset($xml->{"release"}->{"artist-credit"}) && isset($xml->{"release"}->{"artist-credit"}->{"name-credit"}) && isset($xml->{"release"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $xml->{"release"}->{"artist-credit"}->{"name-credit"}->{"artist"}["id"] : null;
@@ -135,6 +135,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
             }
         } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON) {
             $json = json_decode($this->raw);
+            $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
             $this->title = isset($json->{"title"}) ? (string) $json->{"title"} : null;
             $this->year = isset($json->{"date"}) && strlen($json->{"date"}) == 10 ? (string) date_format(date_create_from_format('Y-m-d', $json->{"date"}), 'Y') : (strlen($json->{"date"}) == 4 ? $json->{"date"} : null);
             $this->artist->mbId = isset($json->{"artist-credit"}) && is_array($json->{"artist-credit"}) && count($json->{"artist-credit"}) > 0 ? $json->{"artist-credit"}[0]->artist->id : null;
