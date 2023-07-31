@@ -79,7 +79,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         }
     }
 
-    public function parse(string $rawText)
+    public function parse(string $rawText): void
     {
         $this->mbId = null;
         $this->raw = $rawText;
