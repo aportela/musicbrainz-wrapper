@@ -109,7 +109,8 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
             $xml = simplexml_load_string($this->raw);
             $this->mbId = isset($xml->{"release"}->attributes()->{"id"}) ? (string) $xml->{"release"}->attributes()->{"id"} : null;
             $this->title = isset($xml->{"release"}->{"title"}) ? (string) $xml->{"release"}->{"title"} : null;
-            $this->year = isset($xml->{"release"}->{"date"}) && strlen($xml->{"release"}->{"date"}) == 10 ? (string) date_format(date_create_from_format('Y-m-d', $xml->{"release"}->{"date"}), 'Y') : (strlen($xml->{"release"}->{"date"}) == 4 ? $xml->{"release"}->{"date"} : null);
+            $releaseDate = isset($xml->{"release"}->{"date"}) && !empty($xml->{"release"}->{"date"}) ? $xml->{"release"}->{"date"} : "";
+            $this->year = strlen($releaseDate) == 10 ? (string) date_format(date_create_from_format('Y-m-d', $releaseDate), 'Y') : (strlen($releaseDate) == 4 ? ((string) $releaseDate) : null);
             $this->artist->mbId = isset($xml->{"release"}->{"artist-credit"}) && isset($xml->{"release"}->{"artist-credit"}->{"name-credit"}) && isset($xml->{"release"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $xml->{"release"}->{"artist-credit"}->{"name-credit"}->{"artist"}["id"] : null;
             $this->artist->name = isset($xml->{"release"}->{"artist-credit"}) && isset($xml->{"release"}->{"artist-credit"}->{"name-credit"}) && isset($xml->{"release"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $xml->{"release"}->{"artist-credit"}->{"name-credit"}->{"artist"}->{"name"} : null;
             $this->coverArtArchive = (object) [
@@ -137,7 +138,8 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
             $json = json_decode($this->raw);
             $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
             $this->title = isset($json->{"title"}) ? (string) $json->{"title"} : null;
-            $this->year = isset($json->{"date"}) && strlen($json->{"date"}) == 10 ? (string) date_format(date_create_from_format('Y-m-d', $json->{"date"}), 'Y') : (strlen($json->{"date"}) == 4 ? $json->{"date"} : null);
+            $releaseDate = isset($json->{"date"}) && !empty($json->{"date"}) ? $json->{"date"} : "";
+            $this->year = strlen($releaseDate) == 10 ? (string) date_format(date_create_from_format('Y-m-d', $releaseDate), 'Y') : (strlen($releaseDate) == 4 ? ((string) $releaseDate) : null);
             $this->artist->mbId = isset($json->{"artist-credit"}) && is_array($json->{"artist-credit"}) && count($json->{"artist-credit"}) > 0 ? $json->{"artist-credit"}[0]->artist->id : null;
             $this->artist->name = isset($json->{"artist-credit"}) && is_array($json->{"artist-credit"}) && count($json->{"artist-credit"}) > 0 ? $json->{"artist-credit"}[0]->artist->name : null;
             $this->coverArtArchive = (object) [
