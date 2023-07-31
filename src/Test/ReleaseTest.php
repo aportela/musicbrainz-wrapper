@@ -51,7 +51,7 @@ final class ReleaseTest extends BaseTest
     {
         $results = self::$mbJSON->search("piece of mind", "iron maiden", "1983", 1);
         $this->assertCount(1, $results);
-        $this->assertSame($results[0]->mbId, "3d241a54-9b55-4ae9-a007-c391f7df29c7");
+        $this->assertSame($results[0]->mbId, "1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
         $this->assertSame($results[0]->title, "Piece of Mind");
         $this->assertSame($results[0]->artist->mbId, "ca891d65-d9b0-4258-89f7-e6ba29d83767");
         $this->assertSame($results[0]->artist->name, "Iron Maiden");
@@ -62,7 +62,7 @@ final class ReleaseTest extends BaseTest
     {
         $results = self::$mbXML->search("piece of mind", "iron maiden", "1983", 1);
         $this->assertCount(1, $results);
-        $this->assertSame($results[0]->mbId, "3d241a54-9b55-4ae9-a007-c391f7df29c7");
+        $this->assertSame($results[0]->mbId, "1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
         $this->assertSame($results[0]->title, "Piece of Mind");
         $this->assertSame($results[0]->artist->mbId, "ca891d65-d9b0-4258-89f7-e6ba29d83767");
         $this->assertSame($results[0]->artist->name, "Iron Maiden");
@@ -71,8 +71,8 @@ final class ReleaseTest extends BaseTest
 
     public function testGetJSON(): void
     {
-        self::$mbJSON->get("3d241a54-9b55-4ae9-a007-c391f7df29c7");
-        $this->assertSame(self::$mbJSON->mbId, "3d241a54-9b55-4ae9-a007-c391f7df29c7");
+        self::$mbJSON->get("1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
+        $this->assertSame(self::$mbJSON->mbId, "1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
         $this->assertSame(self::$mbJSON->title, "Piece of Mind");
         $this->assertSame(self::$mbJSON->artist->mbId, "ca891d65-d9b0-4258-89f7-e6ba29d83767");
         $this->assertSame(self::$mbJSON->artist->name, "Iron Maiden");
@@ -82,8 +82,8 @@ final class ReleaseTest extends BaseTest
 
     public function testGetXML(): void
     {
-        self::$mbXML->get("3d241a54-9b55-4ae9-a007-c391f7df29c7");
-        $this->assertSame(self::$mbXML->mbId, "3d241a54-9b55-4ae9-a007-c391f7df29c7");
+        self::$mbXML->get("1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
+        $this->assertSame(self::$mbXML->mbId, "1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
         $this->assertSame(self::$mbXML->title, "Piece of Mind");
         $this->assertSame(self::$mbXML->artist->mbId, "ca891d65-d9b0-4258-89f7-e6ba29d83767");
         $this->assertSame(self::$mbXML->artist->name, "Iron Maiden");
