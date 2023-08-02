@@ -9,6 +9,7 @@
             "email": "766f6964+github@gmail.com"
         }
     ],
+    "homepage": "https://github.com/aportela/musicbrainz-wrapper",
     "autoload": {
         "psr-4": {
             "aportela\\MusicBrainzWrapper\\": "src"
@@ -23,7 +24,8 @@
         "sort-packages": true
     },
     "require": {
-        "aportela/httprequest-wrapper": "^1.1",
+        "php": ">=8.0",
+        "aportela/httprequest-wrapper": "^2.0",
         "psr/log": "^3.0"
     },
     "require-dev": {
