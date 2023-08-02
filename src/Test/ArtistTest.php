@@ -75,7 +75,7 @@ final class ArtistTest extends BaseTest
 
     public function testGetXML(): void
     {
-        $artist = self::$mbXML->get("d3b2711f-2baa-441a-be95-14945ca7e6ea");
+        self::$mbXML->get("d3b2711f-2baa-441a-be95-14945ca7e6ea");
         $this->assertSame(self::$mbXML->mbId, "d3b2711f-2baa-441a-be95-14945ca7e6ea");
         $this->assertSame(self::$mbXML->name, "Roxette");
         $this->assertSame(self::$mbXML->country, "se");
