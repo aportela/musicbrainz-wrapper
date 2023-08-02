@@ -7,12 +7,12 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
     private const SEARCH_API_URL = "http://musicbrainz.org/ws/2/release/?query=%s&limit=%d&fmt=%s";
     private const GET_API_URL = "https://musicbrainz.org/ws/2/release/%s?inc=artist-credits+recordings+url-rels&fmt=%s";
 
-    public $title;
-    public $year;
-    public $artist;
-    public $tracks;
-    public $trackCount;
-    public $coverArtArchive;
+    public ?string $title;
+    public int $year;
+    public object $artist;
+    public array $tracks = [];
+    public int $trackCount;
+    public string $coverArtArchive;
 
     public function search(string $title, string $artist, string $year, int $limit = 1): array
     {

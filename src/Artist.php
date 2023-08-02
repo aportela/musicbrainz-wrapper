@@ -2,17 +2,15 @@
 
 namespace aportela\MusicBrainzWrapper;
 
-use stdClass;
-
 class Artist extends \aportela\MusicBrainzWrapper\Entity
 {
     private const SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=artist:%s&limit=%d&fmt=%s";
     private const GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=genres+recordings+releases+release-groups+works+url-rels&fmt=%s";
 
-    public $name;
-    public $country;
-    public $genres;
-    public $relations;
+    public ?string $name;
+    public ?string $country;
+    public array $genres = [];
+    public array $relations = [];
 
     public function search(string $name, int $limit = 1): array
     {

@@ -6,8 +6,8 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
 {
     const GET_API_URL = "https://musicbrainz.org/ws/2/recording/%s?inc=artist-credits&fmt=%s";
 
-    public $title;
-    public $artist;
+    public ?string $title;
+    public object $artist;
 
     public function get(string $mbId): void
     {

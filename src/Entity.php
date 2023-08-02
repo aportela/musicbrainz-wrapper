@@ -2,8 +2,6 @@
 
 namespace aportela\MusicBrainzWrapper;
 
-use stdClass;
-
 class Entity
 {
     const USER_AGENT = "MusicBrainzWrapper - https://github.com/aportela/musicbrainz-wrapper (766f6964+github@gmail.com)";
@@ -14,15 +12,15 @@ class Entity
     protected $http;
     protected $apiFormat;
 
-    public $mbId;
-    public $raw;
+    public ?string $mbId;
+    public ?string $raw;
 
     public function __construct(\Psr\Log\LoggerInterface $logger, string $apiFormat)
     {
         $this->logger = $logger;
         $this->logger->debug("MusicBrainzWrapper::__construct");
-        $supportedApiFormats = [ self::API_FORMAT_XML, self::API_FORMAT_JSON ];
-        if (! in_array($apiFormat, $supportedApiFormats)) {
+        $supportedApiFormats = [self::API_FORMAT_XML, self::API_FORMAT_JSON];
+        if (!in_array($apiFormat, $supportedApiFormats)) {
             $this->logger->critical("MusicBrainzWrapper::__construct ERROR: invalid api format");
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("supported formats: " . implode(", ", $supportedApiFormats));
         }
@@ -35,7 +33,6 @@ class Entity
             $this->logger->critical("MusicBrainzWrapper::__construct ERROR: SimpleXML extension not found");
             throw new \aportela\MusicBrainzWrapper\Exception\SimpleXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
         } else {
-            $this->logger->debug("MusicBrainzWrapper::__construct");
             $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger, self::USER_AGENT);
         }
     }
