@@ -1,14 +1,19 @@
 # musicbrainz-wrapper
+
 Custom musicbrainz api wrapper
+
+## Requirements
+
+- mininum php version 8.x
+- curl extension must be enabled (aportela/httprequest-wrapper)
 
 ## Install (composer) dependencies:
 
 ```
 composer require aportela/musicbrainz-wrapper
-composer require psr/log
 ```
 
-# Code example:
+## Code example:
 
 ```
 <?php
@@ -58,5 +63,6 @@ composer require psr/log
     $mbRecording->get("4fba6ee9-b49d-4503-ba34-7337ed2e972f");
     // parse raw xml string (use this if you have an stored pre-cached json music brainz recording api response) into recording object
     $mbRecording->parse($mbRecording->raw);
-
 ```
+
+![PHP Composer](https://github.com/aportela/musicbrainz-wrapper/actions/workflows/php.yml/badge.svg)
