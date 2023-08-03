@@ -17,10 +17,10 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         $queryParams = [
             "artist:" . urlencode($name)
         ];
-        $url = sprintf(self::SEARCH_API_URL, implode(urlencode(" AND "), $queryParams), $limit, $this->apiFormat);
+        $url = sprintf(self::SEARCH_API_URL, implode(urlencode(" AND "), $queryParams), $limit, $this->apiFormat->value);
         $response = $this->http->GET($url);
         if ($response->code == 200) {
-            if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
+            if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
                 $xml = simplexml_load_string($response->body);
                 if ($xml->{"artist-list"} && $xml->{"artist-list"}["count"] > 0 && $xml->{"artist-list"}->{"artist"}) {
                     $results = [];
@@ -35,7 +35,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 } else {
                     throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($name, $response->code);
                 }
-            } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON) {
+            } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
                 $json = json_decode($response->body);
                 if ($json->{"count"} > 0 && is_array($json->{"artists"}) && count($json->{"artists"}) > 0) {
                     $results = [];
@@ -62,7 +62,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
 
     public function get(string $mbId): void
     {
-        $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat);
+        $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
         $response = $this->http->GET($url);
         if ($response->code == 200) {
             $this->parse($response->body);
@@ -85,7 +85,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         $this->country = null;
         $this->genres = [];
         $this->relations = [];
-        if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
+        if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $xml = simplexml_load_string($this->raw);
             $this->mbId = isset($xml->{"artist"}->attributes()->{"id"}) ? (string) $xml->{"artist"}->attributes()->{"id"} : null;
             $this->name = isset($xml->{"artist"}->{"name"}) ? (string) $xml->{"artist"}->{"name"} : null;
@@ -109,7 +109,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
             } else {
                 $this->relations = [];
             }
-        } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON) {
+        } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
             $json = json_decode($this->raw);
             $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
             $this->name = isset($json->{"name"}) ? (string) $json->{"name"} : null;

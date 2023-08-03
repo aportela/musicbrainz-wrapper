@@ -12,7 +12,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
     public object $artist;
     public array $tracks = [];
     public int $trackCount;
-    public string $coverArtArchive;
+    public ?object $coverArtArchive;
 
     public function search(string $title, string $artist, string $year, int $limit = 1): array
     {
@@ -25,11 +25,11 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
         if (!empty($year) && mb_strlen($year) == 4) {
             $queryParams[] = "date:" . urlencode($year);
         }
-        $url = sprintf(self::SEARCH_API_URL, implode(urlencode(" AND "), $queryParams), $limit, $this->apiFormat);
+        $url = sprintf(self::SEARCH_API_URL, implode(urlencode(" AND "), $queryParams), $limit, $this->apiFormat->value);
         $response = $this->http->GET($url);
         if ($response->code == 200) {
             $results = [];
-            if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
+            if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
                 $xml = simplexml_load_string($response->body);
                 if ($xml->{"release-list"} && $xml->{"release-list"}['count'] > 0) {
                     foreach ($xml->{"release-list"}->{"release"} as $release) {
@@ -49,7 +49,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                     throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($title, $response->code);
                 }
                 return ($results);
-            } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON) {
+            } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
                 $json = json_decode($response->body);
                 if ($json->{"count"} > 0 && is_array($json->{"releases"}) && count($json->{"releases"}) > 0) {
                     foreach ($json->{"releases"} as $release) {
@@ -81,7 +81,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
 
     public function get(string $mbId): void
     {
-        $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat);
+        $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
         $response = $this->http->GET($url);
         if ($response->code == 200) {
             $this->parse($response->body);
@@ -105,7 +105,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
         $this->tracks = [];
         $this->trackCount = 0;
         $this->coverArtArchive = (object) ['front' => false, 'back' => false];
-        if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
+        if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $xml = simplexml_load_string($this->raw);
             $this->mbId = isset($xml->{"release"}->attributes()->{"id"}) ? (string) $xml->{"release"}->attributes()->{"id"} : null;
             $this->title = isset($xml->{"release"}->{"title"}) ? (string) $xml->{"release"}->{"title"} : null;
@@ -134,7 +134,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                     }
                 }
             }
-        } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON) {
+        } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
             $json = json_decode($this->raw);
             $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
             $this->title = isset($json->{"title"}) ? (string) $json->{"title"} : null;

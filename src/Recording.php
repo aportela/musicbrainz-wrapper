@@ -14,7 +14,7 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
         $this->raw = null;
         $this->title = null;
         $this->artist = (object) ['mbId' => null, 'name' => null];
-        $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat);
+        $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
         $response = $this->http->GET($url);
         if ($response->code == 200) {
             $this->parse($response->body);
@@ -33,13 +33,13 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
     {
         $this->mbId = null;
         $this->raw = $rawText;
-        if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML) {
+        if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $xml = simplexml_load_string($this->raw);
             $this->mbId = isset($xml->{"recording"}->attributes()->{"title"}) ? (string) $xml->{"recording"}->attributes()->{"title"} : null;
             $this->title = isset($xml->{"recording"}->{"title"}) ? (string) $xml->{"recording"}->{"title"} : null;
             $this->artist->mbId = isset($xml->{"recording"}->{"artist-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}["id"] : null;
             $this->artist->name = isset($xml->{"recording"}->{"artist-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}->{"name"} : null;
-        } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON) {
+        } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
             $json = json_decode($this->raw);
             $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
             $this->title = isset($json->{"title"}) ? (string) $json->{"title"} : null;

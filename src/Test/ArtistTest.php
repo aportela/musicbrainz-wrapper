@@ -18,8 +18,8 @@ final class ArtistTest extends BaseTest
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        self::$mbJSON = new \aportela\MusicBrainzWrapper\Artist(self::$logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_JSON);
-        self::$mbXML = new \aportela\MusicBrainzWrapper\Artist(self::$logger, \aportela\MusicBrainzWrapper\Entity::API_FORMAT_XML);
+        self::$mbJSON = new \aportela\MusicBrainzWrapper\Artist(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
+        self::$mbXML = new \aportela\MusicBrainzWrapper\Artist(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::XML);
     }
 
     /**
