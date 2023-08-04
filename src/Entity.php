@@ -33,6 +33,9 @@ class Entity
         } else {
             $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger, self::USER_AGENT);
         }
+        // avoids simplexml_load_string warnings
+        // https://stackoverflow.com/a/40585185
+        libxml_use_internal_errors(true);
     }
 
     public function __destruct()
