@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" backupGlobals="false" backupStaticProperties="false" colors="true" processIsolation="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.3/phpunit.xsd">
+    <testsuites>
+        <testsuite name="musicbrainz-warpper-test-suite">
+            <file>src/Test/ArtistTest.php</file>
+            <file>src/Test/ReleaseTest.php</file>
+            <file>src/Test/RecordingTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>
