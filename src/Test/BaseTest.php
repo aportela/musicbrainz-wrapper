@@ -6,7 +6,7 @@ namespace aportela\MusicBrainzWrapper\Test;
 
 require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-abstract class BaseTest extends \PHPUnit\Framework\TestCase
+class BaseTest extends \PHPUnit\Framework\TestCase
 {
     protected static $logger;
 
@@ -38,5 +38,14 @@ abstract class BaseTest extends \PHPUnit\Framework\TestCase
      */
     public static function tearDownAfterClass(): void
     {
+    }
+
+    /**
+     * this empty test is made to avoid the warning:
+     * No tests found in class "aportela\MusicBrainzWrapper\Test\BaseTest"
+     */
+    public function testBaseClass(): void
+    {
+        $this->assertFalse(false);
     }
 }
