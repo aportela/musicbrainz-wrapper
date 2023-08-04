@@ -39,13 +39,4 @@ class BaseTest extends \PHPUnit\Framework\TestCase
     public static function tearDownAfterClass(): void
     {
     }
-
-    /**
-     * this empty test is made to avoid the warning:
-     * No tests found in class "aportela\MusicBrainzWrapper\Test\BaseTest"
-     */
-    public function testBaseClass(): void
-    {
-        $this->assertFalse(false);
-    }
 }
