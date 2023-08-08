@@ -126,7 +126,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                             "number" => isset($track->{"number"}) ? (int) $track->{"number"} : null,
                             "length" => isset($track->{"length"}) ? (int) $track->{"length"} : null,
                             "title" => isset($track->{"recording"}) && isset($track->{"recording"}->{"title"}) ? (string) $track->{"recording"}->{"title"} : null,
-                            "artist" => [
+                            "artist" => (object) [
                                 "mbId" => isset($track->{"recording"}) && isset($track->{"recording"}->{"artist-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}["id"] : null,
                                 "name" => isset($track->{"recording"}) && isset($track->{"recording"}->{"artist-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}->{"name"} : null
                             ]
@@ -155,7 +155,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                             "number" => isset($track->{"number"}) ? (int) $track->{"number"} : null,
                             "length" => isset($track->{"length"}) ? (int) $track->{"length"} : null,
                             "title" => isset($track->{"title"}) ? (string) $track->{"title"} : null,
-                            "artist" => [
+                            "artist" => (object) [
                                 "mbId" => isset($track->{"artist-credit"}) && is_array($track->{"artist-credit"}) && count($track->{"artist-credit"}) > 0 ? $track->{"artist-credit"}[0]->artist->id : null,
                                 "name" => isset($track->{"artist-credit"}) && is_array($track->{"artist-credit"}) && count($track->{"artist-credit"}) > 0 ? $track->{"artist-credit"}[0]->artist->name : null
                             ]
