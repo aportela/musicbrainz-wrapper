@@ -102,6 +102,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
             if (isset($xml->{"artist"}->{"relation-list"})) {
                 foreach ($xml->{"artist"}->{"relation-list"}->{"relation"} as $relation) {
                     $newRelation = new \stdClass();
+                    $newRelation->typeId = (string)$relation->attributes()->{"type-id"};
                     $newRelation->name = (string)$relation->attributes()->{"type"};
                     $newRelation->url = (string)$relation->{"target"};
                     $this->relations[] = $newRelation;
@@ -125,6 +126,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
             if (isset($json->{"relations"})) {
                 foreach ($json->{"relations"} as $relation) {
                     $newRelation = new \stdClass();
+                    $newRelation->typeId = (string)$relation->{"type-id"};
                     $newRelation->name = (string)$relation->{"type"};
                     $newRelation->url = (string)$relation->{"url"}->{"resource"};
                     $this->relations[] = $newRelation;
