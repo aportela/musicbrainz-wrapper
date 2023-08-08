@@ -8,7 +8,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
     private const GET_API_URL = "https://musicbrainz.org/ws/2/release/%s?inc=artist-credits+recordings+url-rels&fmt=%s";
 
     public ?string $title;
-    public int $year;
+    public ?int $year;
     public object $artist;
     public array $tracks = [];
     public int $trackCount;
