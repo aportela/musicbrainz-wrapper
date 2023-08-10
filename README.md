@@ -28,6 +28,8 @@ composer require aportela/musicbrainz-wrapper
     $mbArtist->get("ca891d65-d9b0-4258-89f7-e6ba29d83767");
     // parse raw json string (use this if you have an stored pre-cached json music brainz artist api response) into artist object
     $mbArtist->parse($mbArtist->raw);
+    // get youtube url artist relationships
+    $urls = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::SOCIAL_YOUTUBE);
 
     // XML format
     $mbArtist = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::XML);
@@ -35,6 +37,8 @@ composer require aportela/musicbrainz-wrapper
     $mbArtist->get("ca891d65-d9b0-4258-89f7-e6ba29d83767");
     // parse raw xml string (use this if you have an stored pre-cached xml music brainz artist api response) into artist object
     $mbArtist->parse($mbArtist->raw);
+    // get youtube url artist relationships
+    $urls = $mbArtist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::SOCIAL_YOUTUBE);
 
     // JSON format
     $mbRelease = new \aportela\MusicBrainzWrapper\Release($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
