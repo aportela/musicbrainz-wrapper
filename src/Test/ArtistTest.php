@@ -71,6 +71,10 @@ final class ArtistTest extends BaseTest
         $this->assertSame(self::$mbJSON->mbId, "d3b2711f-2baa-441a-be95-14945ca7e6ea");
         $this->assertSame(self::$mbJSON->name, "Roxette");
         $this->assertSame(self::$mbJSON->country, "se");
+        $lastFMURLs = self::$mbJSON->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
+        $this->assertIsArray($lastFMURLs);
+        $this->assertCount(1, $lastFMURLs);
+        $this->assertSame($lastFMURLs[0], "https://www.last.fm/music/Roxette");
     }
 
     public function testGetXML(): void
@@ -79,5 +83,9 @@ final class ArtistTest extends BaseTest
         $this->assertSame(self::$mbXML->mbId, "d3b2711f-2baa-441a-be95-14945ca7e6ea");
         $this->assertSame(self::$mbXML->name, "Roxette");
         $this->assertSame(self::$mbXML->country, "se");
+        $lastFMURLs = self::$mbXML->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
+        $this->assertIsArray($lastFMURLs);
+        $this->assertCount(1, $lastFMURLs);
+        $this->assertSame($lastFMURLs[0], "https://www.last.fm/music/Roxette");
     }
 }

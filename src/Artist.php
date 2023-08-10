@@ -138,4 +138,15 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
         }
     }
+
+    public function getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType $typeId): array
+    {
+        $urls = [];
+        foreach ($this->relations as $relation) {
+            if ($relation->typeId == $typeId->value) {
+                $urls[] = $relation->url;
+            }
+        }
+        return ($urls);
+    }
 }
