@@ -8,7 +8,6 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECT
 
 final class ArtistTest extends BaseTest
 {
-
     private static $mbJSON;
     private static $mbXML;
 

@@ -4,7 +4,7 @@ namespace aportela\MusicBrainzWrapper;
 
 class Entity
 {
-    const USER_AGENT = "MusicBrainzWrapper - https://github.com/aportela/musicbrainz-wrapper (766f6964+github@gmail.com)";
+    public const USER_AGENT = "MusicBrainzWrapper - https://github.com/aportela/musicbrainz-wrapper (766f6964+github@gmail.com)";
 
     protected \Psr\Log\LoggerInterface $logger;
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
@@ -27,7 +27,7 @@ class Entity
         if (!in_array("libxml", $loadedExtensions)) {
             $this->logger->critical("MusicBrainzWrapper::__construct ERROR: libxml extension not found");
             throw new \aportela\MusicBrainzWrapper\Exception\LibXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
-        } else if (!in_array("SimpleXML", $loadedExtensions)) {
+        } elseif (!in_array("SimpleXML", $loadedExtensions)) {
             $this->logger->critical("MusicBrainzWrapper::__construct ERROR: SimpleXML extension not found");
             throw new \aportela\MusicBrainzWrapper\Exception\SimpleXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
         } else {

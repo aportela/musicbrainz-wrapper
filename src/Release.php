@@ -49,7 +49,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                     throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($title, $response->code);
                 }
                 return ($results);
-            } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
+            } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
                 $json = json_decode($response->body);
                 if ($json->{"count"} > 0 && is_array($json->{"releases"}) && count($json->{"releases"}) > 0) {
                     foreach ($json->{"releases"} as $release) {
@@ -72,7 +72,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
             } else {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
             }
-        } else if ($response->code == 503) {
+        } elseif ($response->code == 503) {
             throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($title, $response->code);
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($title, $response->code);
@@ -85,11 +85,11 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
         $response = $this->http->GET($url);
         if ($response->code == 200) {
             $this->parse($response->body);
-        } else if ($response->code == 400) {
+        } elseif ($response->code == 400) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
-        } else if ($response->code == 404) {
+        } elseif ($response->code == 404) {
             throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($mbId, $response->code);
-        } else if ($response->code == 503) {
+        } elseif ($response->code == 503) {
             throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($mbId, $response->code);
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($mbId, $response->code);
@@ -134,7 +134,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                     }
                 }
             }
-        } else if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
+        } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
             $json = json_decode($this->raw);
             $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
             $this->title = isset($json->{"title"}) ? (string) $json->{"title"} : null;
