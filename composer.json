@@ -2,7 +2,7 @@
     "name": "aportela/musicbrainz-wrapper",
     "description": "Custom musicbrainz api wrapper",
     "type": "library",
-    "license": "GPL-3.0-only",
+    "license": "AGPL-3.0-only",
     "authors": [
         {
             "name": "alex",
