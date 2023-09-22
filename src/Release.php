@@ -121,7 +121,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                         foreach ($medium->{"track-list"}->track as $track) {
                             $tracks[] = (object) [
                                 "mbId" => isset($track["id"]) ? (string) $track["id"] : null,
-                                "number" => isset($track->{"number"}) ? (int) $track->{"number"} : null,
+                                "position" => isset($track->{"position"}) ? (int) $track->{"position"} : null,
                                 "length" => isset($track->{"length"}) ? (int) $track->{"length"} : null,
                                 "title" => isset($track->{"recording"}) && isset($track->{"recording"}->{"title"}) ? (string) $track->{"recording"}->{"title"} : null,
                                 "artist" => (object) [
@@ -157,7 +157,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                         foreach ($media->{"tracks"} as $track) {
                             $tracks[] = (object) [
                                 "mbId" => isset($track->{"id"}) ? (string) $track->{"id"} : null,
-                                "number" => isset($track->{"number"}) ? (int) $track->{"number"} : null,
+                                "position" => isset($track->{"position"}) ? (int) $track->{"position"} : null,
                                 "length" => isset($track->{"length"}) ? (int) $track->{"length"} : null,
                                 "title" => isset($track->{"title"}) ? (string) $track->{"title"} : null,
                                 "artist" => (object) [
