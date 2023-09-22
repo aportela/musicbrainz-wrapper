@@ -10,8 +10,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
     public ?string $title;
     public ?int $year;
     public object $artist;
-    public array $tracks = [];
-    public int $trackCount;
+    public array $media;
     public ?object $coverArtArchive;
 
     public function search(string $title, string $artist, string $year, int $limit = 1): array
@@ -41,8 +40,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                             "artist" => (object) [
                                 "mbId" => isset($release->{"artist-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}->artist) ? (string) $release->{"artist-credit"}->{"name-credit"}->artist["id"] : null,
                                 "name" => isset($release->{"artist-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}->artist) ? (string) $release->{"artist-credit"}->{"name-credit"}->artist->name : null
-                            ],
-                            "trackCount" => isset($release->{"medium-list"}) && isset($release->{"medium-list"}["count"]) && $release->{"medium-list"}["count"] > 0 ? (int) $release->{"medium-list"}->{"track-count"} : 0
+                            ]
                         ];
                     }
                 } else {
@@ -61,8 +59,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                             "artist" => (object) [
                                 "mbId" => isset($release->{"artist-credit"}) && is_array($release->{"artist-credit"}) && count($release->{"artist-credit"}) > 0 ? $release->{"artist-credit"}[0]->artist->id : null,
                                 "name" => isset($release->{"artist-credit"}) && is_array($release->{"artist-credit"}) && count($release->{"artist-credit"}) > 0 ? $release->{"artist-credit"}[0]->artist->name : null
-                            ],
-                            "trackCount" => isset($release->{"track-count"}) ? (int) $release->{"track-count"} : 0
+                            ]
                         ];
                     }
                 } else {
@@ -101,9 +98,9 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
         $this->mbId = null;
         $this->raw = $rawText;
         $this->title = null;
+        $this->year = null;
         $this->artist = (object) ['mbId' => null, 'name' => null];
-        $this->tracks = [];
-        $this->trackCount = 0;
+        $this->media = [];
         $this->coverArtArchive = (object) ['front' => false, 'back' => false];
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $xml = simplexml_load_string($this->raw);
@@ -118,20 +115,27 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                 'back' => isset($xml->{"release"}->{"cover-art-archive"}) && isset($xml->{"release"}->{"cover-art-archive"}->{"back"}) ? $xml->{"release"}->{"cover-art-archive"}->{"back"} == "true" : false
             ];
             if (isset($xml->{"release"}->{"medium-list"}) && isset($xml->{"release"}->{"medium-list"}["count"]) && $xml->{"release"}->{"medium-list"}["count"] > 0) {
-                $this->trackCount = isset($xml->{"release"}->{"medium-list"}->{"medium"}->{"track-list"}) && isset($xml->{"release"}->{"medium-list"}->{"medium"}->{"track-list"}["count"]) ? (int) $xml->{"release"}->{"medium-list"}->{"medium"}->{"track-list"}["count"] : 0;
-                if ($this->trackCount > 0) {
-                    foreach ($xml->{"release"}->{"medium-list"}->{"medium"}->{"track-list"}->track as $track) {
-                        $this->tracks[] = (object) [
-                            "mbId" => isset($track["id"]) ? (string) $track["id"] : null,
-                            "number" => isset($track->{"number"}) ? (int) $track->{"number"} : null,
-                            "length" => isset($track->{"length"}) ? (int) $track->{"length"} : null,
-                            "title" => isset($track->{"recording"}) && isset($track->{"recording"}->{"title"}) ? (string) $track->{"recording"}->{"title"} : null,
-                            "artist" => (object) [
-                                "mbId" => isset($track->{"recording"}) && isset($track->{"recording"}->{"artist-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}["id"] : null,
-                                "name" => isset($track->{"recording"}) && isset($track->{"recording"}->{"artist-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}->{"name"} : null
-                            ]
-                        ];
+                foreach ($xml->{"release"}->{"medium-list"}->{"medium"} as $medium) {
+                    if ($medium->{"track-list"}["count"] > 0) {
+                        $tracks = [];
+                        foreach ($medium->{"track-list"}->track as $track) {
+                            $tracks[] = (object) [
+                                "mbId" => isset($track["id"]) ? (string) $track["id"] : null,
+                                "number" => isset($track->{"number"}) ? (int) $track->{"number"} : null,
+                                "length" => isset($track->{"length"}) ? (int) $track->{"length"} : null,
+                                "title" => isset($track->{"recording"}) && isset($track->{"recording"}->{"title"}) ? (string) $track->{"recording"}->{"title"} : null,
+                                "artist" => (object) [
+                                    "mbId" => isset($track->{"recording"}) && isset($track->{"recording"}->{"artist-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}["id"] : null,
+                                    "name" => isset($track->{"recording"}) && isset($track->{"recording"}->{"artist-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $track->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}->{"name"} : null
+                                ]
+                            ];
+                        }
                     }
+                    $this->media[] = (object) [
+                        "position" => (int) $medium->{"position"},
+                        "trackCount" => (int) $medium->{"track-list"}["count"],
+                        "tracks" => $tracks
+                    ];
                 }
             }
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
@@ -146,21 +150,28 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                 'front' => isset($json->{"cover-art-archive"}) && isset($json->{"cover-art-archive"}->front) ? (bool) $json->{"cover-art-archive"}->front : false,
                 'back' => isset($json->{"cover-art-archive"}) && isset($json->{"cover-art-archive"}->back) ? (bool) $json->{"cover-art-archive"}->back : false
             ];
-            if (isset($json->{"media"}) && is_array($json->{"media"}) && count($json->{"media"}) > 0 && isset($json->{"media"}[0]->tracks) && is_array($json->{"media"}[0]->tracks) && count($json->{"media"}[0]->tracks) > 0) {
-                $this->trackCount = isset($json->{"media"}[0]->{"track-count"}) ? (int) $json->{"media"}[0]->{"track-count"} : 0;
-                if ($this->trackCount > 0) {
-                    foreach ($json->{"media"}[0]->tracks as $track) {
-                        $this->tracks[] = (object) [
-                            "mbId" => isset($track->{"id"}) ? (string) $track->{"id"} : null,
-                            "number" => isset($track->{"number"}) ? (int) $track->{"number"} : null,
-                            "length" => isset($track->{"length"}) ? (int) $track->{"length"} : null,
-                            "title" => isset($track->{"title"}) ? (string) $track->{"title"} : null,
-                            "artist" => (object) [
-                                "mbId" => isset($track->{"artist-credit"}) && is_array($track->{"artist-credit"}) && count($track->{"artist-credit"}) > 0 ? $track->{"artist-credit"}[0]->artist->id : null,
-                                "name" => isset($track->{"artist-credit"}) && is_array($track->{"artist-credit"}) && count($track->{"artist-credit"}) > 0 ? $track->{"artist-credit"}[0]->artist->name : null
-                            ]
-                        ];
+            if (isset($json->{"media"}) && is_array($json->{"media"}) && count($json->{"media"}) > 0) { // && isset($json->{"media"}[0]->tracks) && is_array($json->{"media"}[0]->tracks) && count($json->{"media"}[0]->tracks) > 0) {
+                foreach ($json->{"media"} as $media) {
+                    $tracks = [];
+                    if ($media->{"track-count"} > 0) {
+                        foreach ($media->{"tracks"} as $track) {
+                            $tracks[] = (object) [
+                                "mbId" => isset($track->{"id"}) ? (string) $track->{"id"} : null,
+                                "number" => isset($track->{"number"}) ? (int) $track->{"number"} : null,
+                                "length" => isset($track->{"length"}) ? (int) $track->{"length"} : null,
+                                "title" => isset($track->{"title"}) ? (string) $track->{"title"} : null,
+                                "artist" => (object) [
+                                    "mbId" => isset($track->{"artist-credit"}) && is_array($track->{"artist-credit"}) && count($track->{"artist-credit"}) > 0 ? $track->{"artist-credit"}[0]->artist->id : null,
+                                    "name" => isset($track->{"artist-credit"}) && is_array($track->{"artist-credit"}) && count($track->{"artist-credit"}) > 0 ? $track->{"artist-credit"}[0]->artist->name : null
+                                ]
+                            ];
+                        }
                     }
+                    $this->media[] = (object) [
+                        "position" => (int) $media->{"position"},
+                        "trackCount" => (int) $media->{"track-count"},
+                        "tracks" => $tracks
+                    ];
                 }
             }
         } else {
