@@ -4,7 +4,7 @@ namespace aportela\MusicBrainzWrapper;
 
 class Artist extends \aportela\MusicBrainzWrapper\Entity
 {
-    private const SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=artist:%s&limit=%d&fmt=%s";
+    private const SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=%s&limit=%d&fmt=%s";
     private const GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=genres+recordings+releases+release-groups+works+url-rels&fmt=%s";
 
     public ?string $name;
@@ -14,10 +14,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
 
     public function search(string $name, int $limit = 1): array
     {
-        $queryParams = [
-            "artist:" . urlencode($name)
-        ];
-        $url = sprintf(self::SEARCH_API_URL, implode(urlencode(" AND "), $queryParams), $limit, $this->apiFormat->value);
+        $url = sprintf(self::SEARCH_API_URL, urlencode($name), $limit, $this->apiFormat->value);
         $response = $this->http->GET($url);
         if ($response->code == 200) {
             if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
