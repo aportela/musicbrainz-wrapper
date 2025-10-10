@@ -20,7 +20,7 @@ composer require aportela/musicbrainz-wrapper
 
     require "vendor/autoload.php";
 
-    $logger = new \Psr\Log\NullLogger("");
+    $logger = new \Psr\Log\NullLogger();
 
     // JSON format
     $mbArtist = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
