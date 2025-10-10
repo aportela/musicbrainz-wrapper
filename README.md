@@ -4,7 +4,7 @@ Custom musicbrainz api wrapper
 
 ## Requirements
 
-- mininum php version 8.x
+- mininum php version 8.4
 - curl extension must be enabled (aportela/httprequest-wrapper)
 
 ## Install (composer) dependencies:
