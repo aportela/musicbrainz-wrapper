@@ -5,6 +5,7 @@
             <file>src/Test/ArtistTest.php</file>
             <file>src/Test/ReleaseTest.php</file>
             <file>src/Test/RecordingTest.php</file>
+            <file>src/Test/CoverArtArchiveTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>
