@@ -9,13 +9,13 @@ Custom musicbrainz api wrapper
 
 ## Install (composer) dependencies:
 
-```
+```Shell
 composer require aportela/musicbrainz-wrapper
 ```
 
 ## Code example:
 
-```
+```php
 <?php
 
     require "vendor/autoload.php";
