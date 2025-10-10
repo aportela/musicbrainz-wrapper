@@ -8,8 +8,14 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECT
 
 final class RecordingTest extends BaseTest
 {
-    private static $mbJSON;
-    private static $mbXML;
+    private const string TEST_ARTIST_NAME = "Imagine Dragons";
+    private const string TEST_ARTIST_MBID = "012151a8-0f9a-44c9-997f-ebd68b5389f9";
+
+    private const string TEST_ARTIST_RECORDING_TITLE = "Radioactive";
+    private const string TEST_ARTIST_RECORDING_MBID = "bd61eda3-eb77-4634-ba66-4a084f7f8455";
+
+    private static \aportela\MusicBrainzWrapper\Recording $mbJSON;
+    private static \aportela\MusicBrainzWrapper\Recording $mbXML;
 
     /**
      * Called once just like normal constructor
@@ -46,19 +52,19 @@ final class RecordingTest extends BaseTest
         parent::tearDownAfterClass();
     }
 
-    public function testGetJSON(): void
+    public function testGetJson(): void
     {
-        self::$mbJSON->get("bd61eda3-eb77-4634-ba66-4a084f7f8455");
-        $this->assertSame(self::$mbJSON->title, "Radioactive");
-        $this->assertSame(self::$mbJSON->artist->mbId, "012151a8-0f9a-44c9-997f-ebd68b5389f9");
-        $this->assertSame(self::$mbJSON->artist->name, "Imagine Dragons");
+        self::$mbJSON->get(self::TEST_ARTIST_RECORDING_MBID);
+        $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, self::$mbJSON->title);
+        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->artist->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbJSON->artist->name);
     }
 
-    public function testGetXML(): void
+    public function testGetXml(): void
     {
-        self::$mbXML->get("bd61eda3-eb77-4634-ba66-4a084f7f8455");
-        $this->assertSame(self::$mbXML->title, "Radioactive");
-        $this->assertSame(self::$mbXML->artist->mbId, "012151a8-0f9a-44c9-997f-ebd68b5389f9");
-        $this->assertSame(self::$mbXML->artist->name, "Imagine Dragons");
+        self::$mbXML->get(self::TEST_ARTIST_RECORDING_MBID);
+        $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, self::$mbXML->title);
+        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->artist->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbXML->artist->name);
     }
 }

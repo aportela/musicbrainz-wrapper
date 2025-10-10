@@ -8,8 +8,16 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECT
 
 final class ReleaseTest extends BaseTest
 {
-    private static $mbJSON;
-    private static $mbXML;
+    private const string TEST_ARTIST_NAME = "Kavinsky";
+    private const string TEST_ARTIST_MBID = "eb6de5f6-98f8-4b5a-bfdc-f87fa4936baa";
+
+    private const string TEST_ARTIST_RELEASE_TITLE = "OutRun";
+    private const string TEST_ARTIST_RELEASE_YEAR = "2013";
+    private const string TEST_ARTIST_RELEASE_MBID = "4e5d9f0c-09b6-42bf-b495-e2d7cc288bf6";
+    private const int TEST_ARTIST_RELEASE_TRACK_COUNT = 13;
+
+    private static \aportela\MusicBrainzWrapper\Release $mbJSON;
+    private static \aportela\MusicBrainzWrapper\Release $mbXML;
 
     /**
      * Called once just like normal constructor
@@ -46,47 +54,61 @@ final class ReleaseTest extends BaseTest
         parent::tearDownAfterClass();
     }
 
-    public function testSearchJSON(): void
+    public function testSearchJson(): void
     {
-        $results = self::$mbJSON->search("piece of mind", "iron maiden", "1983", 1);
-        $this->assertCount(1, $results);
-        $this->assertSame($results[0]->mbId, "1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
-        $this->assertSame($results[0]->title, "Piece of Mind");
-        $this->assertSame($results[0]->artist->mbId, "ca891d65-d9b0-4258-89f7-e6ba29d83767");
-        $this->assertSame($results[0]->artist->name, "Iron Maiden");
+        $results = self::$mbJSON->search(self::TEST_ARTIST_RELEASE_TITLE, self::TEST_ARTIST_NAME, self::TEST_ARTIST_RELEASE_YEAR, 9);
+        $this->assertCount(9, $results);
+        $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artist->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artist->name);
+        $found = false;
+        foreach ($results as $result) {
+            // sometimes the requested release mbId in the group is not the "first"
+            // (search on all release-group items)
+            if (self::TEST_ARTIST_RELEASE_MBID == $result->mbId && self::TEST_ARTIST_RELEASE_TITLE == $result->title) {
+                $found  = true;
+            }
+        }
+        $this->assertTrue($found);
     }
 
-    public function testSearchXML(): void
+    public function testSearchXml(): void
     {
-        $results = self::$mbXML->search("piece of mind", "iron maiden", "1983", 1);
-        $this->assertCount(1, $results);
-        $this->assertSame($results[0]->mbId, "1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
-        $this->assertSame($results[0]->title, "Piece of Mind");
-        $this->assertSame($results[0]->artist->mbId, "ca891d65-d9b0-4258-89f7-e6ba29d83767");
-        $this->assertSame($results[0]->artist->name, "Iron Maiden");
+        $results = self::$mbXML->search(self::TEST_ARTIST_RELEASE_TITLE, self::TEST_ARTIST_NAME, self::TEST_ARTIST_RELEASE_YEAR, 9);
+        $this->assertCount(9, $results);
+        $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artist->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artist->name);
+        $found = false;
+        foreach ($results as $result) {
+            // sometimes the requested release mbId in the group is not the "first"
+            // (search on all release-group items)
+            if (self::TEST_ARTIST_RELEASE_MBID == $result->mbId && self::TEST_ARTIST_RELEASE_TITLE == $result->title) {
+                $found  = true;
+            }
+        }
+        $this->assertTrue($found);
     }
 
-    public function testGetJSON(): void
+    public function testGetJson(): void
     {
-        self::$mbJSON->get("1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
-        $this->assertSame(self::$mbJSON->mbId, "1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
-        $this->assertSame(self::$mbJSON->title, "Piece of Mind");
-        $this->assertSame(self::$mbJSON->artist->mbId, "ca891d65-d9b0-4258-89f7-e6ba29d83767");
-        $this->assertSame(self::$mbJSON->artist->name, "Iron Maiden");
-        $this->assertEquals(self::$mbJSON->year, 1983);
-        $this->assertEquals(count(self::$mbJSON->media), 1);
-        $this->assertEquals(self::$mbJSON->media[0]->trackCount, 9);
+        self::$mbJSON->get(self::TEST_ARTIST_RELEASE_MBID);
+        $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, self::$mbJSON->mbId);
+        $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, self::$mbJSON->title);
+        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->artist->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbJSON->artist->name);
+        $this->assertEquals(self::TEST_ARTIST_RELEASE_YEAR, self::$mbJSON->year);
+        $this->assertEquals(1, count(self::$mbJSON->media));
+        $this->assertEquals(self::TEST_ARTIST_RELEASE_TRACK_COUNT, self::$mbJSON->media[0]->trackCount);
     }
 
-    public function testGetXML(): void
+    public function testGetXml(): void
     {
-        self::$mbXML->get("1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
-        $this->assertSame(self::$mbXML->mbId, "1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
-        $this->assertSame(self::$mbXML->title, "Piece of Mind");
-        $this->assertSame(self::$mbXML->artist->mbId, "ca891d65-d9b0-4258-89f7-e6ba29d83767");
-        $this->assertSame(self::$mbXML->artist->name, "Iron Maiden");
-        $this->assertEquals(self::$mbXML->year, 1983);
-        $this->assertEquals(count(self::$mbXML->media), 1);
-        $this->assertEquals(self::$mbXML->media[0]->trackCount, 9);
+        self::$mbXML->get(self::TEST_ARTIST_RELEASE_MBID);
+        $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, self::$mbXML->mbId);
+        $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, self::$mbXML->title);
+        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->artist->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbXML->artist->name);
+        $this->assertEquals(self::TEST_ARTIST_RELEASE_YEAR, self::$mbXML->year);
+        $this->assertEquals(1, count(self::$mbXML->media));
+        $this->assertEquals(self::TEST_ARTIST_RELEASE_TRACK_COUNT, self::$mbXML->media[0]->trackCount);
     }
 }

@@ -20,7 +20,7 @@ class Entity
         $supportedApiFormats = [\aportela\MusicBrainzWrapper\APIFormat::XML, \aportela\MusicBrainzWrapper\APIFormat::JSON];
         if (!in_array($apiFormat, $supportedApiFormats)) {
             $this->logger->critical("MusicBrainzWrapper::__construct ERROR: invalid api format");
-            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("supported formats: " . implode(", ", $supportedApiFormats));
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("supported formats: " . implode(", ", [\aportela\MusicBrainzWrapper\APIFormat::XML->value, \aportela\MusicBrainzWrapper\APIFormat::JSON->value]));
         }
         $this->apiFormat = $apiFormat;
         $loadedExtensions = get_loaded_extensions();

@@ -7,9 +7,12 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
     private const DIRECT_IMAGE_URL = "https://coverartarchive.org/release/%s/%s-%s";
     private const GET_API_URL = "https://coverartarchive.org/release/%s/";
 
+    /**
+     * @var array<mixed>
+     */
     public array $images = [];
 
-    public function getReleaseImageURL(string $releaseMbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType $imageType, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize $imageSize)
+    public function getReleaseImageURL(string $releaseMbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType $imageType, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize $imageSize): string
     {
         return (sprintf(self::DIRECT_IMAGE_URL, $releaseMbId, $imageType->value, $imageSize->value));
     }
@@ -39,7 +42,7 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
             $json = json_decode($this->raw);
             $releaseURL = isset($json->{"release"}) ? (string) $json->{"release"} : null;
             $releaseURLFields = explode("/", $releaseURL);
-            if (is_array($releaseURLFields) && count($releaseURLFields) > 0) {
+            if (! empty($releaseURLFields[0])) {
                 $this->mbId = array_pop($releaseURLFields);
             }
             if (isset($json->{"images"})) {

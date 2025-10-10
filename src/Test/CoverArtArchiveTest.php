@@ -8,7 +8,9 @@ require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECT
 
 final class CoverArtArchiveTest extends BaseTest
 {
-    private static $mbJSON;
+    private const string TEST_RELEASE_MBID = "1b396ee6-5b47-4648-b6c2-a45b7fccafc7";
+
+    private static \aportela\MusicBrainzWrapper\CoverArtArchive $mbJSON;
 
     /**
      * Called once just like normal constructor
@@ -45,22 +47,20 @@ final class CoverArtArchiveTest extends BaseTest
     }
 
 
-    public function testGetReleaseImageURL(): void
+    public function testGetReleaseImageUrl(): void
     {
         foreach (\aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::cases() as $size) {
             foreach (\aportela\MusicBrainzWrapper\CoverArtArchiveImageType::cases() as $type) {
-                $url = self::$mbJSON->getReleaseImageURL("1b396ee6-5b47-4648-b6c2-a45b7fccafc7", $type, $size);
+                $url = self::$mbJSON->getReleaseImageURL(self::TEST_RELEASE_MBID, $type, $size);
                 $this->assertNotEmpty($url);
-                echo $url . PHP_EOL;
             }
         }
     }
 
-    public function testGetJSON(): void
+    public function testGetJson(): void
     {
-        self::$mbJSON->get("1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
-        $this->assertSame(self::$mbJSON->mbId, "1b396ee6-5b47-4648-b6c2-a45b7fccafc7");
-        $this->assertIsArray(self::$mbJSON->images);
+        self::$mbJSON->get(self::TEST_RELEASE_MBID);
+        $this->assertSame(self::TEST_RELEASE_MBID, self::$mbJSON->mbId);
         $this->assertTrue(count(self::$mbJSON->images) > 0);
     }
 }

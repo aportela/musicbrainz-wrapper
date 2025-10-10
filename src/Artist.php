@@ -9,9 +9,18 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
 
     public ?string $name;
     public ?string $country;
+    /**
+     * @var array<string>
+     */
     public array $genres = [];
+    /**
+     * @var array<mixed>
+     */
     public array $relations = [];
 
+    /**
+     * @return array<mixed>
+     */
     public function search(string $name, int $limit = 1): array
     {
         $url = sprintf(self::SEARCH_API_URL, urlencode($name), $limit, $this->apiFormat->value);
@@ -19,7 +28,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         if ($response->code == 200) {
             if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
                 $xml = simplexml_load_string($response->body);
-                if ($xml->{"artist-list"} && $xml->{"artist-list"}["count"] > 0 && $xml->{"artist-list"}->{"artist"}) {
+                if ($xml->{"artist-list"} && intval($xml->{"artist-list"}["count"]) > 0 && $xml->{"artist-list"}->{"artist"}) {
                     $results = [];
                     foreach ($xml->{"artist-list"}->{"artist"} as $artist) {
                         $results[] = (object) [
@@ -136,6 +145,9 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         }
     }
 
+    /**
+     * @return array<string>
+     */
     public function getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType $typeId): array
     {
         $urls = [];
