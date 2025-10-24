@@ -29,6 +29,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
      */
     public function search(string $name, int $limit = 1): array
     {
+        $this->checkThrottle();
         $url = sprintf(self::SEARCH_API_URL, urlencode($name), $limit, $this->apiFormat->value);
         $response = $this->http->GET($url);
         if ($response->code == 200) {
@@ -74,6 +75,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
 
     public function get(string $mbId): void
     {
+        $this->checkThrottle();
         $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
         $response = $this->http->GET($url);
         if ($response->code == 200) {

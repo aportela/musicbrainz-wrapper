@@ -21,6 +21,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
      */
     public function search(string $title, string $artist, string $year, int $limit = 1): array
     {
+        $this->checkThrottle();
         $queryParams = [
             "release:" . urlencode($title)
         ];
@@ -84,6 +85,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
 
     public function get(string $mbId): void
     {
+        $this->checkThrottle();
         $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
         $response = $this->http->GET($url);
         if ($response->code == 200) {

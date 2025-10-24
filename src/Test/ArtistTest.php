@@ -22,7 +22,7 @@ final class ArtistTest extends BaseTest
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        self::$mbJSON = new \aportela\MusicBrainzWrapper\Artist(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
+        self::$mbJSON = new \aportela\MusicBrainzWrapper\Artist(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, 500);
         self::$mbXML = new \aportela\MusicBrainzWrapper\Artist(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::XML);
     }
 
@@ -53,6 +53,10 @@ final class ArtistTest extends BaseTest
 
     public function testSearchJson(): void
     {
+        $results = self::$mbJSON->search(self::TEST_ARTIST_NAME, 1);
+        $results = self::$mbJSON->search(self::TEST_ARTIST_NAME, 1);
+        $results = self::$mbJSON->search(self::TEST_ARTIST_NAME, 1);
+        $results = self::$mbJSON->search(self::TEST_ARTIST_NAME, 1);
         $results = self::$mbJSON->search(self::TEST_ARTIST_NAME, 1);
         $this->assertCount(1, $results);
         $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->mbId);

@@ -11,6 +11,7 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
 
     public function get(string $mbId): void
     {
+        $this->checkThrottle();
         $this->raw = null;
         $this->title = null;
         $this->artist = (object) ['mbId' => null, 'name' => null];

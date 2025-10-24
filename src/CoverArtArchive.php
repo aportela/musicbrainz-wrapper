@@ -19,6 +19,7 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
 
     public function get(string $mbId): void
     {
+        //$this->checkThrottle();
         $url = sprintf(self::GET_API_URL, $mbId);
         $response = $this->http->GET($url);
         if ($response->code == 200) {

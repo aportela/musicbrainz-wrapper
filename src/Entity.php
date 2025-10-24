@@ -10,10 +10,13 @@ class Entity
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
     protected \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
 
+    protected int $throttleDelayMS = 0;
+    protected int $lastThrottleTimestamp = 0;
+
     public ?string $mbId;
     public ?string $raw;
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat)
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = 0)
     {
         $this->logger = $logger;
         $this->logger->debug("MusicBrainzWrapper::__construct");
@@ -23,6 +26,8 @@ class Entity
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("supported formats: " . implode(", ", [\aportela\MusicBrainzWrapper\APIFormat::XML->value, \aportela\MusicBrainzWrapper\APIFormat::JSON->value]));
         }
         $this->apiFormat = $apiFormat;
+        $this->throttleDelayMS = $throttleDelayMS;
+        $this->lastThrottleTimestamp = intval(microtime(true) * 1000);
         $loadedExtensions = get_loaded_extensions();
         if (!in_array("libxml", $loadedExtensions)) {
             $this->logger->critical("MusicBrainzWrapper::__construct ERROR: libxml extension not found");
@@ -41,5 +46,20 @@ class Entity
     public function __destruct()
     {
         $this->logger->debug("MusicBrainzWrapper::__destruct");
+    }
+
+    /**
+     * throttle api calls
+     */
+    protected function checkThrottle()
+    {
+        if ($this->throttleDelayMS > 0) {
+            $currentTimestamp = intval(microtime(true) * 1000);
+            while (($currentTimestamp - $this->lastThrottleTimestamp) < $this->throttleDelayMS) {
+                usleep(10);
+                $currentTimestamp = intval(microtime(true) * 1000);
+            }
+            $this->lastThrottleTimestamp = $currentTimestamp;
+        }
     }
 }
