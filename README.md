@@ -22,6 +22,14 @@ composer require aportela/musicbrainz-wrapper
 
     $logger = new \Psr\Log\NullLogger();
 
+    /**
+     *  NOTE regarding \aportela\MusicBrainzWrapper\Entity constructor params
+     *  $logger => the log handler
+     *  $apiFormat => json/xml
+     *  $throttleDelayMS => milliseconds between consecutive MusicBrainz getEntity API calls (please use a reasonable value to avoid overloading the servers, ex: > 250ms)
+     *  $cachePath => disk cache path, useful when we are continuously testing with the same values and don't want to overload the servers with repeated requests.
+     */
+
     // JSON format
     $mbArtist = new \aportela\MusicBrainzWrapper\Artist($logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
     // get artist object from MusicBrainz API
