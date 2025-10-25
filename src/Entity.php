@@ -2,8 +2,6 @@
 
 namespace aportela\MusicBrainzWrapper;
 
-use function PHPUnit\Framework\directoryExists;
-
 class Entity
 {
     public const USER_AGENT = "MusicBrainzWrapper - https://github.com/aportela/musicbrainz-wrapper (766f6964+github@gmail.com)";
