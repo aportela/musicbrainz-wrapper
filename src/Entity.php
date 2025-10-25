@@ -148,4 +148,36 @@ class Entity
             return (false);
         }
     }
+
+    /**
+     * parse json, launch InvalidJSONException on errors
+     */
+    protected function parseJSON(string $rawText): mixed
+    {
+        $json = json_decode($rawText);
+        if (json_last_error() != JSON_ERROR_NONE) {
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidJSONException(json_last_error_msg(), json_last_error());
+        }
+        return ($json);
+    }
+
+    /**
+     * parse xml, launch InvalidXMLException on errors
+     */
+    protected function parseXML(string $rawText): mixed
+    {
+        libxml_clear_errors();
+        $xml = simplexml_load_string($rawText);
+        if ($xml === false) {
+            $errorMessage = "invalid xml";
+            $errorCode = 0;
+            $lastError = libxml_get_last_error();
+            if ($lastError) {
+                $errorMessage = "Error: " . $lastError->message . " (Line: " . $lastError->line . ", Column: " . $lastError->column . ")";
+                $errorCode = $lastError->code;
+            }
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException($errorMessage, $errorCode);
+        }
+        return ($xml);
+    }
 }
