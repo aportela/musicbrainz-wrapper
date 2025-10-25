@@ -85,19 +85,24 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
 
     public function get(string $mbId): void
     {
-        $this->checkThrottle();
-        $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
-        $response = $this->http->GET($url);
-        if ($response->code == 200) {
-            $this->parse($response->body);
-        } elseif ($response->code == 400) {
-            throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
-        } elseif ($response->code == 404) {
-            throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($mbId, $response->code);
-        } elseif ($response->code == 503) {
-            throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($mbId, $response->code);
+        if (! $this->getCache($mbId)) {
+            $this->checkThrottle();
+            $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
+            $response = $this->http->GET($url);
+            if ($response->code == 200) {
+                $this->saveCache($mbId, $response->body);
+                $this->parse($response->body);
+            } elseif ($response->code == 400) {
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
+            } elseif ($response->code == 404) {
+                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($mbId, $response->code);
+            } elseif ($response->code == 503) {
+                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($mbId, $response->code);
+            } else {
+                throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($mbId, $response->code);
+            }
         } else {
-            throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($mbId, $response->code);
+            $this->parse($this->raw);
         }
     }
 

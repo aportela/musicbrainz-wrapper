@@ -10,6 +10,10 @@ class BaseTest extends \PHPUnit\Framework\TestCase
 {
     protected static \Psr\Log\NullLogger $logger;
 
+    protected const THROTTLE_MS = 250;
+
+    protected const CACHE_PATH = null;
+
     /**
      * Called once just like normal constructor
      */
@@ -22,21 +26,15 @@ class BaseTest extends \PHPUnit\Framework\TestCase
      * Initialize the test case
      * Called for every defined test
      */
-    public function setUp(): void
-    {
-    }
+    public function setUp(): void {}
 
     /**
      * Clean up the test case, called for every defined test
      */
-    public function tearDown(): void
-    {
-    }
+    public function tearDown(): void {}
 
     /**
      * Clean up the whole test class
      */
-    public static function tearDownAfterClass(): void
-    {
-    }
+    public static function tearDownAfterClass(): void {}
 }

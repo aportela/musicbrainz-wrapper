@@ -23,8 +23,8 @@ final class RecordingTest extends BaseTest
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        self::$mbJSON = new \aportela\MusicBrainzWrapper\Recording(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON);
-        self::$mbXML = new \aportela\MusicBrainzWrapper\Recording(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::XML);
+        self::$mbJSON = new \aportela\MusicBrainzWrapper\Recording(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, self::THROTTLE_MS, self::CACHE_PATH);
+        self::$mbXML = new \aportela\MusicBrainzWrapper\Recording(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::XML, self::THROTTLE_MS, self::CACHE_PATH);
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace aportela\MusicBrainzWrapper;
 
+use function PHPUnit\Framework\directoryExists;
+
 class Entity
 {
     public const USER_AGENT = "MusicBrainzWrapper - https://github.com/aportela/musicbrainz-wrapper (766f6964+github@gmail.com)";
@@ -13,10 +15,12 @@ class Entity
     protected int $throttleDelayMS = 0;
     protected int $lastThrottleTimestamp = 0;
 
-    public ?string $mbId;
-    public ?string $raw;
+    protected ?string $cachePath = null;
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = 0)
+    public ?string $mbId = null;
+    public ?string $raw = null;
+
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = 0, ?string $cachePath = null)
     {
         $this->logger = $logger;
         $this->logger->debug("MusicBrainzWrapper::__construct");
@@ -28,6 +32,7 @@ class Entity
         $this->apiFormat = $apiFormat;
         $this->throttleDelayMS = $throttleDelayMS;
         $this->lastThrottleTimestamp = intval(microtime(true) * 1000);
+        $this->cachePath = ! empty($cachePath) ? realpath($cachePath) : null;
         $loadedExtensions = get_loaded_extensions();
         if (!in_array("libxml", $loadedExtensions)) {
             $this->logger->critical("MusicBrainzWrapper::__construct ERROR: libxml extension not found");
@@ -60,6 +65,64 @@ class Entity
                 $currentTimestamp = intval(microtime(true) * 1000);
             }
             $this->lastThrottleTimestamp = $currentTimestamp;
+        }
+    }
+
+    /**
+     * return cache path for MusicBrainz id
+     */
+    protected function getCachePath(string $mbId)
+    {
+        switch ($this->apiFormat) {
+            case \aportela\MusicBrainzWrapper\APIFormat::JSON:
+                return ($this->cachePath . DIRECTORY_SEPARATOR . $mbId . ".json");
+            case \aportela\MusicBrainzWrapper\APIFormat::XML:
+                return ($this->cachePath . DIRECTORY_SEPARATOR . $mbId . ".xml");
+            default:
+                return ($this->cachePath . DIRECTORY_SEPARATOR . $mbId);
+        }
+    }
+
+    /**
+     * save current raw data into disk cache
+     */
+    protected function saveCache(string $mbId, string $raw): bool
+    {
+        try {
+            if (! empty($this->cachePath) && ! empty($raw)) {
+                $this->logger->debug("Saving MusicBrainz disk cache", [$mbId, $this->cachePath, $this->getCachePath($mbId)]);
+                return (file_put_contents($this->getCachePath($mbId), $raw) > 0);
+            } else {
+                return (false);
+            }
+        } catch (\Throwable $e) {
+            $this->logger->error("Error saving MusicBrainz disk cache", [$mbId, $e->getMessage()]);
+            return (false);
+        }
+    }
+
+    /**
+     * read disk cache into current raw data
+     */
+    protected function getCache(string $mbId): bool
+    {
+        $this->raw = null;
+        try {
+            if (! empty($this->cachePath)) {
+                if (file_exists($this->getCachePath($mbId))) {
+                    $this->logger->debug("Loading MusicBrainz disk cache", [$mbId, $this->cachePath, $this->getCachePath($mbId)]);
+                    $this->raw = file_get_contents($this->getCachePath($mbId));
+                    return (! empty($this->raw));
+                } else {
+                    $this->logger->debug("MusicBrainz disk cache not found", [$mbId, $this->cachePath, $this->getCachePath($mbId)]);
+                    return (false);
+                }
+            } else {
+                return (false);
+            }
+        } catch (\Throwable $e) {
+            $this->logger->error("Error loading MusicBrainz disk cache", [$mbId, $this->cachePath, $e->getMessage()]);
+            return (false);
         }
     }
 }
