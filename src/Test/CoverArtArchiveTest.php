@@ -49,17 +49,25 @@ final class CoverArtArchiveTest extends BaseTest
 
     public function testGetReleaseImageUrl(): void
     {
-        foreach (\aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::cases() as $size) {
-            foreach (\aportela\MusicBrainzWrapper\CoverArtArchiveImageType::cases() as $type) {
-                $url = self::$mbJSON->getReleaseImageURL(self::TEST_RELEASE_MBID, $type, $size);
-                $this->assertNotEmpty($url);
+        try {
+            foreach (\aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::cases() as $size) {
+                foreach (\aportela\MusicBrainzWrapper\CoverArtArchiveImageType::cases() as $type) {
+                    $url = self::$mbJSON->getReleaseImageURL(self::TEST_RELEASE_MBID, $type, $size);
+                    $this->assertNotEmpty($url);
+                }
             }
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
     }
 
     public function testGetJson(): void
     {
-        self::$mbJSON->get(self::TEST_RELEASE_MBID);
+        try {
+            self::$mbJSON->get(self::TEST_RELEASE_MBID);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        }
         $this->assertSame(self::TEST_RELEASE_MBID, self::$mbJSON->mbId);
         $this->assertTrue(count(self::$mbJSON->images) > 0);
     }

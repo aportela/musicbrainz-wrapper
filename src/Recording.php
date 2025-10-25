@@ -27,7 +27,7 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
         if (! $this->getCache($mbId)) {
             $this->checkThrottle();
             $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
-            $response = $this->http->GET($url);
+            $response = $this->httpGET($url);
             if ($response->code == 200) {
                 $this->saveCache($mbId, $response->body);
                 $this->parse($response->body);

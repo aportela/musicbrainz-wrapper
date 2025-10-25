@@ -148,6 +148,19 @@ class Entity
     }
 
     /**
+     * http handler GET method wrapper for catching CurlExecException (connection errors / server busy ?)
+     */
+    protected function httpGET(string $url): \aportela\HTTPRequestWrapper\HTTPResponse
+    {
+        try {
+            return ($this->http->GET($url));
+        } catch (\aportela\HTTPRequestWrapper\Exception\CurlExecException $e) {
+            $this->logger->error("Error opening URL " . $url, [$e->getCode(), $e->getMessage()]);
+            throw new \aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException("Error opening URL " . $url, 0, $e);
+        }
+    }
+
+    /**
      * parse json, launch InvalidJSONException on errors
      */
     protected function parseJSON(string $rawText): mixed

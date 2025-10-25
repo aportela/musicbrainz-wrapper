@@ -54,7 +54,11 @@ final class RecordingTest extends BaseTest
 
     public function testGetJson(): void
     {
-        self::$mbJSON->get(self::TEST_ARTIST_RECORDING_MBID);
+        try {
+            self::$mbJSON->get(self::TEST_ARTIST_RECORDING_MBID);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        }
         $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, self::$mbJSON->title);
         $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->artist->mbId);
         $this->assertSame(self::TEST_ARTIST_NAME, self::$mbJSON->artist->name);
@@ -62,7 +66,11 @@ final class RecordingTest extends BaseTest
 
     public function testGetXml(): void
     {
-        self::$mbXML->get(self::TEST_ARTIST_RECORDING_MBID);
+        try {
+            self::$mbXML->get(self::TEST_ARTIST_RECORDING_MBID);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        }
         $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, self::$mbXML->title);
         $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->artist->mbId);
         $this->assertSame(self::TEST_ARTIST_NAME, self::$mbXML->artist->name);

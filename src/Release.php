@@ -49,7 +49,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
             $queryParams[] = "date:" . urlencode($year);
         }
         $url = sprintf(self::SEARCH_API_URL, implode(urlencode(" AND "), $queryParams), $limit, $this->apiFormat->value);
-        $response = $this->http->GET($url);
+        $response = $this->httpGET($url);
         if ($response->code == 200) {
             $results = [];
             if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
@@ -105,7 +105,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
         if (! $this->getCache($mbId)) {
             $this->checkThrottle();
             $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
-            $response = $this->http->GET($url);
+            $response = $this->httpGET($url);
             if ($response->code == 200) {
                 $this->saveCache($mbId, $response->body);
                 $this->parse($response->body);

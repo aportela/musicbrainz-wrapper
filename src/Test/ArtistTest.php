@@ -53,7 +53,12 @@ final class ArtistTest extends BaseTest
 
     public function testSearchJson(): void
     {
-        $results = self::$mbJSON->search(self::TEST_ARTIST_NAME, 1);
+        $results = [];
+        try {
+            $results = self::$mbJSON->search(self::TEST_ARTIST_NAME, 1);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        }
         $this->assertCount(1, $results);
         $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->mbId);
         $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->name);
@@ -62,7 +67,12 @@ final class ArtistTest extends BaseTest
 
     public function testSearchXml(): void
     {
-        $results = self::$mbXML->search(self::TEST_ARTIST_NAME, 1);
+        $results = [];
+        try {
+            $results = self::$mbXML->search(self::TEST_ARTIST_NAME, 1);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        }
         $this->assertCount(1, $results);
         $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->mbId);
         $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->name);
@@ -71,7 +81,11 @@ final class ArtistTest extends BaseTest
 
     public function testGetJson(): void
     {
-        self::$mbJSON->get(self::TEST_ARTIST_MBID);
+        try {
+            self::$mbJSON->get(self::TEST_ARTIST_MBID);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        }
         $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->mbId);
         $this->assertSame(self::TEST_ARTIST_NAME, self::$mbJSON->name);
         $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbJSON->country);
@@ -82,7 +96,11 @@ final class ArtistTest extends BaseTest
 
     public function testGetXml(): void
     {
-        self::$mbXML->get(self::TEST_ARTIST_MBID);
+        try {
+            self::$mbXML->get(self::TEST_ARTIST_MBID);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        }
         $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->mbId);
         $this->assertSame(self::TEST_ARTIST_NAME, self::$mbXML->name);
         $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbXML->country);

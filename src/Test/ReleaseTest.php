@@ -56,7 +56,12 @@ final class ReleaseTest extends BaseTest
 
     public function testSearchJson(): void
     {
-        $results = self::$mbJSON->search(self::TEST_ARTIST_RELEASE_TITLE, self::TEST_ARTIST_NAME, self::TEST_ARTIST_RELEASE_YEAR, 9);
+        $results = [];
+        try {
+            $results = self::$mbJSON->search(self::TEST_ARTIST_RELEASE_TITLE, self::TEST_ARTIST_NAME, self::TEST_ARTIST_RELEASE_YEAR, 9);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        }
         $this->assertCount(9, $results);
         $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artist->mbId);
         $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artist->name);
@@ -73,7 +78,12 @@ final class ReleaseTest extends BaseTest
 
     public function testSearchXml(): void
     {
-        $results = self::$mbXML->search(self::TEST_ARTIST_RELEASE_TITLE, self::TEST_ARTIST_NAME, self::TEST_ARTIST_RELEASE_YEAR, 9);
+        $results = [];
+        try {
+            $results = self::$mbXML->search(self::TEST_ARTIST_RELEASE_TITLE, self::TEST_ARTIST_NAME, self::TEST_ARTIST_RELEASE_YEAR, 9);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        }
         $this->assertCount(9, $results);
         $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artist->mbId);
         $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artist->name);
@@ -90,7 +100,11 @@ final class ReleaseTest extends BaseTest
 
     public function testGetJson(): void
     {
-        self::$mbJSON->get(self::TEST_ARTIST_RELEASE_MBID);
+        try {
+            self::$mbJSON->get(self::TEST_ARTIST_RELEASE_MBID);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        }
         $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, self::$mbJSON->mbId);
         $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, self::$mbJSON->title);
         $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->artist->mbId);
@@ -102,7 +116,11 @@ final class ReleaseTest extends BaseTest
 
     public function testGetXml(): void
     {
-        self::$mbXML->get(self::TEST_ARTIST_RELEASE_MBID);
+        try {
+            self::$mbXML->get(self::TEST_ARTIST_RELEASE_MBID);
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
+            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        }
         $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, self::$mbXML->mbId);
         $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, self::$mbXML->title);
         $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->artist->mbId);
