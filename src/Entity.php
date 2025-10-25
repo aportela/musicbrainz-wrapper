@@ -69,18 +69,27 @@ class Entity
     }
 
     /**
-     * return cache path for MusicBrainz id
+     * return cache file path for MusicBrainz id
      */
-    protected function getCachePath(string $mbId)
+    protected function getCacheFilePath(string $mbId)
     {
+        $basePath = $this->getCacheDirectoryPath($mbId);
         switch ($this->apiFormat) {
             case \aportela\MusicBrainzWrapper\APIFormat::JSON:
-                return ($this->cachePath . DIRECTORY_SEPARATOR . $mbId . ".json");
+                return ($basePath . DIRECTORY_SEPARATOR . $mbId . ".json");
             case \aportela\MusicBrainzWrapper\APIFormat::XML:
-                return ($this->cachePath . DIRECTORY_SEPARATOR . $mbId . ".xml");
+                return ($basePath . DIRECTORY_SEPARATOR . $mbId . ".xml");
             default:
-                return ($this->cachePath . DIRECTORY_SEPARATOR . $mbId);
+                return ($basePath . DIRECTORY_SEPARATOR . $mbId);
         }
+    }
+
+    /**
+     * return cache directory path for MusicBrainz id
+     */
+    protected function getCacheDirectoryPath(string $mbId)
+    {
+        return ($this->cachePath . DIRECTORY_SEPARATOR . mb_substr($mbId, 0, 1) . DIRECTORY_SEPARATOR . mb_substr($mbId, 1, 1) . DIRECTORY_SEPARATOR . mb_substr($mbId, 2, 1) . DIRECTORY_SEPARATOR . mb_substr($mbId, 3, 1));
     }
 
     /**
@@ -90,8 +99,15 @@ class Entity
     {
         try {
             if (! empty($this->cachePath) && ! empty($raw)) {
-                $this->logger->debug("Saving MusicBrainz disk cache", [$mbId, $this->cachePath, $this->getCachePath($mbId)]);
-                return (file_put_contents($this->getCachePath($mbId), $raw) > 0);
+                $this->logger->debug("Saving MusicBrainz disk cache", [$mbId, $this->cachePath, $this->getCacheFilePath($mbId)]);
+                $directoryPath = $this->getCacheDirectoryPath($mbId);
+                if (! file_exists($directoryPath)) {
+                    if (!mkdir($directoryPath, 0750, true)) {
+                        $this->logger->error("Error creating MusicBrainz disk cache directory", [$mbId, $directoryPath]);
+                        return (false);
+                    }
+                }
+                return (file_put_contents($this->getCacheFilePath($mbId), $raw) > 0);
             } else {
                 return (false);
             }
@@ -109,12 +125,12 @@ class Entity
         $this->raw = null;
         try {
             if (! empty($this->cachePath)) {
-                if (file_exists($this->getCachePath($mbId))) {
-                    $this->logger->debug("Loading MusicBrainz disk cache", [$mbId, $this->cachePath, $this->getCachePath($mbId)]);
-                    $this->raw = file_get_contents($this->getCachePath($mbId));
+                if (file_exists($this->getCacheFilePath($mbId))) {
+                    $this->logger->debug("Loading MusicBrainz disk cache", [$mbId, $this->cachePath, $this->getCacheFilePath($mbId)]);
+                    $this->raw = file_get_contents($this->getCacheFilePath($mbId));
                     return (! empty($this->raw));
                 } else {
-                    $this->logger->debug("MusicBrainz disk cache not found", [$mbId, $this->cachePath, $this->getCachePath($mbId)]);
+                    $this->logger->debug("MusicBrainz disk cache not found", [$mbId, $this->cachePath, $this->getCacheFilePath($mbId)]);
                     return (false);
                 }
             } else {
