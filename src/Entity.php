@@ -46,6 +46,7 @@ class Entity
         // avoids simplexml_load_string warnings
         // https://stackoverflow.com/a/40585185
         libxml_use_internal_errors(true);
+        $this->reset();
     }
 
     public function __destruct()
@@ -53,10 +54,16 @@ class Entity
         $this->logger->debug("MusicBrainzWrapper::__destruct");
     }
 
+    protected function reset(): void
+    {
+        $this->mbId = null;
+        $this->raw = null;
+    }
+
     /**
      * throttle api calls
      */
-    protected function checkThrottle()
+    protected function checkThrottle(): void
     {
         if ($this->throttleDelayMS > 0) {
             $currentTimestamp = intval(microtime(true) * 1000);
@@ -71,7 +78,7 @@ class Entity
     /**
      * return cache file path for MusicBrainz id
      */
-    protected function getCacheFilePath(string $mbId)
+    protected function getCacheFilePath(string $mbId): string
     {
         $basePath = $this->getCacheDirectoryPath($mbId);
         switch ($this->apiFormat) {
@@ -87,7 +94,7 @@ class Entity
     /**
      * return cache directory path for MusicBrainz id
      */
-    protected function getCacheDirectoryPath(string $mbId)
+    protected function getCacheDirectoryPath(string $mbId): string
     {
         return ($this->cachePath . DIRECTORY_SEPARATOR . mb_substr($mbId, 0, 1) . DIRECTORY_SEPARATOR . mb_substr($mbId, 1, 1) . DIRECTORY_SEPARATOR . mb_substr($mbId, 2, 1) . DIRECTORY_SEPARATOR . mb_substr($mbId, 3, 1));
     }
