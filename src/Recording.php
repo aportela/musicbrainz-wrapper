@@ -49,14 +49,14 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
     {
         $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-            $xml = simplexml_load_string($rawText);
+            $xml = $this->parseXML($rawText);
             $this->mbId = isset($xml->{"recording"}->attributes()->{"title"}) ? (string) $xml->{"recording"}->attributes()->{"title"} : null;
             $this->title = isset($xml->{"recording"}->{"title"}) ? (string) $xml->{"recording"}->{"title"} : null;
             $this->artist->mbId = isset($xml->{"recording"}->{"artist-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}["id"] : null;
             $this->artist->name = isset($xml->{"recording"}->{"artist-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}->{"name"} : null;
             $this->raw = $rawText;
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-            $json = json_decode($rawText);
+            $json = $this->parseJSON($rawText);
             $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
             $this->title = isset($json->{"title"}) ? (string) $json->{"title"} : null;
             $this->artist->mbId = isset($json->{"artist-credit"}) && is_array($json->{"artist-credit"}) && count($json->{"artist-credit"}) > 0 ? $json->{"artist-credit"}[0]->artist->id : null;

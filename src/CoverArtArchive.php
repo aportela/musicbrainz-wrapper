@@ -53,9 +53,8 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
     public function parse(string $rawText): void
     {
         $this->reset();
-
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-            $json = json_decode($this->raw);
+            $json = $this->parseJSON($rawText);
             $releaseURL = isset($json->{"release"}) ? (string) $json->{"release"} : null;
             $releaseURLFields = explode("/", $releaseURL);
             if (! empty($releaseURLFields[0])) {

@@ -53,7 +53,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
         if ($response->code == 200) {
             $results = [];
             if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-                $xml = simplexml_load_string($response->body);
+                $xml = $this->parseXML($response->body);
                 if ($xml->{"release-list"} && isset($xml->{"release-list"}['count']) && intval($xml->{"release-list"}['count']) > 0) {
                     foreach ($xml->{"release-list"}->{"release"} as $release) {
                         $releaseDate = isset($release->{"date"}) && !empty($release->{"date"}) ? $release->{"date"} : "";
@@ -72,7 +72,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                 }
                 return ($results);
             } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-                $json = json_decode($response->body);
+                $json = $this->parseJSON($response->body);
                 if ($json->{"count"} > 0 && is_array($json->{"releases"}) && count($json->{"releases"}) > 0) {
                     foreach ($json->{"releases"} as $release) {
                         $releaseDate = isset($release->{"date"}) && !empty($release->{"date"}) ? $release->{"date"} : "";
@@ -127,7 +127,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
     {
         $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-            $xml = simplexml_load_string($rawText);
+            $xml = $this->parseXML($rawText);
             $this->mbId = isset($xml->{"release"}->attributes()->{"id"}) ? (string) $xml->{"release"}->attributes()->{"id"} : null;
             $this->title = isset($xml->{"release"}->{"title"}) ? (string) $xml->{"release"}->{"title"} : null;
             $releaseDate = isset($xml->{"release"}->{"date"}) && !empty($xml->{"release"}->{"date"}) ? $xml->{"release"}->{"date"} : "";
@@ -164,7 +164,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
             }
             $this->raw = $rawText;
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-            $json = json_decode($rawText);
+            $json = $this->parseJSON($rawText);
             $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
             $this->title = isset($json->{"title"}) ? (string) $json->{"title"} : null;
             $releaseDate = isset($json->{"date"}) && !empty($json->{"date"}) ? $json->{"date"} : "";
