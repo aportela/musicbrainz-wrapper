@@ -7,14 +7,31 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
     private const SEARCH_API_URL = "http://musicbrainz.org/ws/2/release/?query=%s&limit=%d&fmt=%s";
     private const GET_API_URL = "https://musicbrainz.org/ws/2/release/%s?inc=artist-credits+recordings+url-rels&fmt=%s";
 
-    public ?string $title;
-    public ?int $year;
+    public ?string $title = null;
+    public ?int $year = null;
     public object $artist;
+
     /**
      * @var array<mixed>
      */
-    public array $media;
-    public ?object $coverArtArchive;
+    public array $media = [];
+    public object $coverArtArchive;
+
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = 0, ?string $cachePath = null)
+    {
+        parent::__construct($logger, $apiFormat, $throttleDelayMS, $cachePath);
+        $this->reset();
+    }
+
+    protected function reset(): void
+    {
+        parent::reset();
+        $this->title = null;
+        $this->year = null;
+        $this->artist = (object) ["mbId" => null, "name" => null];
+        $this->media = [];
+        $this->coverArtArchive = (object) ["front" => false, "back" => false];
+    }
 
     /**
      * @return array<mixed>
@@ -108,15 +125,9 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
 
     public function parse(string $rawText): void
     {
-        $this->mbId = null;
-        $this->raw = $rawText;
-        $this->title = null;
-        $this->year = null;
-        $this->artist = (object) ['mbId' => null, 'name' => null];
-        $this->media = [];
-        $this->coverArtArchive = (object) ['front' => false, 'back' => false];
+        $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-            $xml = simplexml_load_string($this->raw);
+            $xml = simplexml_load_string($rawText);
             $this->mbId = isset($xml->{"release"}->attributes()->{"id"}) ? (string) $xml->{"release"}->attributes()->{"id"} : null;
             $this->title = isset($xml->{"release"}->{"title"}) ? (string) $xml->{"release"}->{"title"} : null;
             $releaseDate = isset($xml->{"release"}->{"date"}) && !empty($xml->{"release"}->{"date"}) ? $xml->{"release"}->{"date"} : "";
@@ -151,8 +162,9 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                     ];
                 }
             }
+            $this->raw = $rawText;
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-            $json = json_decode($this->raw);
+            $json = json_decode($rawText);
             $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
             $this->title = isset($json->{"title"}) ? (string) $json->{"title"} : null;
             $releaseDate = isset($json->{"date"}) && !empty($json->{"date"}) ? $json->{"date"} : "";
@@ -187,6 +199,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
                     ];
                 }
             }
+            $this->raw = $rawText;
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
         }

@@ -13,8 +13,8 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
      */
     public const NO_ARTIST_MB_ID = "eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61";
 
-    public ?string $name;
-    public ?string $country;
+    public ?string $name = null;
+    public ?string $country = null;
     /**
      * @var array<string>
      */
@@ -23,6 +23,21 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
      * @var array<mixed>
      */
     public array $relations = [];
+
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = 0, ?string $cachePath = null)
+    {
+        parent::__construct($logger, $apiFormat, $throttleDelayMS, $cachePath);
+        $this->reset();
+    }
+
+    protected function reset(): void
+    {
+        parent::reset();
+        $this->name = null;
+        $this->country = null;
+        $this->genres = [];
+        $this->relations = [];
+    }
 
     /**
      * @return array<mixed>
@@ -98,14 +113,9 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
 
     public function parse(string $rawText): void
     {
-        $this->mbId = null;
-        $this->raw = $rawText;
-        $this->name = null;
-        $this->country = null;
-        $this->genres = [];
-        $this->relations = [];
+        $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-            $xml = simplexml_load_string($this->raw);
+            $xml = simplexml_load_string($rawText);
             $this->mbId = isset($xml->{"artist"}->attributes()->{"id"}) ? (string) $xml->{"artist"}->attributes()->{"id"} : null;
             $this->name = isset($xml->{"artist"}->{"name"}) ? (string) $xml->{"artist"}->{"name"} : null;
             $this->country = isset($xml->{"artist"}->{"country"}) ? mb_strtolower((string) $xml->{"artist"}->{"country"}) : null;
@@ -113,24 +123,20 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 foreach ($xml->{"artist"}->{"genre-list"}->{"genre"} as $genre) {
                     $this->genres[] = trim(mb_strtolower((string) $genre->{"name"}));
                 }
-                $this->genres = array_unique(($this->genres));
-            } else {
-                $this->genres = [];
+                $this->genres = array_unique($this->genres);
             }
-
             if (isset($xml->{"artist"}->{"relation-list"})) {
                 foreach ($xml->{"artist"}->{"relation-list"}->{"relation"} as $relation) {
-                    $newRelation = new \stdClass();
-                    $newRelation->typeId = (string)$relation->attributes()->{"type-id"};
-                    $newRelation->name = (string)$relation->attributes()->{"type"};
-                    $newRelation->url = (string)$relation->{"target"};
-                    $this->relations[] = $newRelation;
+                    $this->relations[] = (object) [
+                        "typeId" => (string)$relation->attributes()->{"type-id"},
+                        "name" => (string)$relation->attributes()->{"type"},
+                        "url" => (string)$relation->{"target"}
+                    ];
                 }
-            } else {
-                $this->relations = [];
             }
+            $this->raw = $rawText;
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-            $json = json_decode($this->raw);
+            $json = json_decode($rawText);
             $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
             $this->name = isset($json->{"name"}) ? (string) $json->{"name"} : null;
             $this->country = isset($json->{"country"}) ? mb_strtolower((string) $json->{"country"}) : null;
@@ -138,21 +144,18 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 foreach ($json->{"genres"} as $genre) {
                     $this->genres[] = trim(mb_strtolower((string) $genre->{"name"}));
                 }
-                $this->genres = array_unique(($this->genres));
-            } else {
-                $this->genres = [];
+                $this->genres = array_unique($this->genres);
             }
             if (isset($json->{"relations"})) {
                 foreach ($json->{"relations"} as $relation) {
-                    $newRelation = new \stdClass();
-                    $newRelation->typeId = (string)$relation->{"type-id"};
-                    $newRelation->name = (string)$relation->{"type"};
-                    $newRelation->url = (string)$relation->{"url"}->{"resource"};
-                    $this->relations[] = $newRelation;
+                    $this->relations[] = (object) [
+                        "typeId" => (string)$relation->{"type-id"},
+                        "name" => (string)$relation->{"type"},
+                        "url" => (string)$relation->{"url"}->{"resource"}
+                    ];
                 }
-            } else {
-                $this->relations = [];
             }
+            $this->raw = $rawText;
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
         }
@@ -163,12 +166,14 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
      */
     public function getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType $typeId): array
     {
-        $urls = [];
-        foreach ($this->relations as $relation) {
-            if ($relation->typeId == $typeId->value) {
-                $urls[] = $relation->url;
-            }
-        }
-        return ($urls);
+        return array_map(
+            fn($relation) => $relation->url,
+            array_values(
+                array_filter(
+                    $this->relations,
+                    fn($relation) => $relation->typeId == $typeId->value
+                )
+            )
+        );
     }
 }

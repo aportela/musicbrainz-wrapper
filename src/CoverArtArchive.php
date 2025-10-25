@@ -12,6 +12,21 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
      */
     public array $images = [];
 
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = 0, ?string $cachePath = null)
+    {
+        if ($apiFormat != \aportela\MusicBrainzWrapper\APIFormat::JSON) {
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
+        }
+        parent::__construct($logger, $apiFormat, $throttleDelayMS, $cachePath);
+        $this->reset();
+    }
+
+    protected function reset(): void
+    {
+        parent::reset();
+        $this->images = [];
+    }
+
     public function getReleaseImageURL(string $releaseMbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType $imageType, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize $imageSize): string
     {
         return (sprintf(self::DIRECT_IMAGE_URL, $releaseMbId, $imageType->value, $imageSize->value));
@@ -19,7 +34,7 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
 
     public function get(string $mbId): void
     {
-        //$this->checkThrottle();
+        $this->checkThrottle();
         $url = sprintf(self::GET_API_URL, $mbId);
         $response = $this->http->GET($url);
         if ($response->code == 200) {
@@ -37,8 +52,8 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
 
     public function parse(string $rawText): void
     {
-        $this->mbId = null;
-        $this->raw = $rawText;
+        $this->reset();
+
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
             $json = json_decode($this->raw);
             $releaseURL = isset($json->{"release"}) ? (string) $json->{"release"} : null;
@@ -51,6 +66,7 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
                     $this->images[] = $image;
                 }
             }
+            $this->raw = $rawText;
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
         }
