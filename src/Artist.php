@@ -48,34 +48,41 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
         if ($response->code == 200) {
             $this->resetThrottle();
             if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-                $xml = $this->parseXML($response->body);
-                if ($xml->{"artist-list"} && intval($xml->{"artist-list"}["count"]) > 0 && $xml->{"artist-list"}->{"artist"}) {
+                $xmlHelper = new \aportela\MusicBrainzWrapper\Helpers\XMLHelper($response->body);
+                //echo $response->body . PHP_EOL;
+                $artistsXPath = $xmlHelper->getXPath("//" . $xmlHelper->getNS() . ":artist-list/" . $xmlHelper->getNS() . ":artist");
+                if ($artistsXPath === false) {
+                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("artist-list xpath not found");
+                }
+                if (count($artistsXPath) > 0) {
                     $results = [];
-                    foreach ($xml->{"artist-list"}->{"artist"} as $artist) {
+                    foreach ($artistsXPath as $artistXPath) {
                         $results[] = (object) [
-                            "mbId" => isset($artist["id"]) ? (string) $artist["id"] : null,
-                            "name" => isset($artist->{"name"}) ? (string) $artist->{"name"} : null,
-                            "country" => isset($artist->{"country"}) ? mb_strtolower((string) $artist->{"country"}) : null
+                            "mbId" => (string) $artistXPath->attributes()->id,
+                            "type" => \aportela\MusicBrainzWrapper\ArtistType::fromString($artistXPath->attributes()->type) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE,
+                            "name" => (string) $artistXPath->children()->name,
+                            "country" => !empty($country = $artistXPath->children()->country) ? mb_strtolower($country) : null
                         ];
                     }
                     return ($results);
                 } else {
-                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($name, $response->code);
+                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($name, 0);
                 }
             } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
                 $json = $this->parseJSON($response->body);
-                if ($json->{"count"} > 0 && is_array($json->{"artists"}) && count($json->{"artists"}) > 0) {
+                if ($json->{"count"} > 0 && is_array($json->{"artists"})) {
                     $results = [];
                     foreach ($json->{"artists"} as $artist) {
                         $results[] = (object) [
-                            "mbId" => isset($artist->{"id"}) ? (string) $artist->{"id"} : null,
-                            "name" => isset($artist->{"name"}) ? (string) $artist->{"name"} : null,
-                            "country" => isset($artist->{"country"}) ? mb_strtolower((string) $artist->{"country"}) : null
+                            "mbId" => (string)$artist->{"id"},
+                            "type" => \aportela\MusicBrainzWrapper\ArtistType::fromString($artist->{"type"}) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE,
+                            "name" => (string)$artist->{"name"},
+                            "country" => isset($artist->{"country"}) ? mb_strtolower($artist->{"country"}) : null
                         ];
                     }
                     return ($results);
                 } else {
-                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($name, $response->code);
+                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($name, 0);
                 }
             } else {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
@@ -120,9 +127,9 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
             if ($artistXPath === false || count($artistXPath) != 1) {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("artist xpath not found");
             }
-            $this->mbId = $artistXPath[0]->attributes()->id ?: null;
+            $this->mbId = (string)$artistXPath[0]->attributes()->id ?: null;
             $this->type = \aportela\MusicBrainzWrapper\ArtistType::fromString($artistXPath[0]->attributes()->type) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE;
-            $this->name = $artistXPath[0]->children()->name ?: null;
+            $this->name = (string)$artistXPath[0]->children()->name ?: null;
             $this->country = !empty($country = $artistXPath[0]->children()->country) ? mb_strtolower($country) : null;
             $genreList = $artistXPath[0]->children()->{"genre-list"};
             if ($genreList !== false && count($genreList) > 0) {
@@ -154,19 +161,20 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
             $this->raw = $rawText;
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
             $json = $this->parseJSON($rawText);
-            $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
-            $this->name = isset($json->{"name"}) ? (string) $json->{"name"} : null;
-            $this->country = isset($json->{"country"}) ? mb_strtolower((string) $json->{"country"}) : null;
-            if (isset($json->{"genres"})) {
+            $this->mbId = (string)$json->{"id"};
+            $this->type = \aportela\MusicBrainzWrapper\ArtistType::fromString($json->{"type"}) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE;
+            $this->name = (string)$json->{"name"};
+            $this->country = isset($json->{"country"}) ? mb_strtolower($json->{"country"}) : null;
+            if (isset($json->{"genres"}) && is_array(($json->{"genres"}))) {
                 foreach ($json->{"genres"} as $genre) {
-                    $this->genres[] = trim(mb_strtolower((string) $genre->{"name"}));
+                    $this->genres[] = mb_strtolower(trim($genre->{"name"}));
                 }
                 $this->genres = array_unique($this->genres);
             }
-            if (isset($json->{"relations"})) {
+            if (isset($json->{"relations"}) && is_array($json->{"relations"})) {
                 foreach ($json->{"relations"} as $relation) {
                     $this->relations[] = (object) [
-                        "typeId" => (string)$relation->{"type-id"},
+                        "typeId" => (string) $relation->{"type-id"},
                         "name" => (string)$relation->{"type"},
                         "url" => (string)$relation->{"url"}->{"resource"}
                     ];
