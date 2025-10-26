@@ -111,30 +111,6 @@ class Entity
     }
 
     /**
-     * return cache file path for MusicBrainz id
-     */
-    protected function getCacheFilePath(string $mbId): string
-    {
-        $basePath = $this->getCacheDirectoryPath($mbId);
-        switch ($this->apiFormat) {
-            case \aportela\MusicBrainzWrapper\APIFormat::JSON:
-                return ($basePath . DIRECTORY_SEPARATOR . $mbId . ".json");
-            case \aportela\MusicBrainzWrapper\APIFormat::XML:
-                return ($basePath . DIRECTORY_SEPARATOR . $mbId . ".xml");
-            default:
-                return ($basePath . DIRECTORY_SEPARATOR . $mbId);
-        }
-    }
-
-    /**
-     * return cache directory path for MusicBrainz id
-     */
-    protected function getCacheDirectoryPath(string $mbId): string
-    {
-        return ($this->cachePath . DIRECTORY_SEPARATOR . mb_substr($mbId, 0, 1) . DIRECTORY_SEPARATOR . mb_substr($mbId, 1, 1) . DIRECTORY_SEPARATOR . mb_substr($mbId, 2, 1) . DIRECTORY_SEPARATOR . mb_substr($mbId, 3, 1));
-    }
-
-    /**
      * save current raw data into disk cache
      */
     protected function saveCache(string $mbId, string $raw): bool
