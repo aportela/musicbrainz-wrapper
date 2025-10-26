@@ -160,6 +160,28 @@ class Entity
     }
 
     /**
+     * remove cache entry
+     */
+    protected function removeCache(string $mbId): bool
+    {
+        try {
+            if (! empty($this->cachePath)) {
+                $cacheFilePath = $this->getCacheFilePath($mbId);
+                if (file_exists($cacheFilePath)) {
+                    return (unlink($cacheFilePath));
+                } else {
+                    return (false);
+                }
+            } else {
+                return (false);
+            }
+        } catch (\Throwable $e) {
+            $this->logger->error("Error removing MusicBrainz disk cache", [$mbId, $e->getMessage()]);
+            return (false);
+        }
+    }
+
+    /**
      * read disk cache into current raw data
      */
     protected function getCache(string $mbId): bool
@@ -199,6 +221,7 @@ class Entity
         }
     }
 
+    // TODO: REMOVE
     /**
      * parse json, launch InvalidJSONException on errors
      */
@@ -211,6 +234,7 @@ class Entity
         return ($json);
     }
 
+    // TODO: REMOVE
     /**
      * parse xml, launch InvalidXMLException on errors
      */
