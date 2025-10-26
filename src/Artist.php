@@ -47,15 +47,14 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
         $response = $this->httpGET($url);
         if ($response->code == 200) {
             $this->resetThrottle();
-            $helper = null;
             if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-                $helper = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Search\Artist($response->body);
+                $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Search\Artist($response->body);
             } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-                $helper = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Search\Artist($response->body);
+                $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Search\Artist($response->body);
             } else {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
             }
-            $results = $helper->parse();
+            $results = $this->parser->parse();
             if (count($results) > 0) {
                 return ($results);
             } else {
@@ -97,15 +96,14 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
     public function parse(string $rawText): void
     {
         $this->reset();
-        $helper = null;
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-            $helper = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Get\Artist($rawText);
+            $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Get\Artist($rawText);
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-            $helper = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\Artist($rawText);
+            $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\Artist($rawText);
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
         }
-        $data = $helper->parse();
+        $data = $this->parser->parse();
         $this->mbId = $data->mbId;
         $this->type = $data->type;
         $this->name = $data->name;

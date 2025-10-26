@@ -24,6 +24,8 @@ class Entity
 
     protected ?string $cachePath = null;
 
+    protected mixed $parser = null;
+
     public ?string $mbId = null;
     public ?string $raw = null;
 
