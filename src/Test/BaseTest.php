@@ -12,7 +12,7 @@ class BaseTest extends \PHPUnit\Framework\TestCase
 
     protected const THROTTLE_MS = 1000;
 
-    protected const CACHE_PATH = null;
+    protected static $cachePath;
 
     /**
      * Called once just like normal constructor
@@ -20,27 +20,22 @@ class BaseTest extends \PHPUnit\Framework\TestCase
     public static function setUpBeforeClass(): void
     {
         self::$logger = new \Psr\Log\NullLogger();
+        self::$cachePath = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . "cache";
     }
 
     /**
      * Initialize the test case
      * Called for every defined test
      */
-    public function setUp(): void
-    {
-    }
+    public function setUp(): void {}
 
     /**
      * Clean up the test case, called for every defined test
      */
-    public function tearDown(): void
-    {
-    }
+    public function tearDown(): void {}
 
     /**
      * Clean up the whole test class
      */
-    public static function tearDownAfterClass(): void
-    {
-    }
+    public static function tearDownAfterClass(): void {}
 }
