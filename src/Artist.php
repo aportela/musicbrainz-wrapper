@@ -46,6 +46,7 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
         $url = sprintf(self::SEARCH_API_URL, urlencode($name), $limit, $this->apiFormat->value);
         $response = $this->httpGET($url);
         if ($response->code == 200) {
+            $this->resetThrottle();
             if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
                 $xml = $this->parseXML($response->body);
                 if ($xml->{"artist-list"} && intval($xml->{"artist-list"}["count"]) > 0 && $xml->{"artist-list"}->{"artist"}) {
@@ -93,6 +94,7 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
             $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
             $response = $this->httpGET($url);
             if ($response->code == 200) {
+                $this->resetThrottle();
                 $this->saveCache($mbId, $response->body);
                 $this->parse($response->body);
             } elseif ($response->code == 400) {
@@ -120,8 +122,8 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
             }
             $this->mbId = $artistXPath[0]->attributes()->id ?: null;
             $this->type = \aportela\MusicBrainzWrapper\ArtistType::fromString($artistXPath[0]->attributes()->type) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE;
-            $this->name = current($artistXPath[0]->children()->name) ?: null;
-            $this->country = !empty($country = current($artistXPath[0]->children()->country)) ? mb_strtolower($country) : null;
+            $this->name = $artistXPath[0]->children()->name ?: null;
+            $this->country = !empty($country = $artistXPath[0]->children()->country) ? mb_strtolower($country) : null;
             $genreList = $artistXPath[0]->children()->{"genre-list"};
             if ($genreList !== false && count($genreList) > 0) {
                 $genres = $genreList->children();
