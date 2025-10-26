@@ -37,6 +37,7 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
             } elseif ($response->code == 404) {
                 throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($mbId, $response->code);
             } elseif ($response->code == 503) {
+                $this->incrementThrottle();
                 throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($mbId, $response->code);
             } else {
                 throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($mbId, $response->code);
