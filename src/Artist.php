@@ -98,69 +98,23 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
     public function parse(string $rawText): void
     {
         $this->reset();
+        $data = null;
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-            $xmlHelper = new \aportela\MusicBrainzWrapper\Helpers\XMLHelper($rawText);
-            $artistXPath = $xmlHelper->getXPath("//" . $xmlHelper->getNS() . ":artist");
-            if ($artistXPath === false || count($artistXPath) != 1) {
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("artist xpath not found");
-            }
-            $this->mbId = (string)$artistXPath[0]->attributes()->id ?: null;
-            $this->type = \aportela\MusicBrainzWrapper\ArtistType::fromString($artistXPath[0]->attributes()->type) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE;
-            $this->name = (string)$artistXPath[0]->children()->name ?: null;
-            $this->country = !empty($country = $artistXPath[0]->children()->country) ? mb_strtolower($country) : null;
-            $genreList = $artistXPath[0]->children()->{"genre-list"};
-            if ($genreList !== false && count($genreList) > 0) {
-                $genres = $genreList->children();
-                if (! empty($genres)) {
-                    foreach ($genres as $genre) {
-                        $this->genres[] = mb_strtolower(trim($genre->children()->name));
-                    }
-                    $this->genres = array_unique($this->genres);
-                }
-            } else {
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("artist genre-list children not found");
-            }
-            $relationList = $artistXPath[0]->children()->{"relation-list"};
-            if ($relationList !== false && count($relationList) > 0) {
-                $relations = $relationList->children();
-                if (! empty($relations)) {
-                    foreach ($relations as $relation) {
-                        $this->relations[] = (object) [
-                            "typeId" => (string) $relation->attributes()->{"type-id"},
-                            "name" => (string) $relation->attributes()->{"type"},
-                            "url" => (string) $relation->{"target"}
-                        ];
-                    }
-                }
-            } else {
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("artist relation-list children not found");
-            }
-            $this->raw = $rawText;
+            $xmlHelper = new \aportela\MusicBrainzWrapper\Helpers\ArtistXMLHelper($rawText);
+            $data = $xmlHelper->parseGetResponse();
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-            $json = $this->parseJSON($rawText);
-            $this->mbId = (string)$json->{"id"};
-            $this->type = \aportela\MusicBrainzWrapper\ArtistType::fromString($json->{"type"}) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE;
-            $this->name = (string)$json->{"name"};
-            $this->country = isset($json->{"country"}) ? mb_strtolower($json->{"country"}) : null;
-            if (isset($json->{"genres"}) && is_array(($json->{"genres"}))) {
-                foreach ($json->{"genres"} as $genre) {
-                    $this->genres[] = mb_strtolower(trim($genre->{"name"}));
-                }
-                $this->genres = array_unique($this->genres);
-            }
-            if (isset($json->{"relations"}) && is_array($json->{"relations"})) {
-                foreach ($json->{"relations"} as $relation) {
-                    $this->relations[] = (object) [
-                        "typeId" => (string) $relation->{"type-id"},
-                        "name" => (string)$relation->{"type"},
-                        "url" => (string)$relation->{"url"}->{"resource"}
-                    ];
-                }
-            }
-            $this->raw = $rawText;
+            $jsonHelper = new \aportela\MusicBrainzWrapper\Helpers\ArtistJSONHelper($rawText);
+            $data = $jsonHelper->parseGetResponse();
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
         }
+        $this->mbId = $data->mbId;
+        $this->type = $data->type;
+        $this->name = $data->name;
+        $this->country = $data->country;
+        $this->genres = $data->genres;
+        $this->relations = $data->relations;
+        $this->raw = $rawText;
     }
 
     /**
