@@ -13,6 +13,8 @@ class Entity
     protected int $throttleDelayMS = 0;
     protected int $lastThrottleTimestamp = 0;
 
+    protected string $defaultXMLNamespaceAlias = "mmd";
+
     protected ?string $cachePath = null;
 
     public ?string $mbId = null;
@@ -179,6 +181,7 @@ class Entity
     {
         libxml_clear_errors();
         $xml = simplexml_load_string($rawText);
+        $xml->registerXPathNamespace($this->defaultXMLNamespaceAlias, reset($xml->getNamespaces(true)));
         if ($xml === false) {
             $errorMessage = "invalid xml";
             $errorCode = 0;
