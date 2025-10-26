@@ -59,7 +59,7 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
             if (count($results) > 0) {
                 return ($results);
             } else {
-                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($name, 0);
+                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException("artist name: {$name}", 0);
             }
         } elseif ($response->code == 503) {
             $this->incrementThrottle();
