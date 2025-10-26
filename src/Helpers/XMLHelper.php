@@ -26,7 +26,8 @@ class XMLHelper
             }
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException($errorMessage, $errorCode);
         }
-        $this->xml->registerXPathNamespace(self::DEFAULT_NS_ALIAS, reset($this->xml->getNamespaces(true)) ?? self::DEFAULT_NS);
+        //$this->xml->registerXPathNamespace(self::DEFAULT_NS_ALIAS, reset($this->xml->getNamespaces(true)) ?? self::DEFAULT_NS);
+        $this->xml->registerXPathNamespace(self::DEFAULT_NS_ALIAS, self::DEFAULT_NS);
     }
 
     public function getNS()
