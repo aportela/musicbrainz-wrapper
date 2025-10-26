@@ -51,6 +51,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
         $url = sprintf(self::SEARCH_API_URL, implode(urlencode(" AND "), $queryParams), $limit, $this->apiFormat->value);
         $response = $this->httpGET($url);
         if ($response->code == 200) {
+            $this->resetThrottle();
             $results = [];
             if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
                 $xml = $this->parseXML($response->body);
@@ -107,6 +108,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
             $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
             $response = $this->httpGET($url);
             if ($response->code == 200) {
+                $this->resetThrottle();
                 $this->saveCache($mbId, $response->body);
                 $this->parse($response->body);
             } elseif ($response->code == 400) {

@@ -10,8 +10,17 @@ class Entity
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
     protected \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
 
-    protected int $throttleDelayMS = 0;
-    protected int $lastThrottleTimestamp = 0;
+
+    /**
+     * https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting
+     * For "anonymous" user-agents (see below): we allow through (on average) 50 requests per second, and decline (http 503) the rest.
+     */
+    protected const MIN_THROTTLE_DELAY_MS = 20; // min allowed: 50 requests per second
+    protected const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
+
+    private int $originalThrottleDelayMS = 0;
+    private int $currentThrottleDelayMS = 0;
+    private int $lastThrottleTimestamp = 0;
 
     protected string $defaultXMLNamespaceAlias = "mmd";
 
@@ -30,7 +39,11 @@ class Entity
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("supported formats: " . implode(", ", [\aportela\MusicBrainzWrapper\APIFormat::XML->value, \aportela\MusicBrainzWrapper\APIFormat::JSON->value]));
         }
         $this->apiFormat = $apiFormat;
-        $this->throttleDelayMS = $throttleDelayMS;
+        if ($throttleDelayMS < self::MIN_THROTTLE_DELAY_MS) {
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidThrottleMsDelayException("min throttle delay ms required: " . self::MIN_THROTTLE_DELAY_MS);
+        }
+        $this->originalThrottleDelayMS = $throttleDelayMS;
+        $this->currentThrottleDelayMS = $throttleDelayMS;
         $this->lastThrottleTimestamp = intval(microtime(true) * 1000);
         $this->cachePath = ! empty($cachePath) ? realpath($cachePath) : null;
         $loadedExtensions = get_loaded_extensions();
@@ -61,13 +74,35 @@ class Entity
     }
 
     /**
+     * increment throttle delay (time between api calls)
+     * call this function when api returns rate limit exception
+     * (or connection reset errors caused by remote server busy ?)
+     */
+    protected function incrementThrottle(): void
+    {
+        // allow incrementing current throttle delay to a max of 5 seconds
+        if ($this->currentThrottleDelayMS < 5000) {
+            // set next throttle delay with current value * 2 (wait more time on next api calls)
+            $this->currentThrottleDelayMS * 2;
+        }
+    }
+
+    /**
+     * reset throttle to original value
+     */
+    protected function resetThrottle(): void
+    {
+        $this->currentThrottleDelayMS = $this->originalThrottleDelayMS;
+    }
+
+    /**
      * throttle api calls
      */
     protected function checkThrottle(): void
     {
-        if ($this->throttleDelayMS > 0) {
+        if ($this->currentThrottleDelayMS > 0) {
             $currentTimestamp = intval(microtime(true) * 1000);
-            while (($currentTimestamp - $this->lastThrottleTimestamp) < $this->throttleDelayMS) {
+            while (($currentTimestamp - $this->lastThrottleTimestamp) < $this->currentThrottleDelayMS) {
                 usleep(10);
                 $currentTimestamp = intval(microtime(true) * 1000);
             }
@@ -149,6 +184,7 @@ class Entity
         }
     }
 
+
     /**
      * http handler GET method wrapper for catching CurlExecException (connection errors / server busy ?)
      */
@@ -158,6 +194,7 @@ class Entity
             return ($this->http->GET($url));
         } catch (\aportela\HTTPRequestWrapper\Exception\CurlExecException $e) {
             $this->logger->error("Error opening URL " . $url, [$e->getCode(), $e->getMessage()]);
+            $this->incrementThrottle(); // sometimes api calls return connection error, interpret this as rate limit response
             throw new \aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException("Error opening URL " . $url, 0, $e);
         }
     }
