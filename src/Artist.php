@@ -47,45 +47,20 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
         $response = $this->httpGET($url);
         if ($response->code == 200) {
             $this->resetThrottle();
+            $results = [];
             if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-                $xmlHelper = new \aportela\MusicBrainzWrapper\Helpers\XMLHelper($response->body);
-                //echo $response->body . PHP_EOL;
-                $artistsXPath = $xmlHelper->getXPath("//" . $xmlHelper->getNS() . ":artist-list/" . $xmlHelper->getNS() . ":artist");
-                if ($artistsXPath === false) {
-                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("artist-list xpath not found");
-                }
-                if (count($artistsXPath) > 0) {
-                    $results = [];
-                    foreach ($artistsXPath as $artistXPath) {
-                        $results[] = (object) [
-                            "mbId" => (string) $artistXPath->attributes()->id,
-                            "type" => \aportela\MusicBrainzWrapper\ArtistType::fromString($artistXPath->attributes()->type) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE,
-                            "name" => (string) $artistXPath->children()->name,
-                            "country" => !empty($country = $artistXPath->children()->country) ? mb_strtolower($country) : null
-                        ];
-                    }
-                    return ($results);
-                } else {
-                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($name, 0);
-                }
+                $xmlHelper = new \aportela\MusicBrainzWrapper\Helpers\ArtistXMLHelper($response->body);
+                $results = $xmlHelper->parseSearchResponse();
             } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-                $json = $this->parseJSON($response->body);
-                if ($json->{"count"} > 0 && is_array($json->{"artists"})) {
-                    $results = [];
-                    foreach ($json->{"artists"} as $artist) {
-                        $results[] = (object) [
-                            "mbId" => (string)$artist->{"id"},
-                            "type" => \aportela\MusicBrainzWrapper\ArtistType::fromString($artist->{"type"}) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE,
-                            "name" => (string)$artist->{"name"},
-                            "country" => isset($artist->{"country"}) ? mb_strtolower($artist->{"country"}) : null
-                        ];
-                    }
-                    return ($results);
-                } else {
-                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($name, 0);
-                }
+                $jsonHelper = new \aportela\MusicBrainzWrapper\Helpers\ArtistJSONHelper($response->body);
+                $results = $jsonHelper->parseSearchResponse();
             } else {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
+            }
+            if (count($results) > 0) {
+                return ($results);
+            } else {
+                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($name, 0);
             }
         } elseif ($response->code == 503) {
             throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($name, $response->code);
