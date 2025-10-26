@@ -6,14 +6,22 @@ class Artist extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseXMLHelper
 {
     public function parse(): mixed
     {
-        $data = (object) ["mbId" => null, "type" => null, "name" => null, "country" => null, "genres" => [], "relations" => []];
+        $data = (object)
+        [
+            "mbId" => null,
+            "type" => \aportela\MusicBrainzWrapper\ArtistType::NONE,
+            "name" => null,
+            "country" => null,
+            "genres" => [],
+            "relations" => []
+        ];
         $artistXPath = $this->getXPath("//" . $this->getNS() . ":artist");
         if ($artistXPath === false || count($artistXPath) != 1) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("artist xpath not found");
         }
-        $data->mbId = (string)$artistXPath[0]->attributes()->id ?: null;
+        $data->mbId = (string)$artistXPath[0]->attributes()->id;
         $data->type = \aportela\MusicBrainzWrapper\ArtistType::fromString($artistXPath[0]->attributes()->type) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE;
-        $data->name = (string)$artistXPath[0]->children()->name ?: null;
+        $data->name = (string)$artistXPath[0]->children()->name;
         $data->country = !empty($country = $artistXPath[0]->children()->country) ? mb_strtolower($country) : null;
 
         $genreList = $artistXPath[0]->children()->{"genre-list"};
