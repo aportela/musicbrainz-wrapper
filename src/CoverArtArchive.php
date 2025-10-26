@@ -38,6 +38,7 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
         $url = sprintf(self::GET_API_URL, $mbId);
         $response = $this->httpGET($url);
         if ($response->code == 200) {
+            $this->resetThrottle();
             $this->parse($response->body);
         } elseif ($response->code == 400) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
