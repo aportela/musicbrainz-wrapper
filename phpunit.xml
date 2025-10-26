@@ -10,8 +10,7 @@
     displayDetailsOnPhpunitDeprecations="true"
     displayDetailsOnTestsThatTriggerWarnings="true"
     displayDetailsOnTestsThatTriggerDeprecations="true"
-    displayDetailsOnTestsThatTriggerNotices="true"
->
+    displayDetailsOnTestsThatTriggerNotices="true">
     <testsuites>
         <testsuite name="musicbrainz-wrapper-test-suite">
             <file>src/Test/ArtistTest.php</file>
