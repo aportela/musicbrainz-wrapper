@@ -2,8 +2,6 @@
 
 namespace aportela\MusicBrainzWrapper\Helpers;
 
-use SimpleXMLElement;
-
 class XMLHelper
 {
     protected const DEFAULT_NS_ALIAS = "mmd";
