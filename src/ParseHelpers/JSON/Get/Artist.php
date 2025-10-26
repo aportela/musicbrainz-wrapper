@@ -1,32 +1,10 @@
 <?php
 
-namespace aportela\MusicBrainzWrapper\Helpers;
+namespace aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get;
 
-class ArtistJSONHelper extends JSONHelper
+class Artist extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseJSONHelper
 {
-
-    public function __construct(string $raw)
-    {
-        parent::__construct($raw);
-    }
-
-    public function parseSearchResponse(): array
-    {
-        $results = [];
-        if ($this->json->{"count"} > 0 && is_array($this->json->{"artists"})) {
-            foreach ($this->json->{"artists"} as $artist) {
-                $results[] = (object) [
-                    "mbId" => (string)$artist->{"id"},
-                    "type" => \aportela\MusicBrainzWrapper\ArtistType::fromString($artist->{"type"}) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE,
-                    "name" => (string)$artist->{"name"},
-                    "country" => isset($artist->{"country"}) ? mb_strtolower($artist->{"country"}) : null
-                ];
-            }
-        }
-        return ($results);
-    }
-
-    public function parseGetResponse()
+    public function parse(): mixed
     {
         $data = (object) ["mbId" => null, "type" => null, "name" => null, "country" => null, "genres" => [], "relations" => []];
         $data->mbId = (string)$this->json->{"id"};

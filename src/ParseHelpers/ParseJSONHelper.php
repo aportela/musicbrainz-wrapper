@@ -1,10 +1,9 @@
 <?php
 
-namespace aportela\MusicBrainzWrapper\Helpers;
+namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
-class JSONHelper
+abstract class ParseJSONHelper
 {
-
     protected mixed $json;
 
     public function __construct(string $raw)
@@ -14,4 +13,6 @@ class JSONHelper
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidJSONException(json_last_error_msg(), json_last_error());
         }
     }
+
+    abstract public function parse(): mixed;
 }

@@ -47,16 +47,15 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
         $response = $this->httpGET($url);
         if ($response->code == 200) {
             $this->resetThrottle();
-            $results = [];
+            $helper = null;
             if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-                $xmlHelper = new \aportela\MusicBrainzWrapper\Helpers\ArtistXMLHelper($response->body);
-                $results = $xmlHelper->parseSearchResponse();
+                $helper = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Search\Artist($response->body);
             } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-                $jsonHelper = new \aportela\MusicBrainzWrapper\Helpers\ArtistJSONHelper($response->body);
-                $results = $jsonHelper->parseSearchResponse();
+                $helper = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Search\Artist($response->body);
             } else {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
             }
+            $results = $helper->parse();
             if (count($results) > 0) {
                 return ($results);
             } else {
@@ -98,16 +97,15 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
     public function parse(string $rawText): void
     {
         $this->reset();
-        $data = null;
+        $helper = null;
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-            $xmlHelper = new \aportela\MusicBrainzWrapper\Helpers\ArtistXMLHelper($rawText);
-            $data = $xmlHelper->parseGetResponse();
+            $helper = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Get\Artist($rawText);
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-            $jsonHelper = new \aportela\MusicBrainzWrapper\Helpers\ArtistJSONHelper($rawText);
-            $data = $jsonHelper->parseGetResponse();
+            $helper = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\Artist($rawText);
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
         }
+        $data = $helper->parse();
         $this->mbId = $data->mbId;
         $this->type = $data->type;
         $this->name = $data->name;
