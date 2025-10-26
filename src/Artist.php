@@ -2,7 +2,7 @@
 
 namespace aportela\MusicBrainzWrapper;
 
-class Artist extends \aportela\MusicBrainzWrapper\Entity
+class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
 {
     private const SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=%s&limit=%d&fmt=%s";
     private const GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=genres+recordings+releases+release-groups+works+url-rels&fmt=%s";
@@ -13,7 +13,6 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
      */
     public const NO_ARTIST_MB_ID = "eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61";
 
-    public ?string $name = null;
     public ?string $country = null;
     /**
      * @var array<string>
@@ -33,7 +32,6 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
     protected function reset(): void
     {
         parent::reset();
-        $this->name = null;
         $this->country = null;
         $this->genres = [];
         $this->relations = [];
@@ -115,24 +113,41 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
     {
         $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-            $xml = $this->parseXML($rawText);
-            $this->mbId = isset($xml->{"artist"}->attributes()->{"id"}) ? (string) $xml->{"artist"}->attributes()->{"id"} : null;
-            $this->name = isset($xml->{"artist"}->{"name"}) ? (string) $xml->{"artist"}->{"name"} : null;
-            $this->country = isset($xml->{"artist"}->{"country"}) ? mb_strtolower((string) $xml->{"artist"}->{"country"}) : null;
-            if (isset($xml->{"artist"}->{"genre-list"})) {
-                foreach ($xml->{"artist"}->{"genre-list"}->{"genre"} as $genre) {
-                    $this->genres[] = trim(mb_strtolower((string) $genre->{"name"}));
-                }
-                $this->genres = array_unique($this->genres);
+            $xmlHelper = new \aportela\MusicBrainzWrapper\Helpers\XMLHelper($rawText);
+            $artistXPath = $xmlHelper->getXPath("//" . $xmlHelper->getNS() . ":artist");
+            if ($artistXPath === false || count($artistXPath) != 1) {
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("artist xpath not found");
             }
-            if (isset($xml->{"artist"}->{"relation-list"})) {
-                foreach ($xml->{"artist"}->{"relation-list"}->{"relation"} as $relation) {
-                    $this->relations[] = (object) [
-                        "typeId" => (string)$relation->attributes()->{"type-id"},
-                        "name" => (string)$relation->attributes()->{"type"},
-                        "url" => (string)$relation->{"target"}
-                    ];
+            $this->mbId = $artistXPath[0]->attributes()->id ?: null;
+            $this->type = \aportela\MusicBrainzWrapper\ArtistType::fromString($artistXPath[0]->attributes()->type) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE;
+            $this->name = current($artistXPath[0]->children()->name) ?: null;
+            $this->country = !empty($country = current($artistXPath[0]->children()->country)) ? mb_strtolower($country) : null;
+            $genreList = $artistXPath[0]->children()->{"genre-list"};
+            if ($genreList !== false && count($genreList) > 0) {
+                $genres = $genreList->children();
+                if (! empty($genres)) {
+                    foreach ($genres as $genre) {
+                        $this->genres[] = mb_strtolower(trim($genre->children()->name));
+                    }
+                    $this->genres = array_unique($this->genres);
                 }
+            } else {
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("artist genre-list children not found");
+            }
+            $relationList = $artistXPath[0]->children()->{"relation-list"};
+            if ($relationList !== false && count($relationList) > 0) {
+                $relations = $relationList->children();
+                if (! empty($relations)) {
+                    foreach ($relations as $relation) {
+                        $this->relations[] = (object) [
+                            "typeId" => (string) $relation->attributes()->{"type-id"},
+                            "name" => (string) $relation->attributes()->{"type"},
+                            "url" => (string) $relation->{"target"}
+                        ];
+                    }
+                }
+            } else {
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("artist relation-list children not found");
             }
             $this->raw = $rawText;
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
