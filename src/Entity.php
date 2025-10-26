@@ -22,8 +22,6 @@ class Entity
     private int $currentThrottleDelayMS = 0;
     private int $lastThrottleTimestamp = 0;
 
-    protected string $defaultXMLNamespaceAlias = "mmd";
-
     protected ?string $cachePath = null;
 
     public ?string $mbId = null;
