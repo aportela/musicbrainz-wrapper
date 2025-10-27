@@ -12,13 +12,8 @@ class Artist extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseXMLHelper
         }
         $results = [];
         if (count($artistsXPath) > 0) {
-            foreach ($artistsXPath as $artistXPath) {
-                $results[] = (object) [
-                    "mbId" => (string) $artistXPath->attributes()->id,
-                    "type" => \aportela\MusicBrainzWrapper\ArtistType::fromString($artistXPath->attributes()->type) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE,
-                    "name" => (string) $artistXPath->children()->name,
-                    "country" => !empty($country = $artistXPath->children()->country) ? mb_strtolower($country) : null
-                ];
+            foreach ($artistsXPath as $artistElement) {
+                $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistHelper($artistElement);
             }
         }
         return ($results);
