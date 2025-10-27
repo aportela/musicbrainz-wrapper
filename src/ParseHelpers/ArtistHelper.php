@@ -2,7 +2,6 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
-
 class ArtistHelper
 {
     public string $mbId;
