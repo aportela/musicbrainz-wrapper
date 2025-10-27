@@ -16,7 +16,7 @@ class Entity
      * For "anonymous" user-agents (see below): we allow through (on average) 50 requests per second, and decline (http 503) the rest.
      */
     private const MIN_THROTTLE_DELAY_MS = 20; // min allowed: 50 requests per second
-    private const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
+    protected const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
 
     private int $originalThrottleDelayMS = 0;
     private int $currentThrottleDelayMS = 0;

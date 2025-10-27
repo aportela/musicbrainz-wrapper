@@ -12,7 +12,7 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
      */
     public array $artistCredit = [];
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = 0, ?string $cachePath = null)
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?string $cachePath = null)
     {
         parent::__construct($logger, $apiFormat, $throttleDelayMS, $cachePath);
         $this->reset();
