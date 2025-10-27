@@ -12,7 +12,7 @@ class BaseTest extends \PHPUnit\Framework\TestCase
 
     protected const THROTTLE_MS = 1000;
 
-    protected static $cachePath;
+    protected static string $cachePath;
 
     /**
      * Called once just like normal constructor
