@@ -10,7 +10,7 @@ class Artist extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseJSONHelper
         $data->mbId = (string)$this->json->{"id"};
         $data->type = \aportela\MusicBrainzWrapper\ArtistType::fromString($this->json->{"type"}) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE;
         $data->name = (string)$this->json->{"name"};
-        $data->country = isset($this->json->{"country"}) ? mb_strtolower($this->json->{"country"}) : null;
+        $data->country = !empty($country = $this->json->{"country"}) ? mb_strtolower($country) : null;
         if (isset($this->json->{"genres"}) && is_array(($this->json->{"genres"}))) {
             foreach ($this->json->{"genres"} as $genre) {
                 $data->genres[] = mb_strtolower(trim($genre->{"name"}));
