@@ -9,8 +9,12 @@ class RecordingHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\Recordin
     {
         $this->mbId = (string) $element->attributes()->id;
         $this->title = (string) $element->children()->title;
-        foreach ($element->children()->{"artist-credit"}->children()->{"name-credit"} as $artistElement) {
-            $this->artistCredit[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistHelper($artistElement->children()->artist);
+
+        $children = $element->children()->{"artist-credit"}->children()->{"name-credit"};
+        if ($children !== false) {
+            foreach ($children as $artistElement) {
+                $this->artistCredit[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistHelper($artistElement->children()->artist);
+            }
         }
     }
 }
