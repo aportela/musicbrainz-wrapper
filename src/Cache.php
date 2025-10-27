@@ -99,7 +99,6 @@ class Cache
 
     /**
      * read disk cache
-     * @return false || string
      */
     public function getCache(string $mbId): mixed
     {
