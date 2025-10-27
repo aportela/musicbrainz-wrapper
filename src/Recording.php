@@ -7,6 +7,9 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
     public const GET_API_URL = "https://musicbrainz.org/ws/2/recording/%s?inc=artist-credits&fmt=%s";
 
     public ?string $title = null;
+    /**
+     * @var array<mixed>
+     */
     public array $artistCredit = [];
 
     public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = 0, ?string $cachePath = null)
