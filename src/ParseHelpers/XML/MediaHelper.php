@@ -10,7 +10,7 @@ class MediaHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\MediaHelper
         $this->position = intval($element->children()->position);
 
         $trackListElement = $element->children()->{"track-list"};
-        if ($trackListElement !== false && $trackListElement->attributes() !== null && intval($trackListElement->attributes()->count) > 0) {
+        if ($trackListElement !== null && $trackListElement->attributes() !== null && intval($trackListElement->attributes()->count) > 0) {
             foreach ($trackListElement->children() as $track) {
                 $this->trackList[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\TrackHelper($track);
             }

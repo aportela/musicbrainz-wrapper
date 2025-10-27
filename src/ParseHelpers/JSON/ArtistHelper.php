@@ -7,7 +7,7 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
     public function __construct(object $object)
     {
         $this->mbId = (string)$object->id;
-        $this->type = isset($object->type) ? (\aportela\MusicBrainzWrapper\ArtistType::fromString($object->type) ?: \aportela\MusicBrainzWrapper\ArtistType::NONE) : \aportela\MusicBrainzWrapper\ArtistType::NONE;
+        $this->type = \aportela\MusicBrainzWrapper\ArtistType::fromString((string)($object->type ?? null));
         $this->name = (string)$object->name;
         $this->country = isset($object->country) ? (!empty($country = $object->country) ? mb_strtolower($country) : null) : null;
 
@@ -19,6 +19,7 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
         }
         if (isset($object->relations) && is_array($object->relations)) {
             foreach ($object->relations as $relation) {
+                // TODO: create artistrelation helper
                 $this->relations[] = (object) [
                     "typeId" => (string) $relation->{"type-id"},
                     "name" => (string)$relation->type,

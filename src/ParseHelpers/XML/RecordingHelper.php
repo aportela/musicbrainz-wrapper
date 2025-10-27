@@ -10,7 +10,7 @@ class RecordingHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\Recordin
         $this->title = (string) $element->children()->title;
 
         $children = $element->children()->{"artist-credit"}->children()->{"name-credit"};
-        if ($children !== false) {
+        if ($children !== null) {
             foreach ($children as $artistElement) {
                 $this->artistCredit[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistHelper($artistElement->children()->artist);
             }
