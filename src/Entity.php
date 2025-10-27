@@ -85,7 +85,7 @@ class Entity
         // allow incrementing current throttle delay to a max of 5 seconds
         if ($this->currentThrottleDelayMS < 5000) {
             // set next throttle delay with current value * 2 (wait more time on next api calls)
-            $this->currentThrottleDelayMS * 2;
+            $this->currentThrottleDelayMS *= 2;
         }
     }
 
