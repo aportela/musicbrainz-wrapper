@@ -9,13 +9,14 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\BaseHelper
     public ?int $year = null;
 
     /**
-     * @var array<mixed>
+     * @var array<\aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper>
      */
     public array $artistCredit = [];
 
     public object $coverArtArchive;
+
     /**
-     * @var array<mixed>
+     * @var array<\aportela\MusicBrainzWrapper\ParseHelpers\MediaHelper>
      */
     public array $media = [];
 
