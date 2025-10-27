@@ -28,7 +28,7 @@ abstract class ParseXMLHelper
         $this->xml->registerXPathNamespace(self::DEFAULT_NS_ALIAS, self::DEFAULT_NS);
     }
 
-    protected function getNS()
+    protected function getNS(): string
     {
         return (self::DEFAULT_NS_ALIAS);
     }
