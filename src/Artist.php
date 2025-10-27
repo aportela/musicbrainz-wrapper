@@ -2,7 +2,7 @@
 
 namespace aportela\MusicBrainzWrapper;
 
-class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
+class Artist extends \aportela\MusicBrainzWrapper\Entity
 {
     private const SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=%s&limit=%d&fmt=%s";
     private const GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=genres+recordings+releases+release-groups+works+url-rels&fmt=%s";
@@ -12,6 +12,10 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
      * https://musicbrainz.org/artist/eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61
      */
     public const NO_ARTIST_MB_ID = "eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61";
+
+    public \aportela\MusicBrainzWrapper\ArtistType $type = \aportela\MusicBrainzWrapper\ArtistType::NONE;
+
+    public ?string $name = null;
 
     public ?string $country = null;
     /**
@@ -32,6 +36,8 @@ class Artist extends \aportela\MusicBrainzWrapper\ArtistBase
     protected function reset(): void
     {
         parent::reset();
+        $this->type = \aportela\MusicBrainzWrapper\ArtistType::NONE;
+        $this->name = null;
         $this->country = null;
         $this->genres = [];
         $this->relations = [];
