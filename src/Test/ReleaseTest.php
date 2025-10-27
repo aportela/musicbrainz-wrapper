@@ -66,8 +66,9 @@ final class ReleaseTest extends BaseTest
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
         $this->assertCount(9, $results);
-        $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artist->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artist->name);
+        $this->assertCount(1, $results[0]->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artistCredit[0]->name);
         $found = false;
         foreach ($results as $result) {
             // sometimes the requested release mbId in the group is not the "first"
@@ -88,8 +89,9 @@ final class ReleaseTest extends BaseTest
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
         $this->assertCount(9, $results);
-        $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artist->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artist->name);
+        $this->assertCount(1, $results[0]->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artistCredit[0]->name);
         $found = false;
         foreach ($results as $result) {
             // sometimes the requested release mbId in the group is not the "first"

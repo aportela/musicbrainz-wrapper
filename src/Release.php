@@ -21,7 +21,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
      */
     public array $media = [];
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = 0, ?string $cachePath = null)
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?string $cachePath = null)
     {
         parent::__construct($logger, $apiFormat, $throttleDelayMS, $cachePath);
         $this->reset();
@@ -58,45 +58,17 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
             $this->resetThrottle();
             $results = [];
             if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-                $xml = $this->parseXML($response->body);
-                if ($xml->{"release-list"} && isset($xml->{"release-list"}['count']) && intval($xml->{"release-list"}['count']) > 0) {
-                    foreach ($xml->{"release-list"}->{"release"} as $release) {
-                        $releaseDate = isset($release->{"date"}) && !empty($release->{"date"}) ? $release->{"date"} : "";
-                        $results[] = (object) [
-                            "mbId" => isset($release["id"]) ? (string) $release["id"] : null,
-                            "title" => isset($release->{"title"}) ? (string) $release->{"title"} : null,
-                            "year" => strlen($releaseDate) == 10 ? intval(date_format(date_create_from_format('Y-m-d', $releaseDate), 'Y')) : (strlen($releaseDate) == 4 ? intval($release->{"date"}) : null),
-                            "artist" => (object) [
-                                "mbId" => isset($release->{"artist-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}->artist) ? (string) $release->{"artist-credit"}->{"name-credit"}->artist["id"] : null,
-                                "name" => isset($release->{"artist-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}) && isset($release->{"artist-credit"}->{"name-credit"}->artist) ? (string) $release->{"artist-credit"}->{"name-credit"}->artist->name : null
-                            ]
-                        ];
-                    }
-                } else {
-                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($title, $response->code);
-                }
-                return ($results);
+                $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Search\Release($response->body);
             } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-                $json = $this->parseJSON($response->body);
-                if ($json->{"count"} > 0 && is_array($json->{"releases"}) && count($json->{"releases"}) > 0) {
-                    foreach ($json->{"releases"} as $release) {
-                        $releaseDate = isset($release->{"date"}) && !empty($release->{"date"}) ? $release->{"date"} : "";
-                        $results[] = (object) [
-                            "mbId" => isset($release->{"id"}) ? (string) $release->{"id"} : null,
-                            "title" => isset($release->{"title"}) ? (string) $release->{"title"} : null,
-                            "year" => strlen($releaseDate) == 10 ? intval(date_format(date_create_from_format('Y-m-d', $releaseDate), 'Y')) : (strlen($releaseDate) == 4 ? intval($release->{"date"}) : null),
-                            "artist" => (object) [
-                                "mbId" => isset($release->{"artist-credit"}) && is_array($release->{"artist-credit"}) && count($release->{"artist-credit"}) > 0 ? $release->{"artist-credit"}[0]->artist->id : null,
-                                "name" => isset($release->{"artist-credit"}) && is_array($release->{"artist-credit"}) && count($release->{"artist-credit"}) > 0 ? $release->{"artist-credit"}[0]->artist->name : null
-                            ]
-                        ];
-                    }
-                } else {
-                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($title, $response->code);
-                }
-                return ($results);
+                $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Search\Release($response->body);
             } else {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
+            }
+            $results = $this->parser->parse();
+            if (count($results) > 0) {
+                return ($results);
+            } else {
+                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException("title: {$title} - artist: {$artist} - year: {$year}", 0);
             }
         } elseif ($response->code == 503) {
             $this->incrementThrottle();
