@@ -20,9 +20,6 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\BaseHelper
      */
     public array $media = [];
 
-    // TODO:
-    //public array $relations = [];
-
     public function __construct()
     {
         $this->coverArtArchive = (object)
