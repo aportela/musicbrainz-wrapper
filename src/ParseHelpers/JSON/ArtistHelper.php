@@ -2,7 +2,6 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers\JSON;
 
-
 class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper
 {
     public function __construct(object $object)

@@ -2,7 +2,6 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers\XML;
 
-
 class RecordingHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\RecordingHelper
 {
     public function __construct(\SimpleXMLElement $element)
