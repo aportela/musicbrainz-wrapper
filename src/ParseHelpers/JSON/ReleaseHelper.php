@@ -24,7 +24,6 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHel
         }
 
         if (isset($object->media) && is_array($object->media)) {
-
             foreach ($object->media as $mediaObject) {
                 $this->media[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\MediaHelper($mediaObject);
             }
