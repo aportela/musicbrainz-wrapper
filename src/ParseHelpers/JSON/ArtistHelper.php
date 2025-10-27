@@ -18,13 +18,8 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
             $this->genres = array_unique($this->genres);
         }
         if (isset($object->relations) && is_array($object->relations)) {
-            foreach ($object->relations as $relation) {
-                // TODO: create artistrelation helper
-                $this->relations[] = (object) [
-                    "typeId" => (string) $relation->{"type-id"},
-                    "name" => (string)$relation->type,
-                    "url" => (string)$relation->url->resource
-                ];
+            foreach ($object->relations as $artistRelation) {
+                $this->relations[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\ArtistRelationHelper($artistRelation);
             }
         }
     }

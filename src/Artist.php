@@ -23,7 +23,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
      */
     public array $genres = [];
     /**
-     * @var array<mixed>
+     * @var array<\aportela\MusicBrainzWrapper\ParseHelpers\ArtistRelationHelper>
      */
     public array $relations = [];
 
@@ -44,7 +44,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
     }
 
     /**
-     * @return array<mixed>
+     * @return array<\aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper>
      */
     public function search(string $name, int $limit = 1): array
     {

@@ -23,12 +23,8 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
 
         $relationList = $element->children()->{"relation-list"};
         if ($relationList !== null && $children = $relationList->children()) {
-            foreach ($children as $relation) {
-                $this->relations[] = (object) [
-                    "typeId" => (string) $relation->attributes()->{"type-id"},
-                    "name" => (string) $relation->attributes()->{"type"},
-                    "url" => (string) $relation->{"target"}
-                ];
+            foreach ($children as $artistRelation) {
+                $this->relations[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistRelationHelper($artistRelation);
             }
         }
     }

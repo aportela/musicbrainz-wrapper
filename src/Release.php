@@ -37,8 +37,9 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
         $this->media = [];
     }
 
+
     /**
-     * @return array<mixed>
+     * @return array<\aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHelper>
      */
     public function search(string $title, string $artist, string $year, int $limit = 1): array
     {
