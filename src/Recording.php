@@ -7,7 +7,7 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
     public const GET_API_URL = "https://musicbrainz.org/ws/2/recording/%s?inc=artist-credits&fmt=%s";
 
     public ?string $title = null;
-    public object $artist;
+    public array $artistCredit = [];
 
     public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = 0, ?string $cachePath = null)
     {
@@ -19,7 +19,7 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
     {
         parent::reset();
         $this->title = null;
-        $this->artist = (object) ["mbId" => null, "name" => null];
+        $this->artistCredit = [];
     }
 
     public function get(string $mbId): void
@@ -51,21 +51,16 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
     {
         $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-            $xml = $this->parseXML($rawText);
-            $this->mbId = isset($xml->{"recording"}->attributes()->{"title"}) ? (string) $xml->{"recording"}->attributes()->{"title"} : null;
-            $this->title = isset($xml->{"recording"}->{"title"}) ? (string) $xml->{"recording"}->{"title"} : null;
-            $this->artist->mbId = isset($xml->{"recording"}->{"artist-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}["id"] : null;
-            $this->artist->name = isset($xml->{"recording"}->{"artist-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}) && isset($xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}) ? (string) $xml->{"recording"}->{"artist-credit"}->{"name-credit"}->{"artist"}->{"name"} : null;
-            $this->raw = $rawText;
+            $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Get\Recording($rawText);
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-            $json = $this->parseJSON($rawText);
-            $this->mbId = isset($json->{"id"}) ? (string) $json->{"id"} : null;
-            $this->title = isset($json->{"title"}) ? (string) $json->{"title"} : null;
-            $this->artist->mbId = isset($json->{"artist-credit"}) && is_array($json->{"artist-credit"}) && count($json->{"artist-credit"}) > 0 ? $json->{"artist-credit"}[0]->artist->id : null;
-            $this->artist->name = isset($json->{"artist-credit"}) && is_array($json->{"artist-credit"}) && count($json->{"artist-credit"}) > 0 ? $json->{"artist-credit"}[0]->artist->name : null;
-            $this->raw = $rawText;
+            $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\Recording($rawText);
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
         }
+        $data = $this->parser->parse();
+        $this->mbId = $data->mbId;
+        $this->title = $data->title;
+        $this->artistCredit = $data->artistCredit;
+        $this->raw = $rawText;
     }
 }

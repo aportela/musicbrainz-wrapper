@@ -10,6 +10,8 @@ final class RecordingTest extends BaseTest
 {
     private const string TEST_ARTIST_NAME = "Imagine Dragons";
     private const string TEST_ARTIST_MBID = "012151a8-0f9a-44c9-997f-ebd68b5389f9";
+    private const \aportela\MusicBrainzWrapper\ArtistType TEST_ARTIST_TYPE = \aportela\MusicBrainzWrapper\ArtistType::GROUP;
+    private const string TEST_ARTIST_COUNTRY = "us";
 
     private const string TEST_ARTIST_RECORDING_TITLE = "Radioactive";
     private const string TEST_ARTIST_RECORDING_MBID = "bd61eda3-eb77-4634-ba66-4a084f7f8455";
@@ -60,8 +62,11 @@ final class RecordingTest extends BaseTest
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
         $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, self::$mbJSON->title);
-        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->artist->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbJSON->artist->name);
+        $this->assertCount(1, self::$mbJSON->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbJSON->artistCredit[0]->name);
+        $this->assertSame(self::TEST_ARTIST_TYPE, self::$mbJSON->artistCredit[0]->type);
+        $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbJSON->artistCredit[0]->country);
     }
 
     public function testGetXml(): void
@@ -72,7 +77,10 @@ final class RecordingTest extends BaseTest
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
         $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, self::$mbXML->title);
-        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->artist->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbXML->artist->name);
+        $this->assertCount(1, self::$mbXML->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbXML->artistCredit[0]->name);
+        $this->assertSame(self::TEST_ARTIST_TYPE, self::$mbXML->artistCredit[0]->type);
+        $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbXML->artistCredit[0]->country);
     }
 }
