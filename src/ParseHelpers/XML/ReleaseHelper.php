@@ -20,13 +20,16 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHel
 
         $covertArtArchive = $element->children()->{"cover-art-archive"};
         if ($covertArtArchive !== null) {
-            $this->coverArtArchive->artwork = ((string) $covertArtArchive->children()->artwork) === "true";
-            $this->coverArtArchive->front = ((string) $covertArtArchive->children()->front) === "true";
-            $this->coverArtArchive->back = ((string) $covertArtArchive->children()->back) === "true";
+            $coverArt = $covertArtArchive->children();
+            if ($coverArt !== null) {
+                $this->coverArtArchive->artwork = ((string) $coverArt->artwork) === "true";
+                $this->coverArtArchive->front = ((string) $coverArt->front) === "true";
+                $this->coverArtArchive->back = ((string) $coverArt->back) === "true";
+            }
         }
 
         $mediaList = $element->children()->{"medium-list"};
-        if ($mediaList !== false && intval($mediaList->attributes()->count) > 0) {
+        if ($mediaList !== false && $mediaList->attributes() !== null && intval($mediaList->attributes()->count) > 0) {
             foreach ($mediaList->children() as $media) {
                 $this->media[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\MediaHelper($media);
             }
