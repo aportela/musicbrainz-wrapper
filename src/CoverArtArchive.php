@@ -12,7 +12,7 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
      */
     public array $images = [];
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = 0, ?string $cachePath = null)
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?string $cachePath = null)
     {
         if ($apiFormat != \aportela\MusicBrainzWrapper\APIFormat::JSON) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
@@ -56,20 +56,13 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
     {
         $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-            $json = $this->parseJSON($rawText);
-            $releaseURL = isset($json->{"release"}) ? (string) $json->{"release"} : null;
-            $releaseURLFields = explode("/", $releaseURL);
-            if (! empty($releaseURLFields[0])) {
-                $this->mbId = array_pop($releaseURLFields);
-            }
-            if (isset($json->{"images"})) {
-                foreach ($json->{"images"} as $image) {
-                    $this->images[] = $image;
-                }
-            }
-            $this->raw = $rawText;
+            $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\CoverArtArchive($rawText);
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
         }
+        $data = $this->parser->parse();
+        $this->mbId = $data->mbId;
+        $this->images = $data->images;
+        $this->raw = $rawText;
     }
 }
