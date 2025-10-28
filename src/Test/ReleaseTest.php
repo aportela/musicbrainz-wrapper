@@ -105,37 +105,39 @@ final class ReleaseTest extends BaseTest
 
     public function testGetJson(): void
     {
+        $release = null;
         try {
-            self::$mbJSON->get(self::TEST_ARTIST_RELEASE_MBID);
+            $release = self::$mbJSON->get(self::TEST_ARTIST_RELEASE_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
-        $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, self::$mbJSON->mbId);
-        $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, self::$mbJSON->title);
-        $this->assertCount(1, self::$mbJSON->artistCredit);
-        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->artistCredit[0]->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbJSON->artistCredit[0]->name);
-        $this->assertSame(self::TEST_ARTIST_TYPE, self::$mbJSON->artistCredit[0]->type);
-        $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbJSON->artistCredit[0]->country);
-        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_COUNT, self::$mbJSON->media);
-        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_TRACK_COUNT, self::$mbJSON->media[0]->trackList);
+        $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, $release->mbId);
+        $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, $release->title);
+        $this->assertCount(1, $release->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, $release->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $release->artistCredit[0]->name);
+        $this->assertSame(self::TEST_ARTIST_TYPE, $release->artistCredit[0]->type);
+        $this->assertSame(self::TEST_ARTIST_COUNTRY, $release->artistCredit[0]->country);
+        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_COUNT, $release->media);
+        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_TRACK_COUNT, $release->media[0]->trackList);
     }
 
     public function testGetXml(): void
     {
+        $release = null;
         try {
-            self::$mbXML->get(self::TEST_ARTIST_RELEASE_MBID);
+            $release = self::$mbXML->get(self::TEST_ARTIST_RELEASE_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
-        $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, self::$mbXML->mbId);
-        $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, self::$mbXML->title);
-        $this->assertCount(1, self::$mbXML->artistCredit);
-        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->artistCredit[0]->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbXML->artistCredit[0]->name);
-        $this->assertSame(self::TEST_ARTIST_TYPE, self::$mbXML->artistCredit[0]->type);
-        $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbXML->artistCredit[0]->country);
-        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_COUNT, self::$mbXML->media);
-        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_TRACK_COUNT, self::$mbXML->media[0]->trackList);
+        $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, $release->mbId);
+        $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, $release->title);
+        $this->assertCount(1, $release->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, $release->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $release->artistCredit[0]->name);
+        $this->assertSame(self::TEST_ARTIST_TYPE, $release->artistCredit[0]->type);
+        $this->assertSame(self::TEST_ARTIST_COUNTRY, $release->artistCredit[0]->country);
+        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_COUNT, $release->media);
+        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_TRACK_COUNT, $release->media[0]->trackList);
     }
 }
