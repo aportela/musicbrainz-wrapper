@@ -15,12 +15,6 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
 
     public \aportela\MusicBrainzWrapper\ArtistType $type = \aportela\MusicBrainzWrapper\ArtistType::NONE;
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?string $cachePath = null)
-    {
-        parent::__construct($logger, $apiFormat, $throttleDelayMS, $cachePath);
-        $this->reset();
-    }
-
     /**
      * @return array<\aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper>
      */
