@@ -139,7 +139,6 @@ class Entity
         }
     }
 
-
     /**
      * http handler GET method wrapper for catching CurlExecException (connection errors / server busy ?)
      */
