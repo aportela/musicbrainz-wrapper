@@ -45,8 +45,6 @@ class Entity
         $this->originalThrottleDelayMS = $throttleDelayMS;
         $this->currentThrottleDelayMS = $throttleDelayMS;
         $this->lastThrottleTimestamp = intval(microtime(true) * 1000);
-        if (! empty($cachePath)) {
-        }
         $this->cache = new \aportela\MusicBrainzWrapper\Cache($logger, $apiFormat, $cachePath);
         $loadedExtensions = get_loaded_extensions();
         if (!in_array("libxml", $loadedExtensions)) {

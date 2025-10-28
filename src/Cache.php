@@ -9,10 +9,12 @@ class Cache
     private \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
     private bool $enabled = true;
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, string $cachePath)
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, ?string $cachePath = null)
     {
         $this->logger = $logger;
-        $this->cachePath = realpath(($cachePath));
+        if (! empty($cachePath)) {
+            $this->cachePath = realpath(($cachePath));
+        }
         $this->enabled = ! empty($this->cachePath);
         $this->apiFormat = $apiFormat;
     }
