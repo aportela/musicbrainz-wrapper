@@ -46,7 +46,6 @@ final class CoverArtArchiveTest extends BaseTest
         parent::tearDownAfterClass();
     }
 
-
     public function testGetReleaseImageUrl(): void
     {
         try {
@@ -63,12 +62,13 @@ final class CoverArtArchiveTest extends BaseTest
 
     public function testGetJson(): void
     {
+        $coverArtArchive = null;
         try {
-            self::$mbJSON->get(self::TEST_RELEASE_MBID);
+            $coverArtArchive = self::$mbJSON->get(self::TEST_RELEASE_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
-        $this->assertSame(self::TEST_RELEASE_MBID, self::$mbJSON->mbId);
-        $this->assertTrue(count(self::$mbJSON->images) > 0);
+        $this->assertSame(self::TEST_RELEASE_MBID, $coverArtArchive->mbId);
+        $this->assertTrue(count($coverArtArchive->images) > 0);
     }
 }
