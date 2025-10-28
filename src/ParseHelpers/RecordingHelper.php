@@ -2,9 +2,8 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
-class RecordingHelper
+class RecordingHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\BaseHelper
 {
-    public string $mbId;
     public string $title;
 
     /**
