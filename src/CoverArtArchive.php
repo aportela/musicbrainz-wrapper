@@ -34,6 +34,7 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
 
     public function parse(string $rawText): \aportela\MusicBrainzWrapper\ParseHelpers\CoverArtArchiveHelper
     {
+        $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
             $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\CoverArtArchive($rawText);
         } else {

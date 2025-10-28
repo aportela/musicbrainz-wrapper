@@ -33,6 +33,7 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
 
     public function parse(string $rawText): \aportela\MusicBrainzWrapper\ParseHelpers\RecordingHelper
     {
+        $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Get\Recording($rawText);
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {

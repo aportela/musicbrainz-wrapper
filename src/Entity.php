@@ -26,7 +26,6 @@ class Entity
 
     protected mixed $parser = null;
 
-    public ?string $mbId = null;
     public ?string $raw = null;
 
     public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?string $cachePath = null)
@@ -70,7 +69,6 @@ class Entity
 
     protected function reset(): void
     {
-        $this->mbId = null;
         $this->raw = null;
     }
 

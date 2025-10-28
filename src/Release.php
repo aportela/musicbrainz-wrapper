@@ -75,6 +75,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
 
     public function parse(string $rawText): \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHelper
     {
+        $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Get\Release($rawText);
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
