@@ -14,7 +14,6 @@ abstract class ParseXMLHelper
         libxml_clear_errors();
         $this->xml = simplexml_load_string($raw);
         if ($this->xml === false) {
-
             $errorMessage = "invalid xml";
             $errorCode = 0;
             $lastError = libxml_get_last_error();
