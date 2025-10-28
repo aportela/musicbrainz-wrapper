@@ -73,7 +73,6 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
 
     public function parse(string $rawText): \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper
     {
-        $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Get\Artist($rawText);
         } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
