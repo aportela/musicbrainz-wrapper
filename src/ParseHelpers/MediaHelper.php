@@ -2,9 +2,8 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
-class MediaHelper
+class MediaHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\BaseHelper
 {
-    public string $mbId;
     public int $position;
 
     /**

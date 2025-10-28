@@ -2,10 +2,8 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
-class CoverArtArchiveHelper
+class CoverArtArchiveHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\BaseHelper
 {
-    public string $mbId;
-
     /**
      * @var array<mixed>
      */

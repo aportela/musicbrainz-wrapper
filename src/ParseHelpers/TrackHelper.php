@@ -2,9 +2,8 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
-class TrackHelper
+class TrackHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\BaseHelper
 {
-    public string $mbId;
     public int $position;
     public int $number;
     public \aportela\MusicBrainzWrapper\ParseHelpers\RecordingHelper $recording;
