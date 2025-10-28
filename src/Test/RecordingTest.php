@@ -56,31 +56,33 @@ final class RecordingTest extends BaseTest
 
     public function testGetJson(): void
     {
+        $recording = null;
         try {
-            self::$mbJSON->get(self::TEST_ARTIST_RECORDING_MBID);
+            $recording = self::$mbJSON->get(self::TEST_ARTIST_RECORDING_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
-        $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, self::$mbJSON->title);
-        $this->assertCount(1, self::$mbJSON->artistCredit);
-        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->artistCredit[0]->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbJSON->artistCredit[0]->name);
-        $this->assertSame(self::TEST_ARTIST_TYPE, self::$mbJSON->artistCredit[0]->type);
-        $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbJSON->artistCredit[0]->country);
+        $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, $recording->title);
+        $this->assertCount(1, $recording->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, $recording->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $recording->artistCredit[0]->name);
+        $this->assertSame(self::TEST_ARTIST_TYPE, $recording->artistCredit[0]->type);
+        $this->assertSame(self::TEST_ARTIST_COUNTRY, $recording->artistCredit[0]->country);
     }
 
     public function testGetXml(): void
     {
+        $recording = null;
         try {
-            self::$mbXML->get(self::TEST_ARTIST_RECORDING_MBID);
+            $recording = self::$mbXML->get(self::TEST_ARTIST_RECORDING_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
-        $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, self::$mbXML->title);
-        $this->assertCount(1, self::$mbXML->artistCredit);
-        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->artistCredit[0]->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbXML->artistCredit[0]->name);
-        $this->assertSame(self::TEST_ARTIST_TYPE, self::$mbXML->artistCredit[0]->type);
-        $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbXML->artistCredit[0]->country);
+        $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, $recording->title);
+        $this->assertCount(1, $recording->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, $recording->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $recording->artistCredit[0]->name);
+        $this->assertSame(self::TEST_ARTIST_TYPE, $recording->artistCredit[0]->type);
+        $this->assertSame(self::TEST_ARTIST_COUNTRY, $recording->artistCredit[0]->country);
     }
 }
