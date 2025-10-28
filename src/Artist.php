@@ -74,7 +74,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         }
     }
 
-    public function get(string $mbId): void
+    public function get(string $mbId): \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper
     {
         if (! $this->getCache($mbId)) {
             $this->checkThrottle();
@@ -83,7 +83,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
             if ($response->code == 200) {
                 $this->resetThrottle();
                 $this->saveCache($mbId, $response->body);
-                $this->parse($response->body);
+                return ($this->parse($response->body));
             } elseif ($response->code == 400) {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
             } elseif ($response->code == 404) {
@@ -95,11 +95,11 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($mbId, $response->code);
             }
         } else {
-            $this->parse($this->raw);
+            return ($this->parse($this->raw));
         }
     }
 
-    public function parse(string $rawText): void
+    public function parse(string $rawText): \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper
     {
         $this->reset();
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
@@ -109,29 +109,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         } else {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
         }
-        $data = $this->parser->parse();
-        $this->mbId = $data->mbId;
-        $this->type = $data->type;
-        $this->name = $data->name;
-        $this->country = $data->country;
-        $this->genres = $data->genres;
-        $this->relations = $data->relations;
         $this->raw = $rawText;
-    }
-
-    /**
-     * @return array<string>
-     */
-    public function getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType $typeId): array
-    {
-        return array_map(
-            fn ($relation) => $relation->url,
-            array_values(
-                array_filter(
-                    $this->relations,
-                    fn ($relation) => $relation->typeId == $typeId->value
-                )
-            )
-        );
+        return ($this->parser->parse());
     }
 }

@@ -81,30 +81,32 @@ final class ArtistTest extends BaseTest
 
     public function testGetJson(): void
     {
+        $artist = null;
         try {
-            self::$mbJSON->get(self::TEST_ARTIST_MBID);
+            $artist = self::$mbJSON->get(self::TEST_ARTIST_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
-        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbJSON->name);
-        $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbJSON->country);
-        $lastFMURLs = self::$mbJSON->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
+        $this->assertSame(self::TEST_ARTIST_MBID, $artist->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $artist->name);
+        $this->assertSame(self::TEST_ARTIST_COUNTRY, $artist->country);
+        $lastFMURLs = $artist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
         $this->assertCount(1, $lastFMURLs);
         $this->assertSame(self::TEST_ARTIST_LAST_FM_URL, $lastFMURLs[0]);
     }
 
     public function testGetXml(): void
     {
+        $artist = null;
         try {
-            self::$mbXML->get(self::TEST_ARTIST_MBID);
+            $artist = self::$mbXML->get(self::TEST_ARTIST_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
-        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbXML->name);
-        $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbXML->country);
-        $lastFMURLs = self::$mbXML->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
+        $this->assertSame(self::TEST_ARTIST_MBID, $artist->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $artist->name);
+        $this->assertSame(self::TEST_ARTIST_COUNTRY, $artist->country);
+        $lastFMURLs = $artist->getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType::DATABASE_LASTFM);
         $this->assertCount(1, $lastFMURLs);
         $this->assertSame(self::TEST_ARTIST_LAST_FM_URL, $lastFMURLs[0]);
     }

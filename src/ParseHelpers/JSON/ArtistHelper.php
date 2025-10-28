@@ -10,7 +10,6 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
         $this->type = \aportela\MusicBrainzWrapper\ArtistType::fromString((string)($object->type ?? null));
         $this->name = (string)$object->name;
         $this->country = isset($object->country) ? (!empty($country = $object->country) ? mb_strtolower($country) : null) : null;
-
         if (isset($object->genres) && is_array(($object->genres))) {
             foreach ($object->{"genres"} as $genre) {
                 $this->genres[] = mb_strtolower(trim($genre->name));

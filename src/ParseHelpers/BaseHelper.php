@@ -4,7 +4,9 @@ namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
 class BaseHelper
 {
-    public function parseDateToYear(?string $date): ?int
+    public string $mbId;
+
+    protected function parseDateToYear(?string $date): ?int
     {
         if ($date !== null) {
             switch (mb_strlen($date)) {
