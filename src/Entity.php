@@ -33,6 +33,7 @@ class Entity
     {
         $this->logger = $logger;
         $this->logger->debug("MusicBrainzWrapper::__construct");
+        $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger, self::USER_AGENT);
         $supportedApiFormats = [\aportela\MusicBrainzWrapper\APIFormat::XML, \aportela\MusicBrainzWrapper\APIFormat::JSON];
         if (!in_array($apiFormat, $supportedApiFormats)) {
             $this->logger->critical("MusicBrainzWrapper::__construct ERROR: invalid api format");
@@ -46,19 +47,19 @@ class Entity
         $this->currentThrottleDelayMS = $throttleDelayMS;
         $this->lastThrottleTimestamp = intval(microtime(true) * 1000);
         $this->cache = new \aportela\MusicBrainzWrapper\Cache($logger, $apiFormat, $cachePath);
-        $loadedExtensions = get_loaded_extensions();
-        if (!in_array("libxml", $loadedExtensions)) {
-            $this->logger->critical("MusicBrainzWrapper::__construct ERROR: libxml extension not found");
-            throw new \aportela\MusicBrainzWrapper\Exception\LibXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
-        } elseif (!in_array("SimpleXML", $loadedExtensions)) {
-            $this->logger->critical("MusicBrainzWrapper::__construct ERROR: SimpleXML extension not found");
-            throw new \aportela\MusicBrainzWrapper\Exception\SimpleXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
-        } else {
-            $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger, self::USER_AGENT);
+        if ($apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
+            $loadedExtensions = get_loaded_extensions();
+            if (!in_array("libxml", $loadedExtensions)) {
+                $this->logger->critical("MusicBrainzWrapper::__construct ERROR: libxml extension not found");
+                throw new \aportela\MusicBrainzWrapper\Exception\LibXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
+            } elseif (!in_array("SimpleXML", $loadedExtensions)) {
+                $this->logger->critical("MusicBrainzWrapper::__construct ERROR: SimpleXML extension not found");
+                throw new \aportela\MusicBrainzWrapper\Exception\SimpleXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
+            }
+            // avoids simplexml_load_string warnings
+            // https://stackoverflow.com/a/40585185
+            libxml_use_internal_errors(true);
         }
-        // avoids simplexml_load_string warnings
-        // https://stackoverflow.com/a/40585185
-        libxml_use_internal_errors(true);
         $this->reset();
     }
 
