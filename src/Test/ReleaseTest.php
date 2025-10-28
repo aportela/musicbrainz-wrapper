@@ -10,11 +10,14 @@ final class ReleaseTest extends BaseTest
 {
     private const string TEST_ARTIST_NAME = "Kavinsky";
     private const string TEST_ARTIST_MBID = "eb6de5f6-98f8-4b5a-bfdc-f87fa4936baa";
+    private const \aportela\MusicBrainzWrapper\ArtistType TEST_ARTIST_TYPE = \aportela\MusicBrainzWrapper\ArtistType::PERSON;
+    private const TEST_ARTIST_COUNTRY = "fr";
 
     private const string TEST_ARTIST_RELEASE_TITLE = "OutRun";
     private const string TEST_ARTIST_RELEASE_YEAR = "2013";
     private const string TEST_ARTIST_RELEASE_MBID = "4e5d9f0c-09b6-42bf-b495-e2d7cc288bf6";
-    private const int TEST_ARTIST_RELEASE_TRACK_COUNT = 13;
+    private const int TEST_ARTIST_RELEASE_MEDIA_COUNT = 1;
+    private const int TEST_ARTIST_RELEASE_MEDIA_TRACK_COUNT = 13;
 
     private static \aportela\MusicBrainzWrapper\Release $mbJSON;
     private static \aportela\MusicBrainzWrapper\Release $mbXML;
@@ -25,8 +28,8 @@ final class ReleaseTest extends BaseTest
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        self::$mbJSON = new \aportela\MusicBrainzWrapper\Release(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, self::THROTTLE_MS, self::CACHE_PATH);
-        self::$mbXML = new \aportela\MusicBrainzWrapper\Release(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::XML, self::THROTTLE_MS, self::CACHE_PATH);
+        self::$mbJSON = new \aportela\MusicBrainzWrapper\Release(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, self::THROTTLE_MS, self::$cachePath);
+        self::$mbXML = new \aportela\MusicBrainzWrapper\Release(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::XML, self::THROTTLE_MS, self::$cachePath);
     }
 
     /**
@@ -63,8 +66,9 @@ final class ReleaseTest extends BaseTest
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
         $this->assertCount(9, $results);
-        $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artist->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artist->name);
+        $this->assertCount(1, $results[0]->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artistCredit[0]->name);
         $found = false;
         foreach ($results as $result) {
             // sometimes the requested release mbId in the group is not the "first"
@@ -85,8 +89,9 @@ final class ReleaseTest extends BaseTest
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         }
         $this->assertCount(9, $results);
-        $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artist->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artist->name);
+        $this->assertCount(1, $results[0]->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, $results[0]->artistCredit[0]->name);
         $found = false;
         foreach ($results as $result) {
             // sometimes the requested release mbId in the group is not the "first"
@@ -107,11 +112,13 @@ final class ReleaseTest extends BaseTest
         }
         $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, self::$mbJSON->mbId);
         $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, self::$mbJSON->title);
-        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->artist->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbJSON->artist->name);
-        $this->assertEquals(self::TEST_ARTIST_RELEASE_YEAR, self::$mbJSON->year);
-        $this->assertEquals(1, count(self::$mbJSON->media));
-        $this->assertEquals(self::TEST_ARTIST_RELEASE_TRACK_COUNT, self::$mbJSON->media[0]->trackCount);
+        $this->assertCount(1, self::$mbJSON->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbJSON->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbJSON->artistCredit[0]->name);
+        $this->assertSame(self::TEST_ARTIST_TYPE, self::$mbJSON->artistCredit[0]->type);
+        $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbJSON->artistCredit[0]->country);
+        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_COUNT, self::$mbJSON->media);
+        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_TRACK_COUNT, self::$mbJSON->media[0]->trackList);
     }
 
     public function testGetXml(): void
@@ -123,10 +130,12 @@ final class ReleaseTest extends BaseTest
         }
         $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, self::$mbXML->mbId);
         $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, self::$mbXML->title);
-        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->artist->mbId);
-        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbXML->artist->name);
-        $this->assertEquals(self::TEST_ARTIST_RELEASE_YEAR, self::$mbXML->year);
-        $this->assertEquals(1, count(self::$mbXML->media));
-        $this->assertEquals(self::TEST_ARTIST_RELEASE_TRACK_COUNT, self::$mbXML->media[0]->trackCount);
+        $this->assertCount(1, self::$mbXML->artistCredit);
+        $this->assertSame(self::TEST_ARTIST_MBID, self::$mbXML->artistCredit[0]->mbId);
+        $this->assertSame(self::TEST_ARTIST_NAME, self::$mbXML->artistCredit[0]->name);
+        $this->assertSame(self::TEST_ARTIST_TYPE, self::$mbXML->artistCredit[0]->type);
+        $this->assertSame(self::TEST_ARTIST_COUNTRY, self::$mbXML->artistCredit[0]->country);
+        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_COUNT, self::$mbXML->media);
+        $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_TRACK_COUNT, self::$mbXML->media[0]->trackList);
     }
 }
