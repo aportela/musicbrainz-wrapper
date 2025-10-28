@@ -24,11 +24,11 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\BaseHelper
     public function getURLRelationshipValues(\aportela\MusicBrainzWrapper\ArtistURLRelationshipType $typeId): array
     {
         return array_map(
-            fn($relation) => $relation->url,
+            fn ($relation) => $relation->url,
             array_values(
                 array_filter(
                     $this->relations,
-                    fn($relation) => $relation->typeId == $typeId->value
+                    fn ($relation) => $relation->typeId == $typeId->value
                 )
             )
         );
