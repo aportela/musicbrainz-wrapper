@@ -2,7 +2,7 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
-abstract class ParseJSONHelper
+abstract class ParseJSONHelper implements \aportela\MusicBrainzWrapper\ParseHelpers\IParseHelper
 {
     protected mixed $json;
 

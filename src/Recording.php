@@ -14,8 +14,12 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
             $response = $this->httpGET($url);
             if ($response->code == 200) {
                 $this->resetThrottle();
-                $this->saveCache($mbId, $response->body);
-                return ($this->parse($response->body));
+                if (! empty($response->body)) {
+                    $this->saveCache($mbId, $response->body);
+                    return ($this->parse($response->body));
+                } else {
+                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException("body", $response->code);
+                }
             } elseif ($response->code == 400) {
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
             } elseif ($response->code == 404) {
@@ -27,7 +31,11 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
                 throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($mbId, $response->code);
             }
         } else {
-            return ($this->parse($this->raw));
+            if (! empty($this->raw)) {
+                return ($this->parse($this->raw));
+            } else {
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException("raw");
+            }
         }
     }
 

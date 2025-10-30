@@ -13,7 +13,7 @@ class Cache
     {
         $this->logger = $logger;
         if (! empty($cachePath)) {
-            $this->cachePath = realpath(($cachePath));
+            $this->cachePath = ($path = realpath($cachePath)) ? $path : null;
         }
         $this->enabled = ! empty($this->cachePath);
         $this->apiFormat = $apiFormat;

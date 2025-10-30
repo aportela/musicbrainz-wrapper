@@ -2,7 +2,7 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
-abstract class ParseXMLHelper
+abstract class ParseXMLHelper implements \aportela\MusicBrainzWrapper\ParseHelpers\IParseHelper
 {
     protected const DEFAULT_NS_ALIAS = "mmd";
     protected const DEFAULT_NS = "http://musicbrainz.org/ns/mmd-2.0#";
@@ -32,9 +32,13 @@ abstract class ParseXMLHelper
         return (self::DEFAULT_NS_ALIAS);
     }
 
-    protected function getXPath(string $path): mixed
+    protected function getXPath(string $path): array|null|false
     {
-        return ($this->xml->xpath($path));
+        if (is_object($this->xml)) {
+            return ($this->xml->xpath($path));
+        } else {
+            return (false);
+        }
     }
 
     abstract public function parse(): mixed;
