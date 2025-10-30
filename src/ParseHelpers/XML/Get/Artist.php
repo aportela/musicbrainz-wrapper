@@ -4,7 +4,7 @@ namespace aportela\MusicBrainzWrapper\ParseHelpers\XML\Get;
 
 class Artist extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseXMLHelper
 {
-    public function parse(): mixed
+    public function parse(): \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistHelper
     {
         $artistXPath = $this->getXPath("//" . $this->getNS() . ":artist");
         if ($artistXPath !== false && is_array($artistXPath) && count($artistXPath) == 1) {

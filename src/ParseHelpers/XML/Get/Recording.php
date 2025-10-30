@@ -4,7 +4,7 @@ namespace aportela\MusicBrainzWrapper\ParseHelpers\XML\Get;
 
 class Recording extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseXMLHelper
 {
-    public function parse(): mixed
+    public function parse(): \aportela\MusicBrainzWrapper\ParseHelpers\XML\RecordingHelper
     {
         $recordingXPath = $this->getXPath("//" . $this->getNS() . ":recording");
         if ($recordingXPath !== false && is_array($recordingXPath) && count($recordingXPath) == 1) {

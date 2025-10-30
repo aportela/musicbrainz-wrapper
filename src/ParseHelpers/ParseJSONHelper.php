@@ -2,7 +2,7 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
-abstract class ParseJSONHelper implements \aportela\MusicBrainzWrapper\ParseHelpers\IParseHelper
+class ParseJSONHelper
 {
     protected mixed $json;
 
@@ -13,6 +13,4 @@ abstract class ParseJSONHelper implements \aportela\MusicBrainzWrapper\ParseHelp
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidJSONException(json_last_error_msg(), json_last_error());
         }
     }
-
-    abstract public function parse(): mixed;
 }
