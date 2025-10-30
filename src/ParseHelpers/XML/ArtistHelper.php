@@ -14,7 +14,7 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
         $genreList = $element->children()->{"genre-list"};
         if ($genreList !== null && $children = $genreList->children()) {
             foreach ($children as $genre) {
-                $this->genres[] = mb_strtolower(trim($genre->children()->name));
+                $this->genres[] = mb_strtolower(mb_trim($genre->children()->name));
             }
             if (count($this->genres) > 0) {
                 $this->genres = array_unique($this->genres);

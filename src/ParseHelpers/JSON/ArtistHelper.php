@@ -12,7 +12,7 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
         $this->country = isset($object->country) ? (!empty($country = $object->country) ? mb_strtolower($country) : null) : null;
         if (isset($object->genres) && is_array(($object->genres))) {
             foreach ($object->genres as $genre) {
-                $this->genres[] = mb_strtolower(trim($genre->name));
+                $this->genres[] = mb_strtolower(mb_trim($genre->name));
             }
             $this->genres = array_unique($this->genres);
         }
