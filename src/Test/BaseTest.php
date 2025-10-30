@@ -10,8 +10,6 @@ class BaseTest extends \PHPUnit\Framework\TestCase
 {
     protected static \Psr\Log\NullLogger $logger;
 
-    protected const THROTTLE_MS = 1000;
-
     protected static string $cachePath;
 
     /**
