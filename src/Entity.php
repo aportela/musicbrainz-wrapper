@@ -23,12 +23,13 @@ class Entity
     private int $lastThrottleTimestamp = 0;
 
     protected ?string $cachePath = null;
+    protected bool $refreshExistingCache = false;
 
     protected mixed $parser = null;
 
     public ?string $raw = null;
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?string $cachePath = null)
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?string $cachePath = null, bool $refreshExistingCache = false)
     {
         $this->logger = $logger;
         $this->logger->debug("MusicBrainzWrapper::__construct");
@@ -46,6 +47,7 @@ class Entity
         $this->currentThrottleDelayMS = $throttleDelayMS;
         $this->lastThrottleTimestamp = intval(microtime(true) * 1000);
         $this->cache = new \aportela\MusicBrainzWrapper\Cache($logger, $apiFormat, $cachePath);
+        $this->refreshExistingCache = $refreshExistingCache;
         if ($apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $loadedExtensions = get_loaded_extensions();
             if (!in_array("libxml", $loadedExtensions)) {
@@ -131,11 +133,16 @@ class Entity
     protected function getCache(string $mbId): bool
     {
         $this->raw = null;
-        if ($cache = $this->cache->getCache($mbId)) {
-            $this->raw = $cache;
-            return (true);
-        } else {
+        // this is used for refreshing current stored cache (cache load always return false, for getting again && save after getting new data)
+        if ($this->refreshExistingCache) {
             return (false);
+        } else {
+            if ($cache = $this->cache->getCache($mbId)) {
+                $this->raw = $cache;
+                return (true);
+            } else {
+                return (false);
+            }
         }
     }
 
