@@ -22,7 +22,6 @@ class Entity
     private int $currentThrottleDelayMS = 0;
     private int $lastThrottleTimestamp = 0;
 
-    protected ?string $cachePath = null;
     protected bool $refreshExistingCache = false;
 
     protected mixed $parser = null;
