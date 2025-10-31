@@ -28,8 +28,12 @@ final class ReleaseTest extends BaseTest
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        self::$mbJSON = new \aportela\MusicBrainzWrapper\Release(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, self::$cachePath);
-        self::$mbXML = new \aportela\MusicBrainzWrapper\Release(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::XML, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, self::$cachePath);
+
+        self::$JSONCache = new \aportela\SimpleFSCache\Cache(self::$logger, \aportela\SimpleFSCache\CacheFormat::JSON, self::$cachePath, false);
+        self::$XMLCache = new \aportela\SimpleFSCache\Cache(self::$logger, \aportela\SimpleFSCache\CacheFormat::XML, self::$cachePath, false);
+
+        self::$mbJSON = new \aportela\MusicBrainzWrapper\Release(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, self::$JSONCache, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS);
+        self::$mbXML = new \aportela\MusicBrainzWrapper\Release(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::XML, self::$XMLCache, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS);
     }
 
     /**

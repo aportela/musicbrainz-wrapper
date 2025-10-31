@@ -12,6 +12,10 @@ class BaseTest extends \PHPUnit\Framework\TestCase
 
     protected static string $cachePath;
 
+    protected static \aportela\SimpleFSCache\Cache $JSONCache;
+    protected static \aportela\SimpleFSCache\Cache $XMLCache;
+
+
     /**
      * Called once just like normal constructor
      */

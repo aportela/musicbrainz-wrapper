@@ -9,7 +9,8 @@ class Entity
     protected \Psr\Log\LoggerInterface $logger;
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
     protected \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
-    private \aportela\MusicBrainzWrapper\Cache $cache;
+
+    private \aportela\SimpleFSCache\Cache $cache;
 
     /**
      * https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting
@@ -22,13 +23,11 @@ class Entity
     private int $currentThrottleDelayMS = 0;
     private int $lastThrottleTimestamp = 0;
 
-    protected bool $refreshExistingCache = false;
-
     protected mixed $parser = null;
 
     public ?string $raw = null;
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?string $cachePath = null, bool $refreshExistingCache = false)
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, \aportela\SimpleFSCache\Cache $cache, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS)
     {
         $this->logger = $logger;
         $this->logger->debug("MusicBrainzWrapper::__construct");
@@ -45,8 +44,7 @@ class Entity
         $this->originalThrottleDelayMS = $throttleDelayMS;
         $this->currentThrottleDelayMS = $throttleDelayMS;
         $this->lastThrottleTimestamp = intval(microtime(true) * 1000);
-        $this->cache = new \aportela\MusicBrainzWrapper\Cache($logger, $apiFormat, $cachePath);
-        $this->refreshExistingCache = $refreshExistingCache;
+        $this->cache = $cache;
         if ($apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $loadedExtensions = get_loaded_extensions();
             if (!in_array("libxml", $loadedExtensions)) {
@@ -115,7 +113,7 @@ class Entity
      */
     protected function saveCache(string $mbId, string $raw): bool
     {
-        return ($this->cache->saveCache($mbId, $raw));
+        return ($this->cache->save($mbId, $raw));
     }
 
     /**
@@ -123,7 +121,7 @@ class Entity
      */
     protected function removeCache(string $mbId): bool
     {
-        return ($this->cache->removeCache($mbId));
+        return ($this->cache->remove($mbId));
     }
 
     /**
@@ -131,17 +129,12 @@ class Entity
      */
     protected function getCache(string $mbId): bool
     {
-        $this->raw = null;
-        // this is used for refreshing current stored cache (cache load always return false, for getting again && save after getting new data)
-        if ($this->refreshExistingCache) {
-            return (false);
+        $this->reset();
+        if ($cache = $this->cache->get($mbId)) {
+            $this->raw = $cache;
+            return (true);
         } else {
-            if ($cache = $this->cache->getCache($mbId)) {
-                $this->raw = $cache;
-                return (true);
-            } else {
-                return (false);
-            }
+            return (false);
         }
     }
 
