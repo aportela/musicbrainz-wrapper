@@ -21,7 +21,7 @@ final class CoverArtArchiveTest extends BaseTest
 
         self::$JSONCache = new \aportela\SimpleFSCache\Cache(self::$logger, \aportela\SimpleFSCache\CacheFormat::JSON, self::$cachePath, false);
 
-        self::$mbJSON = new \aportela\MusicBrainzWrapper\CoverArtArchive(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, self::$JSONCache, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS);
+        self::$mbJSON = new \aportela\MusicBrainzWrapper\CoverArtArchive(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, self::$JSONCache);
     }
 
     /**

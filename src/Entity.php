@@ -11,6 +11,7 @@ class Entity
     protected \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
 
     private ?\aportela\SimpleFSCache\Cache $cache;
+    private \aportela\SimpleThrottle\Throttle $throttle;
 
     /**
      * https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting
@@ -19,15 +20,11 @@ class Entity
     private const MIN_THROTTLE_DELAY_MS = 20; // min allowed: 50 requests per second
     public const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
 
-    private int $originalThrottleDelayMS = 0;
-    private int $currentThrottleDelayMS = 0;
-    private int $lastThrottleTimestamp = 0;
-
     protected mixed $parser = null;
 
     public ?string $raw = null;
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, ?\aportela\SimpleFSCache\Cache $cache = null, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS)
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?\aportela\SimpleFSCache\Cache $cache = null)
     {
         $this->logger = $logger;
         $this->logger->debug("MusicBrainzWrapper::__construct");
@@ -41,9 +38,7 @@ class Entity
         if ($throttleDelayMS < self::MIN_THROTTLE_DELAY_MS) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidThrottleMsDelayException("min throttle delay ms required: " . self::MIN_THROTTLE_DELAY_MS);
         }
-        $this->originalThrottleDelayMS = $throttleDelayMS;
-        $this->currentThrottleDelayMS = $throttleDelayMS;
-        $this->lastThrottleTimestamp = intval(microtime(true) * 1000);
+        $this->throttle = new \aportela\SimpleThrottle\Throttle($this->logger, $throttleDelayMS, 5000, 10);
         $this->cache = $cache;
         if ($apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $loadedExtensions = get_loaded_extensions();
@@ -78,11 +73,7 @@ class Entity
      */
     protected function incrementThrottle(): void
     {
-        // allow incrementing current throttle delay to a max of 5 seconds
-        if ($this->currentThrottleDelayMS < 5000) {
-            // set next throttle delay with current value * 2 (wait more time on next api calls)
-            $this->currentThrottleDelayMS *= 2;
-        }
+        $this->throttle->increment(\aportela\SimpleThrottle\ThrottleDelayIncrementType::MULTIPLY_BY_2);
     }
 
     /**
@@ -90,7 +81,7 @@ class Entity
      */
     protected function resetThrottle(): void
     {
-        $this->currentThrottleDelayMS = $this->originalThrottleDelayMS;
+        $this->throttle->reset();
     }
 
     /**
@@ -98,14 +89,7 @@ class Entity
      */
     protected function checkThrottle(): void
     {
-        if ($this->currentThrottleDelayMS > 0) {
-            $currentTimestamp = intval(microtime(true) * 1000);
-            while (($currentTimestamp - $this->lastThrottleTimestamp) < $this->currentThrottleDelayMS) {
-                usleep(10);
-                $currentTimestamp = intval(microtime(true) * 1000);
-            }
-            $this->lastThrottleTimestamp = $currentTimestamp;
-        }
+        $this->throttle->throttle();
     }
 
     /**
