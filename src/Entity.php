@@ -10,7 +10,7 @@ class Entity
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
     protected \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
 
-    private ?\aportela\SimpleFSCache\Cache $cache;
+    private ?\aportela\SimpleFSCache\Cache $cache = null;
 
     /**
      * https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting
