@@ -10,7 +10,7 @@ class Entity
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
     protected \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
 
-    private \aportela\SimpleFSCache\Cache $cache;
+    private ?\aportela\SimpleFSCache\Cache $cache;
 
     /**
      * https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting
@@ -27,7 +27,7 @@ class Entity
 
     public ?string $raw = null;
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, \aportela\SimpleFSCache\Cache $cache, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS)
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, ?\aportela\SimpleFSCache\Cache $cache = null, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS)
     {
         $this->logger = $logger;
         $this->logger->debug("MusicBrainzWrapper::__construct");
@@ -113,7 +113,11 @@ class Entity
      */
     protected function saveCache(string $mbId, string $raw): bool
     {
-        return ($this->cache->save($mbId, $raw));
+        if ($this->cache !== null) {
+            return ($this->cache->save($mbId, $raw));
+        } else {
+            return (false);
+        }
     }
 
     /**
@@ -121,7 +125,11 @@ class Entity
      */
     protected function removeCache(string $mbId): bool
     {
-        return ($this->cache->remove($mbId));
+        if ($this->cache !== null) {
+            return ($this->cache->remove($mbId));
+        } else {
+            return (false);
+        }
     }
 
     /**
@@ -130,9 +138,13 @@ class Entity
     protected function getCache(string $mbId): bool
     {
         $this->reset();
-        if ($cache = $this->cache->get($mbId)) {
-            $this->raw = $cache;
-            return (true);
+        if ($this->cache !== null) {
+            if ($cache = $this->cache->get($mbId)) {
+                $this->raw = $cache;
+                return (true);
+            } else {
+                return (false);
+            }
         } else {
             return (false);
         }
