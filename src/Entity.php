@@ -54,10 +54,7 @@ class Entity
         $this->reset();
     }
 
-    public function __destruct()
-    {
-        $this->logger->debug("MusicBrainzWrapper::__destruct");
-    }
+    public function __destruct() {}
 
     protected function reset(): void
     {
@@ -138,11 +135,11 @@ class Entity
      */
     protected function httpGET(string $url): \aportela\HTTPRequestWrapper\HTTPResponse
     {
-        $this->logger->debug("Opening url: {$url}");
+        $this->logger->debug("\aportela\MusicBrainzWrapper\Entity::httpGET - Opening URL", [$url]);
         try {
             return ($this->http->GET($url));
         } catch (\aportela\HTTPRequestWrapper\Exception\CurlExecException $e) {
-            $this->logger->error("Error opening URL " . $url, [$e->getCode(), $e->getMessage()]);
+            $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $e->getCode(), $e->getMessage()]);
             $this->incrementThrottle(); // sometimes api calls return connection error, interpret this as rate limit response
             throw new \aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException("Error opening URL " . $url, 0, $e);
         }
