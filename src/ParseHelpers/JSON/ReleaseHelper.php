@@ -7,8 +7,8 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHel
     public function __construct(object $object)
     {
         parent::__construct();
-        $this->mbId = (string)$object->id;
-        $this->title = (string)$object->title;
+        $this->mbId = (string)($object->id ?? null);
+        $this->title = (string)($object->title ?? null);
         $this->year = $this->parseDateToYear($object->date ?? null);
 
         if (isset($object->{"artist-credit"}) && is_array($object->{"artist-credit"})) {
