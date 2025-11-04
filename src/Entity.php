@@ -35,6 +35,7 @@ class Entity
         }
         $this->apiFormat = $apiFormat;
         if ($throttleDelayMS < self::MIN_THROTTLE_DELAY_MS) {
+            $this->logger->critical("\aportela\MusicBrainzWrapper\Entity::__construct - ERROR: invalid throttleDelayMS", [$throttleDelayMS, self::MIN_THROTTLE_DELAY_MS]);
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidThrottleMsDelayException("min throttle delay ms required: " . self::MIN_THROTTLE_DELAY_MS);
         }
         $this->throttle = new \aportela\SimpleThrottle\Throttle($this->logger, $throttleDelayMS, 5000, 10);
