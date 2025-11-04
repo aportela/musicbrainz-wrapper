@@ -43,8 +43,8 @@ class Entity
             $loadedExtensions = get_loaded_extensions();
             foreach (["libxml", "SimpleXML"] as $requiredExtension) {
                 if (!in_array($requiredExtension, $loadedExtensions)) {
-                    $this->logger->critical("\aportela\MusicBrainzWrapper\Entity::__construct - ERROR: {$requiredExtension} extension not found", $loadedExtensions);
-                    throw new \aportela\MusicBrainzWrapper\Exception\MissingException("Missing exception {$requiredExtension}, loaded extensions: " . implode(", ", $loadedExtensions));
+                    $this->logger->critical("\aportela\MusicBrainzWrapper\Entity::__construct - ERROR: {$requiredExtension} php extension not found", $loadedExtensions);
+                    throw new \aportela\MusicBrainzWrapper\Exception\PHPExtensionMissingException("Missing required php extension: {$requiredExtension}, loaded extensions: " . implode(", ", $loadedExtensions));
                 }
             }
             // avoids simplexml_load_string warnings
@@ -54,9 +54,7 @@ class Entity
         $this->reset();
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     protected function reset(): void
     {
