@@ -15,7 +15,9 @@ class Release extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseJSONHelper
         $results = [];
         if (isset($this->json->count) && intval($this->json->count) > 0 && is_array($this->json->releases)) {
             foreach ($this->json->releases as $releaseObject) {
-                $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\ReleaseHelper($releaseObject);
+                if (is_object($releaseObject)) {
+                    $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\ReleaseHelper($releaseObject);
+                }
             }
         }
         return ($results);

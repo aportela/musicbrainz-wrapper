@@ -10,7 +10,9 @@ class RecordingHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\Recordin
         $this->title = (string)($object->title ?? null);
         if (isset($object->{"artist-credit"}) && is_array($object->{"artist-credit"})) {
             foreach ($object->{"artist-credit"} as $artistObject) {
-                $this->artistCredit[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\ArtistHelper($artistObject->artist);
+                if (is_object($artistObject) && isset($artistObject->artist)) {
+                    $this->artistCredit[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\ArtistHelper($artistObject->artist);
+                }
             }
         }
     }

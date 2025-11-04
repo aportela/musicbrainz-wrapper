@@ -12,7 +12,9 @@ class MediaHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\MediaHelper
 
         if (isset($object->{"track-count"}) && intval($object->{"track-count"}) > 0 && isset($object->tracks) && is_array($object->tracks)) {
             foreach ($object->tracks as $trackObject) {
-                $this->trackList[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\TrackHelper($trackObject);
+                if (is_object($trackObject)) {
+                    $this->trackList[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\TrackHelper($trackObject);
+                }
             }
         }
     }

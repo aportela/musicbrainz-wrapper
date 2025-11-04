@@ -15,7 +15,9 @@ class Artist extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseJSONHelper
         $results = [];
         if (isset($this->json->count) && intval($this->json->count) > 0 && is_array($this->json->artists)) {
             foreach ($this->json->artists as $artistObject) {
-                $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\ArtistHelper($artistObject);
+                if (is_object($artistObject)) {
+                    $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\ArtistHelper($artistObject);
+                }
             }
         }
         return ($results);

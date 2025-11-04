@@ -12,7 +12,9 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHel
 
         if (isset($object->{"artist-credit"}) && is_array($object->{"artist-credit"})) {
             foreach ($object->{"artist-credit"} as $artistObject) {
-                $this->artistCredit[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\ArtistHelper($artistObject->artist);
+                if (is_object($artistObject) && isset($artistObject->artist)) {
+                    $this->artistCredit[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\ArtistHelper($artistObject->artist);
+                }
             }
         }
 
@@ -22,7 +24,9 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHel
 
         if (isset($object->media) && is_array($object->media)) {
             foreach ($object->media as $mediaObject) {
-                $this->media[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\MediaHelper($mediaObject);
+                if (is_object($mediaObject)) {
+                    $this->media[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\MediaHelper($mediaObject);
+                }
             }
         }
     }
