@@ -123,8 +123,9 @@ class Entity
     {
         $this->reset();
         if ($this->cache !== null) {
-            if ($cache = $this->cache->get($mbId)) {
-                $this->raw = $cache;
+            $cacheData = $this->cache->get($mbId);
+            if (is_string($cacheData)) {
+                $this->raw = $cacheData;
                 return (true);
             } else {
                 return (false);
