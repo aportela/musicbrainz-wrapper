@@ -132,7 +132,7 @@ class Entity
     }
 
     /**
-     * http handler GET method wrapper for catching CurlExecException (connection errors / server busy ?)
+     * http handler GET method wrapper for manage throttle & response, also catches CurlExecException (connection errors / server busy ?)
      */
     protected function httpGET(string $url): ?string
     {
