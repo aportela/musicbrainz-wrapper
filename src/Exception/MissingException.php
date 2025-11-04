@@ -2,7 +2,7 @@
 
 namespace aportela\MusicBrainzWrapper\Exception;
 
-class LibXMLMissingException extends \Exception
+class MissingException extends \Exception
 {
     public function __construct(string $message = "", int $code = 0, ?\Exception $previous = null)
     {

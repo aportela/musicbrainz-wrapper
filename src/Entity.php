@@ -27,11 +27,10 @@ class Entity
     public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?\aportela\SimpleFSCache\Cache $cache = null)
     {
         $this->logger = $logger;
-        $this->logger->debug("MusicBrainzWrapper::__construct");
         $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger, self::USER_AGENT);
         $supportedApiFormats = [\aportela\MusicBrainzWrapper\APIFormat::XML, \aportela\MusicBrainzWrapper\APIFormat::JSON];
         if (!in_array($apiFormat, $supportedApiFormats)) {
-            $this->logger->critical("MusicBrainzWrapper::__construct ERROR: invalid api format");
+            $this->logger->critical("\aportela\MusicBrainzWrapper\Entity::__construct - ERROR: invalid api format", [$apiFormat, [\aportela\MusicBrainzWrapper\APIFormat::XML->value, \aportela\MusicBrainzWrapper\APIFormat::JSON->value]]);
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("supported formats: " . implode(", ", [\aportela\MusicBrainzWrapper\APIFormat::XML->value, \aportela\MusicBrainzWrapper\APIFormat::JSON->value]));
         }
         $this->apiFormat = $apiFormat;
@@ -42,12 +41,11 @@ class Entity
         $this->cache = $cache;
         if ($apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $loadedExtensions = get_loaded_extensions();
-            if (!in_array("libxml", $loadedExtensions)) {
-                $this->logger->critical("MusicBrainzWrapper::__construct ERROR: libxml extension not found");
-                throw new \aportela\MusicBrainzWrapper\Exception\LibXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
-            } elseif (!in_array("SimpleXML", $loadedExtensions)) {
-                $this->logger->critical("MusicBrainzWrapper::__construct ERROR: SimpleXML extension not found");
-                throw new \aportela\MusicBrainzWrapper\Exception\SimpleXMLMissingException("loaded extensions: " . implode(", ", $loadedExtensions));
+            foreach (["libxml", "SimpleXML"] as $requiredExtension) {
+                if (!in_array($requiredExtension, $loadedExtensions)) {
+                    $this->logger->critical("\aportela\MusicBrainzWrapper\Entity::__construct - ERROR: {$requiredExtension} extension not found", $loadedExtensions);
+                    throw new \aportela\MusicBrainzWrapper\Exception\MissingException("Missing exception {$requiredExtension}, loaded extensions: " . implode(", ", $loadedExtensions));
+                }
             }
             // avoids simplexml_load_string warnings
             // https://stackoverflow.com/a/40585185
