@@ -143,8 +143,6 @@ class Entity
             if ($response->code == 200) {
                 $this->resetThrottle();
                 return ($response->body);
-            } elseif ($response->code == 400) {
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($url, $response->code);
             } elseif ($response->code == 404) {
                 throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($url, $response->code);
             } elseif ($response->code == 503) {
