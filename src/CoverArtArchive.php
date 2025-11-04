@@ -14,25 +14,23 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
 
     public function get(string $mbId): \aportela\MusicBrainzWrapper\ParseHelpers\CoverArtArchiveHelper
     {
-        $this->checkThrottle();
         $url = sprintf(self::GET_API_URL, $mbId);
-        $response = $this->httpGET($url);
-        if ($response->code == 200) {
-            $this->resetThrottle();
-            if (! empty($response->body)) {
-                return ($this->parse($response->body));
+        if (! $this->getCache($mbId)) {
+            $responseBody = $this->httpGET($url);
+            if (! empty($responseBody)) {
+                $this->saveCache($mbId, $responseBody);
+                return ($this->parse($responseBody));
             } else {
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("empty body");
+                $this->logger->error("\aportela\MusicBrainzWrapper\CoverArtArchive::get - Error: empty body on API response", [$url]);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: " . $url);
             }
-        } elseif ($response->code == 400) {
-            throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
-        } elseif ($response->code == 404) {
-            throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($mbId, $response->code);
-        } elseif ($response->code == 503) {
-            $this->incrementThrottle();
-            throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($mbId, $response->code);
         } else {
-            throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($mbId, $response->code);
+            if (! empty($this->raw)) {
+                return ($this->parse($this->raw));
+            } else {
+                $this->logger->error("\aportela\MusicBrainzWrapper\CoverArtArchive::get - Error: cached data for identifier is empty", [$mbId]);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException("Cached data for identifier ({$mbId}) is empty");
+            }
         }
     }
 
@@ -42,7 +40,8 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
         if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
             $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\CoverArtArchive($rawText);
         } else {
-            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
+            $this->logger->error("\aportela\MusicBrainzWrapper\CoverArtArchive::parse - Error: invalid API format", [$this->apiFormat]);
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: " . $this->apiFormat->value);
         }
         $this->raw = $rawText;
         return ($this->parser->parse());

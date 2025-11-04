@@ -54,7 +54,9 @@ class Entity
         $this->reset();
     }
 
-    public function __destruct() {}
+    public function __destruct()
+    {
+    }
 
     protected function reset(): void
     {
@@ -133,11 +135,26 @@ class Entity
     /**
      * http handler GET method wrapper for catching CurlExecException (connection errors / server busy ?)
      */
-    protected function httpGET(string $url): \aportela\HTTPRequestWrapper\HTTPResponse
+    protected function httpGET(string $url): ?string
     {
         $this->logger->debug("\aportela\MusicBrainzWrapper\Entity::httpGET - Opening URL", [$url]);
         try {
-            return ($this->http->GET($url));
+            $this->checkThrottle();
+            $response = $this->http->GET($url);
+            if ($response->code == 200) {
+                $this->resetThrottle();
+                return ($response->body);
+            } elseif ($response->code == 400) {
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($url, $response->code);
+            } elseif ($response->code == 404) {
+                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($url, $response->code);
+            } elseif ($response->code == 503) {
+                $this->incrementThrottle();
+                $this->logger->info("\aportela\MusicBrainzWrapper\Entity::httpGET - Error: rate limited (503) response, incrementing throttle", [$url]);
+                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException("URL: {$url}", $response->code);
+            } else {
+                throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($url, $response->code);
+            }
         } catch (\aportela\HTTPRequestWrapper\Exception\CurlExecException $e) {
             $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $e->getCode(), $e->getMessage()]);
             $this->incrementThrottle(); // sometimes api calls return connection error, interpret this as rate limit response

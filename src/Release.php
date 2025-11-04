@@ -12,7 +12,6 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
      */
     public function search(string $title, string $artist, string $year, int $limit = 1): array
     {
-        $this->checkThrottle();
         $queryParams = [
             "release:" . urlencode($title)
         ];
@@ -23,64 +22,44 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
             $queryParams[] = "date:" . urlencode($year);
         }
         $url = sprintf(self::SEARCH_API_URL, implode(urlencode(" AND "), $queryParams), $limit, $this->apiFormat->value);
-        $response = $this->httpGET($url);
-        if ($response->code == 200) {
-            $this->resetThrottle();
-            if (! empty($response->body)) {
-                $results = [];
-                if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-                    $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Search\Release($response->body);
-                } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-                    $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Search\Release($response->body);
-                } else {
-                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
-                }
-                $results = $this->parser->parse();
-                if (count($results) > 0) {
-                    return ($results);
-                } else {
-                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException("title: {$title} - artist: {$artist} - year: {$year}", 0);
-                }
-            } else {
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("empty body");
+        $responseBody = $this->httpGET($url);
+        if (! empty($responseBody)) {
+            switch ($this->apiFormat) {
+                case \aportela\MusicBrainzWrapper\APIFormat::XML:
+                    $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Search\Release($responseBody);
+                    break;
+                case \aportela\MusicBrainzWrapper\APIFormat::JSON:
+                    $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Search\Release($responseBody);
+                    break;
+                default:
+                    $this->logger->error("\aportela\MusicBrainzWrapper\Release::search - Error: invalid API format", [$this->apiFormat]);
+                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: " . $this->apiFormat->value);
             }
-        } elseif ($response->code == 503) {
-            $this->incrementThrottle();
-            throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($title, $response->code);
+            return ($this->parser->parse());
         } else {
-            throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($title, $response->code);
+            $this->logger->error("\aportela\MusicBrainzWrapper\Release::search - Error: empty body on API response", [$url]);
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: " . $url);
         }
     }
 
     public function get(string $mbId): \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHelper
     {
         if (! $this->getCache($mbId)) {
-            $this->checkThrottle();
             $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
-            $response = $this->httpGET($url);
-            if ($response->code == 200) {
-                $this->resetThrottle();
-                if (! empty($response->body)) {
-                    $this->saveCache($mbId, $response->body);
-                    return ($this->parse($response->body));
-                } else {
-                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException("body", $response->code);
-                }
-            } elseif ($response->code == 400) {
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
-            } elseif ($response->code == 404) {
-                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($mbId, $response->code);
-            } elseif ($response->code == 503) {
-                $this->incrementThrottle();
-                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException($mbId, $response->code);
+            $responseBody = $this->httpGET($url);
+            if (! empty($responseBody)) {
+                $this->saveCache($mbId, $responseBody);
+                return ($this->parse($responseBody));
             } else {
-                throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($mbId, $response->code);
+                $this->logger->error("\aportela\MusicBrainzWrapper\Release::get - Error: empty body on API response", [$url]);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: " . $url);
             }
         } else {
             if (! empty($this->raw)) {
                 return ($this->parse($this->raw));
             } else {
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException("raw");
+                $this->logger->error("\aportela\MusicBrainzWrapper\Release::get - Error: cached data for identifier is empty", [$mbId]);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException("Cached data for identifier ({$mbId}) is empty");
             }
         }
     }
@@ -88,12 +67,16 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
     public function parse(string $rawText): \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHelper
     {
         $this->reset();
-        if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-            $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Get\Release($rawText);
-        } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-            $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\Release($rawText);
-        } else {
-            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
+        switch ($this->apiFormat) {
+            case \aportela\MusicBrainzWrapper\APIFormat::XML:
+                $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Get\Release($rawText);
+                break;
+            case \aportela\MusicBrainzWrapper\APIFormat::JSON:
+                $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\Release($rawText);
+                break;
+            default:
+                $this->logger->error("\aportela\MusicBrainzWrapper\Release::parse - Error: invalid API format", [$this->apiFormat]);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: " . $this->apiFormat->value);
         }
         $this->raw = $rawText;
         return ($this->parser->parse());
