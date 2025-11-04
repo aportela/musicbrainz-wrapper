@@ -41,7 +41,7 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
             $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\CoverArtArchive($rawText);
         } else {
             $this->logger->error("\aportela\MusicBrainzWrapper\CoverArtArchive::parse - Error: invalid API format", [$this->apiFormat]);
-            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: " . $this->apiFormat->value);
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: {$this->apiFormat->value}");
         }
         $this->raw = $rawText;
         return ($this->parser->parse());

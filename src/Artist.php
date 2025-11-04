@@ -34,7 +34,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                     break;
                 default:
                     $this->logger->error("\aportela\MusicBrainzWrapper\Artist::search - Error: invalid API format", [$this->apiFormat]);
-                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: " . $this->apiFormat->value);
+                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: {$this->apiFormat->value}");
             }
             return ($this->parser->parse());
         } else {
@@ -78,7 +78,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 break;
             default:
                 $this->logger->error("\aportela\MusicBrainzWrapper\Artist::parse - Error: invalid API format", [$this->apiFormat]);
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: " . $this->apiFormat->value);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: {$this->apiFormat->value}");
         }
         $this->raw = $rawText;
         return ($this->parser->parse());
