@@ -12,22 +12,12 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\BaseHelper
      */
     public array $artistCredit = [];
 
-    public object $coverArtArchive;
+    public \aportela\MusicBrainzWrapper\ParseHelpers\CoverArtArchiveHelper $coverArtArchive;
 
     /**
      * @var array<\aportela\MusicBrainzWrapper\ParseHelpers\MediaHelper>
      */
     public array $media = [];
-
-    public function __construct()
-    {
-        $this->coverArtArchive = (object)
-        [
-            "artwork" => false,
-            "front" => false,
-            "back" => false
-        ];
-    }
 
     public function parseDateToYear(?string $date): ?int
     {
