@@ -144,18 +144,20 @@ class Entity
                 $this->resetThrottle();
                 return ($response->body);
             } elseif ($response->code == 404) {
-                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException($url, $response->code);
+                $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
+                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException("Error opening URL: {$url}", $response->code);
             } elseif ($response->code == 503) {
                 $this->incrementThrottle();
-                $this->logger->info("\aportela\MusicBrainzWrapper\Entity::httpGET - Error: rate limited (503) response, incrementing throttle", [$url]);
-                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException("URL: {$url}", $response->code);
+                $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
+                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException("Error opening URL: {$url}", $response->code);
             } else {
-                throw new \aportela\MusicBrainzWrapper\Exception\HTTPException($url, $response->code);
+                $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
+                throw new \aportela\MusicBrainzWrapper\Exception\HTTPException("Error opening URL: {$url}", $response->code);
             }
         } catch (\aportela\HTTPRequestWrapper\Exception\CurlExecException $e) {
             $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $e->getCode(), $e->getMessage()]);
             $this->incrementThrottle(); // sometimes api calls return connection error, interpret this as rate limit response
-            throw new \aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException("Error opening URL " . $url, 0, $e);
+            throw new \aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException("Error opening URL: {$url}", 0, $e);
         }
     }
 }
