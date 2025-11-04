@@ -2,18 +2,19 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
+use SimpleXMLElement;
+
 class ParseXMLHelper
 {
     protected const DEFAULT_NS_ALIAS = "mmd";
     protected const DEFAULT_NS = "http://musicbrainz.org/ns/mmd-2.0#";
 
-    protected mixed $xml;
+    protected \SimpleXMLElement $xml;
 
     public function __construct(string $raw)
     {
         libxml_clear_errors();
-        $this->xml = simplexml_load_string($raw);
-        if ($this->xml === false) {
+        if (($element = simplexml_load_string($raw)) === false) {
             $errorMessage = "invalid xml";
             $errorCode = 0;
             $lastError = libxml_get_last_error();
@@ -23,6 +24,7 @@ class ParseXMLHelper
             }
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException($errorMessage, $errorCode);
         }
+        $this->xml = $element;
         //$this->xml->registerXPathNamespace(self::DEFAULT_NS_ALIAS, reset($this->xml->getNamespaces(true)) ?? self::DEFAULT_NS);
         $this->xml->registerXPathNamespace(self::DEFAULT_NS_ALIAS, self::DEFAULT_NS);
     }
@@ -37,10 +39,6 @@ class ParseXMLHelper
      */
     protected function getXPath(string $path): array|null|false
     {
-        if (is_object($this->xml)) {
-            return ($this->xml->xpath($path));
-        } else {
-            return (false);
-        }
+        return ($this->xml->xpath($path));
     }
 }

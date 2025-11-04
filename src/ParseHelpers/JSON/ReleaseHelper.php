@@ -18,9 +18,15 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHel
         }
 
         if (isset($object->{"cover-art-archive"})) {
-            $this->coverArtArchive->artwork = ((string) $object->{"cover-art-archive"}->artwork) === "true";
-            $this->coverArtArchive->front = ((string) $object->{"cover-art-archive"}->front) === "true";
-            $this->coverArtArchive->back = ((string) $object->{"cover-art-archive"}->back) === "true";
+            if (isset($object->{"cover-art-archive"}->artwork) && is_string($object->{"cover-art-archive"}->artwork)) {
+                $this->coverArtArchive->artwork = $object->{"cover-art-archive"}->artwork === "true";
+            }
+            if (isset($object->{"cover-art-archive"}->front) && is_string($object->{"cover-art-archive"}->front)) {
+                $this->coverArtArchive->front = $object->{"cover-art-archive"}->front === "true";
+            }
+            if (isset($object->{"cover-art-archive"}->back) && is_string($object->{"cover-art-archive"}->back)) {
+                $this->coverArtArchive->back =  $object->{"cover-art-archive"}->back === "true";
+            }
         }
 
         if (isset($object->media) && is_array($object->media)) {
