@@ -39,7 +39,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
             return ($this->parser->parse());
         } else {
             $this->logger->error("\aportela\MusicBrainzWrapper\Artist::search - Error: empty body on API response", [$url]);
-            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: " . $url);
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
         }
     }
 
@@ -54,7 +54,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 return ($this->parse($responseBody));
             } else {
                 $this->logger->error("\aportela\MusicBrainzWrapper\Artist::get - Error: empty body on API response", [$url]);
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: " . $url);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
             }
         } else {
             if (! empty($this->raw)) {
