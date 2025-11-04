@@ -17,7 +17,7 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHel
         }
 
         if (isset($object->{"cover-art-archive"})) {
-            $this->coverArtArchive = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\CoverArtArchiveHelper($object->{"cover-art-archive"});
+            $this->coverArtArchive = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\ReleaseCoverArtArchiveHelper($object->{"cover-art-archive"});
         }
 
         if (isset($object->media) && is_array($object->media)) {

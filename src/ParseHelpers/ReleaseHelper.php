@@ -12,7 +12,7 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\BaseHelper
      */
     public array $artistCredit = [];
 
-    public \aportela\MusicBrainzWrapper\ParseHelpers\CoverArtArchiveHelper $coverArtArchive;
+    public \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseCoverArtArchiveHelper $coverArtArchive;
 
     /**
      * @var array<\aportela\MusicBrainzWrapper\ParseHelpers\MediaHelper>
