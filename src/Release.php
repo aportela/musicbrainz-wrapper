@@ -26,19 +26,23 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
         $response = $this->httpGET($url);
         if ($response->code == 200) {
             $this->resetThrottle();
-            $results = [];
-            if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
-                $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Search\Release($response->body);
-            } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
-                $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Search\Release($response->body);
+            if (! empty($response->body)) {
+                $results = [];
+                if ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
+                    $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Search\Release($response->body);
+                } elseif ($this->apiFormat == \aportela\MusicBrainzWrapper\APIFormat::JSON) {
+                    $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Search\Release($response->body);
+                } else {
+                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
+                }
+                $results = $this->parser->parse();
+                if (count($results) > 0) {
+                    return ($results);
+                } else {
+                    throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException("title: {$title} - artist: {$artist} - year: {$year}", 0);
+                }
             } else {
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("");
-            }
-            $results = $this->parser->parse();
-            if (count($results) > 0) {
-                return ($results);
-            } else {
-                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException("title: {$title} - artist: {$artist} - year: {$year}", 0);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("empty body");
             }
         } elseif ($response->code == 503) {
             $this->incrementThrottle();
