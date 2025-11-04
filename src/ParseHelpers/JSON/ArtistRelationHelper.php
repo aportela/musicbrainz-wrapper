@@ -7,7 +7,7 @@ class ArtistRelationHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\Art
     public function __construct(object $object)
     {
         $this->typeId = (string)($object->{"type-id"} ?? null);
-        $this->type = (string)$object->type;
-        $this->url = (string)$object->url->resource;
+        $this->type = (string)($object->type ?? null);
+        $this->url = (string)($object->url->resource ?? null);
     }
 }
