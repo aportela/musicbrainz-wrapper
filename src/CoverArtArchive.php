@@ -29,7 +29,7 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
                 return ($this->parse($this->raw));
             } else {
                 $this->logger->error("\aportela\MusicBrainzWrapper\CoverArtArchive::get - Error: cached data for identifier is empty", [$mbId]);
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException("Cached data for identifier ({$mbId}) is empty");
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidCacheException("Cached data for identifier ({$mbId}) is empty");
             }
         }
     }
