@@ -68,6 +68,8 @@ final class ReleaseTest extends BaseTest
             $results = self::$mbJSON->search(self::TEST_ARTIST_RELEASE_TITLE, self::TEST_ARTIST_NAME, self::TEST_ARTIST_RELEASE_YEAR, 9);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
+            $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
         $this->assertCount(9, $results);
         $this->assertCount(1, $results[0]->artistCredit);
@@ -91,6 +93,8 @@ final class ReleaseTest extends BaseTest
             $results = self::$mbXML->search(self::TEST_ARTIST_RELEASE_TITLE, self::TEST_ARTIST_NAME, self::TEST_ARTIST_RELEASE_YEAR, 9);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
+            $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
         $this->assertCount(9, $results);
         $this->assertCount(1, $results[0]->artistCredit);
@@ -114,6 +118,8 @@ final class ReleaseTest extends BaseTest
             $release = self::$mbJSON->get(self::TEST_ARTIST_RELEASE_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
+            $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
         $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, $release->mbId);
         $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, $release->title);
@@ -135,6 +141,8 @@ final class ReleaseTest extends BaseTest
             $release = self::$mbXML->get(self::TEST_ARTIST_RELEASE_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
+            $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
         $this->assertSame(self::TEST_ARTIST_RELEASE_MBID, $release->mbId);
         $this->assertSame(self::TEST_ARTIST_RELEASE_TITLE, $release->title);

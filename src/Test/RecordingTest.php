@@ -65,6 +65,8 @@ final class RecordingTest extends BaseTest
             $recording = self::$mbJSON->get(self::TEST_ARTIST_RECORDING_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
+            $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
         $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, $recording->title);
         $this->assertCount(1, $recording->artistCredit);
@@ -81,6 +83,8 @@ final class RecordingTest extends BaseTest
             $recording = self::$mbXML->get(self::TEST_ARTIST_RECORDING_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
+            $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
         $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, $recording->title);
         $this->assertCount(1, $recording->artistCredit);

@@ -63,6 +63,8 @@ final class ArtistTest extends BaseTest
             $results = self::$mbJSON->search(self::TEST_ARTIST_NAME, 1);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
+            $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
         $this->assertCount(1, $results);
         $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->mbId);
@@ -77,6 +79,8 @@ final class ArtistTest extends BaseTest
             $results = self::$mbXML->search(self::TEST_ARTIST_NAME, 1);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
+            $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
         $this->assertCount(1, $results);
         $this->assertSame(self::TEST_ARTIST_MBID, $results[0]->mbId);
@@ -91,6 +95,8 @@ final class ArtistTest extends BaseTest
             $artist = self::$mbJSON->get(self::TEST_ARTIST_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
+            $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
         $this->assertSame(self::TEST_ARTIST_MBID, $artist->mbId);
         $this->assertSame(self::TEST_ARTIST_NAME, $artist->name);
@@ -107,6 +113,8 @@ final class ArtistTest extends BaseTest
             $artist = self::$mbXML->get(self::TEST_ARTIST_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
+            $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
         $this->assertSame(self::TEST_ARTIST_MBID, $artist->mbId);
         $this->assertSame(self::TEST_ARTIST_NAME, $artist->name);
