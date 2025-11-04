@@ -124,6 +124,8 @@ final class ReleaseTest extends BaseTest
         $this->assertSame(self::TEST_ARTIST_COUNTRY, $release->artistCredit[0]->country);
         $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_COUNT, $release->media);
         $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_TRACK_COUNT, $release->media[0]->trackList);
+        $this->assertTrue($release->coverArtArchive->artwork);
+        $this->assertTrue($release->coverArtArchive->front);
     }
 
     public function testGetXml(): void
@@ -143,5 +145,7 @@ final class ReleaseTest extends BaseTest
         $this->assertSame(self::TEST_ARTIST_COUNTRY, $release->artistCredit[0]->country);
         $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_COUNT, $release->media);
         $this->assertCount(self::TEST_ARTIST_RELEASE_MEDIA_TRACK_COUNT, $release->media[0]->trackList);
+        $this->assertTrue($release->coverArtArchive->artwork);
+        $this->assertTrue($release->coverArtArchive->front);
     }
 }
