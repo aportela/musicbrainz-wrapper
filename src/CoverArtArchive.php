@@ -19,7 +19,11 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
         $response = $this->httpGET($url);
         if ($response->code == 200) {
             $this->resetThrottle();
-            return ($this->parse($response->body));
+            if (! empty($response->body)) {
+                return ($this->parse($response->body));
+            } else {
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("empty body");
+            }
         } elseif ($response->code == 400) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidIdentifierException($mbId, $response->code);
         } elseif ($response->code == 404) {
