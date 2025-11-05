@@ -145,7 +145,7 @@ class Entity
                 return ($response->body);
             } elseif ($response->code == 404) {
                 $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
-                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException("Error opening URL: {$url}", $response->code);
+                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException("Error opening URL: {$url}", $response->code);
             } elseif ($response->code == 503) {
                 $this->incrementThrottle();
                 $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
