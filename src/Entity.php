@@ -55,7 +55,9 @@ class Entity
         $this->reset();
     }
 
-    public function __destruct() {}
+    public function __destruct()
+    {
+    }
 
     protected function reset(): void
     {
@@ -94,7 +96,7 @@ class Entity
     protected function saveCache(string $mbId, string $raw): bool
     {
         if ($this->cache !== null) {
-            return ($this->cache->save($mbId, $raw));
+            return ($this->cache->set($mbId, $raw));
         } else {
             return (false);
         }
@@ -106,7 +108,7 @@ class Entity
     protected function removeCache(string $mbId): bool
     {
         if ($this->cache !== null) {
-            return ($this->cache->remove($mbId));
+            return ($this->cache->delete($mbId));
         } else {
             return (false);
         }
@@ -119,7 +121,7 @@ class Entity
     {
         $this->reset();
         if ($this->cache !== null) {
-            $cacheData = $this->cache->get($mbId);
+            $cacheData = $this->cache->get($mbId, false);
             if (is_string($cacheData)) {
                 $this->raw = $cacheData;
                 return (true);
