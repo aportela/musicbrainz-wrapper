@@ -13,8 +13,8 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
 
         $genreList = $element->children()->{"genre-list"};
         if ($genreList !== null && $children = $genreList->children()) {
-            foreach ($children as $genre) {
-                $this->genres[] = mb_strtolower(mb_trim($genre->children()->name));
+            foreach ($children as $child) {
+                $this->genres[] = mb_strtolower(mb_trim($child->children()->name));
             }
             if (count($this->genres) > 0) {
                 $this->genres = array_unique($this->genres);
@@ -23,8 +23,8 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
 
         $relationList = $element->children()->{"relation-list"};
         if ($relationList !== null && $children = $relationList->children()) {
-            foreach ($children as $artistRelation) {
-                $this->relations[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistRelationHelper($artistRelation);
+            foreach ($children as $child) {
+                $this->relations[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistRelationHelper($child);
             }
         }
     }

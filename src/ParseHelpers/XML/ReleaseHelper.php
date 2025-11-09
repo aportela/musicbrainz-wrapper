@@ -12,8 +12,8 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHel
 
         $children = $element->children()->{"artist-credit"}->children()->{"name-credit"};
         if ($children !== null) {
-            foreach ($children as $artistElement) {
-                $this->artistCredit[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistHelper($artistElement->children()->artist);
+            foreach ($children as $child) {
+                $this->artistCredit[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistHelper($child->children()->artist);
             }
         }
 

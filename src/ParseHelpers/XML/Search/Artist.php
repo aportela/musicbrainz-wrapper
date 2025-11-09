@@ -15,8 +15,8 @@ class Artist extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseXMLHelper
         }
         $results = [];
         if (is_array($artistsXPath) && count($artistsXPath) > 0) {
-            foreach ($artistsXPath as $artistElement) {
-                $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistHelper($artistElement);
+            foreach ($artistsXPath as $artistXPath) {
+                $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistHelper($artistXPath);
             }
         }
         return ($results);

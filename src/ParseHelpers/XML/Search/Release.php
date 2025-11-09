@@ -15,8 +15,8 @@ class Release extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseXMLHelper
         }
         $results = [];
         if (is_array($releasesXPath) && count($releasesXPath) > 0) {
-            foreach ($releasesXPath as $releaseElement) {
-                $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ReleaseHelper($releaseElement);
+            foreach ($releasesXPath as $releaseXPath) {
+                $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ReleaseHelper($releaseXPath);
             }
         }
         return ($results);

@@ -10,7 +10,7 @@ final class CoverArtArchiveTest extends BaseTest
 {
     private const string TEST_RELEASE_MBID = "1b396ee6-5b47-4648-b6c2-a45b7fccafc7";
 
-    private static \aportela\MusicBrainzWrapper\CoverArtArchive $mbJSON;
+    private static \aportela\MusicBrainzWrapper\CoverArtArchive $coverArtArchive;
 
     /**
      * Called once just like normal constructor
@@ -22,7 +22,7 @@ final class CoverArtArchiveTest extends BaseTest
 
         self::$JSONCache = new \aportela\SimpleFSCache\Cache(self::$logger, self::$cachePath, null, \aportela\SimpleFSCache\CacheFormat::JSON);
 
-        self::$mbJSON = new \aportela\MusicBrainzWrapper\CoverArtArchive(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, self::$JSONCache);
+        self::$coverArtArchive = new \aportela\MusicBrainzWrapper\CoverArtArchive(self::$logger, \aportela\MusicBrainzWrapper\APIFormat::JSON, \aportela\MusicBrainzWrapper\Entity::DEFAULT_THROTTLE_DELAY_MS, self::$JSONCache);
     }
 
     /**
@@ -55,7 +55,7 @@ final class CoverArtArchiveTest extends BaseTest
         try {
             foreach (\aportela\MusicBrainzWrapper\CoverArtArchiveImageSize::cases() as $size) {
                 foreach (\aportela\MusicBrainzWrapper\CoverArtArchiveImageType::cases() as $type) {
-                    $url = self::$mbJSON->getReleaseImageURL(self::TEST_RELEASE_MBID, $type, $size);
+                    $url = self::$coverArtArchive->getReleaseImageURL(self::TEST_RELEASE_MBID, $type, $size);
                     $this->assertNotEmpty($url);
                 }
             }
@@ -68,7 +68,7 @@ final class CoverArtArchiveTest extends BaseTest
     {
         $coverArtArchive = null;
         try {
-            $coverArtArchive = self::$mbJSON->get(self::TEST_RELEASE_MBID);
+            $coverArtArchive = self::$coverArtArchive->get(self::TEST_RELEASE_MBID);
         } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
             $this->markTestSkipped('API server connection error: ' . $e->getMessage());
         } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {

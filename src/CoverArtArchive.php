@@ -7,9 +7,9 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
     private const string DIRECT_IMAGE_URL = "https://coverartarchive.org/release/%s/%s-%s";
     private const string GET_API_URL = "https://coverartarchive.org/release/%s/";
 
-    public function getReleaseImageURL(string $releaseMbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType $imageType, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize $imageSize): string
+    public function getReleaseImageURL(string $releaseMbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType $coverArtArchiveImageType, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize $coverArtArchiveImageSize): string
     {
-        return (sprintf(self::DIRECT_IMAGE_URL, $releaseMbId, $imageType->value, $imageSize->value));
+        return (sprintf(self::DIRECT_IMAGE_URL, $releaseMbId, $coverArtArchiveImageType->value, $coverArtArchiveImageSize->value));
     }
 
     public function get(string $mbId): \aportela\MusicBrainzWrapper\ParseHelpers\CoverArtArchiveHelper
