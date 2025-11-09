@@ -4,8 +4,8 @@ namespace aportela\MusicBrainzWrapper;
 
 class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
 {
-    private const DIRECT_IMAGE_URL = "https://coverartarchive.org/release/%s/%s-%s";
-    private const GET_API_URL = "https://coverartarchive.org/release/%s/";
+    private const string DIRECT_IMAGE_URL = "https://coverartarchive.org/release/%s/%s-%s";
+    private const string GET_API_URL = "https://coverartarchive.org/release/%s/";
 
     public function getReleaseImageURL(string $releaseMbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType $imageType, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize $imageSize): string
     {

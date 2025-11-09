@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace aportela\MusicBrainzWrapper\Test;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
 class BaseTest extends \PHPUnit\Framework\TestCase
 {
@@ -22,7 +22,7 @@ class BaseTest extends \PHPUnit\Framework\TestCase
     public static function setUpBeforeClass(): void
     {
         self::$logger = new \Psr\Log\NullLogger();
-        self::$cachePath = dirname(dirname(dirname(__FILE__))) . DIRECTORY_SEPARATOR . "cache";
+        self::$cachePath = dirname(__FILE__, 3) . DIRECTORY_SEPARATOR . "cache";
     }
 
     /**

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace aportela\MusicBrainzWrapper\Test;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
 final class ReleaseTest extends BaseTest
 {
     private const string TEST_ARTIST_NAME = "Kavinsky";
     private const string TEST_ARTIST_MBID = "eb6de5f6-98f8-4b5a-bfdc-f87fa4936baa";
     private const \aportela\MusicBrainzWrapper\ArtistType TEST_ARTIST_TYPE = \aportela\MusicBrainzWrapper\ArtistType::PERSON;
-    private const TEST_ARTIST_COUNTRY = "fr";
+    private const string TEST_ARTIST_COUNTRY = "fr";
 
     private const string TEST_ARTIST_RELEASE_TITLE = "OutRun";
     private const string TEST_ARTIST_RELEASE_YEAR = "2013";
@@ -25,6 +25,7 @@ final class ReleaseTest extends BaseTest
     /**
      * Called once just like normal constructor
      */
+    #[\Override]
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();

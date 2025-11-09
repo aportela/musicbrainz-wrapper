@@ -4,8 +4,8 @@ namespace aportela\MusicBrainzWrapper;
 
 class Release extends \aportela\MusicBrainzWrapper\Entity
 {
-    private const SEARCH_API_URL = "http://musicbrainz.org/ws/2/release/?query=%s&limit=%d&fmt=%s";
-    private const GET_API_URL = "https://musicbrainz.org/ws/2/release/%s?inc=artist-credits+recordings+url-rels&fmt=%s";
+    private const string SEARCH_API_URL = "http://musicbrainz.org/ws/2/release/?query=%s&limit=%d&fmt=%s";
+    private const string GET_API_URL = "https://musicbrainz.org/ws/2/release/%s?inc=artist-credits+recordings+url-rels&fmt=%s";
 
     /**
      * @return array<\aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHelper>

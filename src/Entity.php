@@ -5,28 +5,23 @@ namespace aportela\MusicBrainzWrapper;
 class Entity
 {
     public const USER_AGENT = "MusicBrainzWrapper - https://github.com/aportela/musicbrainz-wrapper (766f6964+github@gmail.com)";
-
-    protected \Psr\Log\LoggerInterface $logger;
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
     protected \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
-
-    private ?\aportela\SimpleFSCache\Cache $cache;
-    private \aportela\SimpleThrottle\Throttle $throttle;
+    private readonly \aportela\SimpleThrottle\Throttle $throttle;
 
     /**
      * https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting
      * For "anonymous" user-agents (see below): we allow through (on average) 50 requests per second, and decline (http 503) the rest.
      */
-    private const MIN_THROTTLE_DELAY_MS = 20; // min allowed: 50 requests per second
+    private const int MIN_THROTTLE_DELAY_MS = 20; // min allowed: 50 requests per second
     public const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
 
     protected mixed $parser = null;
 
     public ?string $raw = null;
 
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?\aportela\SimpleFSCache\Cache $cache = null)
+    public function __construct(protected \Psr\Log\LoggerInterface $logger, \aportela\MusicBrainzWrapper\APIFormat $apiFormat, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, private readonly ?\aportela\SimpleFSCache\Cache $cache = null)
     {
-        $this->logger = $logger;
         $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger, self::USER_AGENT);
         $supportedApiFormats = [\aportela\MusicBrainzWrapper\APIFormat::XML, \aportela\MusicBrainzWrapper\APIFormat::JSON];
         if (!in_array($apiFormat, $supportedApiFormats)) {
@@ -39,7 +34,6 @@ class Entity
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidThrottleMsDelayException("min throttle delay ms required: " . self::MIN_THROTTLE_DELAY_MS);
         }
         $this->throttle = new \aportela\SimpleThrottle\Throttle($this->logger, $throttleDelayMS, 5000, 10);
-        $this->cache = $cache;
         if ($apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $loadedExtensions = get_loaded_extensions();
             foreach (["libxml", "SimpleXML"] as $requiredExtension) {

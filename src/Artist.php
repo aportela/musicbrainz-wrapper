@@ -4,8 +4,8 @@ namespace aportela\MusicBrainzWrapper;
 
 class Artist extends \aportela\MusicBrainzWrapper\Entity
 {
-    private const SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=%s&limit=%d&fmt=%s";
-    private const GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=genres+recordings+releases+release-groups+works+url-rels&fmt=%s";
+    private const string SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=%s&limit=%d&fmt=%s";
+    private const string GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=genres+recordings+releases+release-groups+works+url-rels&fmt=%s";
 
     /**
      * This is a Special Purpose Artist that should only be used if no artist of discographic relevance has been attributed to a piece of work.

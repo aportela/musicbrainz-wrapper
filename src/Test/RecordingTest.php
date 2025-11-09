@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace aportela\MusicBrainzWrapper\Test;
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
 final class RecordingTest extends BaseTest
 {
@@ -22,6 +22,7 @@ final class RecordingTest extends BaseTest
     /**
      * Called once just like normal constructor
      */
+    #[\Override]
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
