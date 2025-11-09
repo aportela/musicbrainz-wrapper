@@ -13,6 +13,7 @@ class CoverArtArchiveHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\Co
                 $this->mbId = array_pop($urlParts);
             }
         }
+        
         if (isset($object->images) && is_array($object->images)) {
             foreach ($object->images as $image) {
                 $this->images[] = $image;

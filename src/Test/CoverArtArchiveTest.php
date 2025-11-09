@@ -59,8 +59,8 @@ final class CoverArtArchiveTest extends BaseTest
                     $this->assertNotEmpty($url);
                 }
             }
-        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $e) {
-            $this->markTestSkipped('API server connection error: ' . $e->getMessage());
+        } catch (\aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException $remoteAPIServerConnectionException) {
+            $this->markTestSkipped('API server connection error: ' . $remoteAPIServerConnectionException->getMessage());
         }
     }
 
@@ -74,7 +74,8 @@ final class CoverArtArchiveTest extends BaseTest
         } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
             $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
+        
         $this->assertSame(self::TEST_RELEASE_MBID, $coverArtArchive->mbId);
-        $this->assertTrue(count($coverArtArchive->images) > 0);
+        $this->assertTrue($coverArtArchive->images !== []);
     }
 }

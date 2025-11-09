@@ -7,6 +7,7 @@ use SimpleXMLElement;
 class ParseXMLHelper
 {
     protected const DEFAULT_NS_ALIAS = "mmd";
+    
     protected const DEFAULT_NS = "http://musicbrainz.org/ns/mmd-2.0#";
 
     protected \SimpleXMLElement $xml;
@@ -22,8 +23,10 @@ class ParseXMLHelper
                 $errorMessage = "Error: " . $lastError->message . " (Line: " . $lastError->line . ", Column: " . $lastError->column . ")";
                 $errorCode = $lastError->code;
             }
+            
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException($errorMessage, $errorCode);
         }
+        
         $this->xml = $element;
         //$this->xml->registerXPathNamespace(self::DEFAULT_NS_ALIAS, reset($this->xml->getNamespaces(true)) ?? self::DEFAULT_NS);
         $this->xml->registerXPathNamespace(self::DEFAULT_NS_ALIAS, self::DEFAULT_NS);

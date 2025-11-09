@@ -13,6 +13,7 @@ abstract class BaseTest extends \PHPUnit\Framework\TestCase
     protected static string $cachePath;
 
     protected static \aportela\SimpleFSCache\Cache $JSONCache;
+    
     protected static \aportela\SimpleFSCache\Cache $XMLCache;
 
 
@@ -29,12 +30,12 @@ abstract class BaseTest extends \PHPUnit\Framework\TestCase
      * Initialize the test case
      * Called for every defined test
      */
-    public function setUp(): void {}
+    protected function setUp(): void {}
 
     /**
      * Clean up the test case, called for every defined test
      */
-    public function tearDown(): void {}
+    protected function tearDown(): void {}
 
     /**
      * Clean up the whole test class

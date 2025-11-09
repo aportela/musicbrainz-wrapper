@@ -16,8 +16,10 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
                     $this->genres[] = mb_strtolower(mb_trim($genre->name));
                 }
             }
+            
             $this->genres = array_unique($this->genres);
         }
+        
         if (isset($object->relations) && is_array($object->relations)) {
             foreach ($object->relations as $artistRelation) {
                 if (is_object($artistRelation)) {

@@ -5,6 +5,7 @@ namespace aportela\MusicBrainzWrapper;
 class Artist extends \aportela\MusicBrainzWrapper\Entity
 {
     private const string SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=%s&limit=%d&fmt=%s";
+    
     private const string GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=genres+recordings+releases+release-groups+works+url-rels&fmt=%s";
 
     /**
@@ -33,13 +34,14 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                     $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Search\Artist($responseBody);
                     break;
                 default:
-                    $this->logger->error("\aportela\MusicBrainzWrapper\Artist::search - Error: invalid API format", [$this->apiFormat]);
-                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: {$this->apiFormat->value}");
+                    $this->logger->error(\aportela\MusicBrainzWrapper\Artist::class . '::search - Error: invalid API format', [$this->apiFormat]);
+                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat('Invalid API format: ' . $this->apiFormat->value);
             }
+            
             return ($this->parser->parse());
         } else {
-            $this->logger->error("\aportela\MusicBrainzWrapper\Artist::search - Error: empty body on API response", [$url]);
-            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
+            $this->logger->error(\aportela\MusicBrainzWrapper\Artist::class . '::search - Error: empty body on API response', [$url]);
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse('Empty body on API response for URL: ' . $url);
         }
     }
 
@@ -52,14 +54,14 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 $this->saveCache($mbId, $responseBody);
                 return ($this->parse($responseBody));
             } else {
-                $this->logger->error("\aportela\MusicBrainzWrapper\Artist::get - Error: empty body on API response", [$url]);
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
+                $this->logger->error(\aportela\MusicBrainzWrapper\Artist::class . '::get - Error: empty body on API response', [$url]);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse('Empty body on API response for URL: ' . $url);
             }
         } elseif (!in_array($this->raw, [null, '', '0'], true)) {
             return ($this->parse($this->raw));
         } else {
-            $this->logger->error("\aportela\MusicBrainzWrapper\Artist::get - Error: cached data for identifier is empty", [$mbId]);
-            throw new \aportela\MusicBrainzWrapper\Exception\InvalidCacheException("Cached data for identifier ({$mbId}) is empty");
+            $this->logger->error(\aportela\MusicBrainzWrapper\Artist::class . '::get - Error: cached data for identifier is empty', [$mbId]);
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidCacheException(sprintf('Cached data for identifier (%s) is empty', $mbId));
         }
     }
 
@@ -74,9 +76,10 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\Artist($rawText);
                 break;
             default:
-                $this->logger->error("\aportela\MusicBrainzWrapper\Artist::parse - Error: invalid API format", [$this->apiFormat]);
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: {$this->apiFormat->value}");
+                $this->logger->error(\aportela\MusicBrainzWrapper\Artist::class . '::parse - Error: invalid API format', [$this->apiFormat]);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat('Invalid API format: ' . $this->apiFormat->value);
         }
+        
         $this->raw = $rawText;
         return ($this->parser->parse());
     }

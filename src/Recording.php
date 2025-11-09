@@ -15,14 +15,14 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
                 $this->saveCache($mbId, $responseBody);
                 return ($this->parse($responseBody));
             } else {
-                $this->logger->error("\aportela\MusicBrainzWrapper\Recording::get - Error: empty body on API response", [$url]);
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
+                $this->logger->error(\aportela\MusicBrainzWrapper\Recording::class . '::get - Error: empty body on API response', [$url]);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse('Empty body on API response for URL: ' . $url);
             }
         } elseif (!in_array($this->raw, [null, '', '0'], true)) {
             return ($this->parse($this->raw));
         } else {
-            $this->logger->error("\aportela\MusicBrainzWrapper\Recording::get - Error: cached data for identifier is empty", [$mbId]);
-            throw new \aportela\MusicBrainzWrapper\Exception\InvalidCacheException("Cached data for identifier ({$mbId}) is empty");
+            $this->logger->error(\aportela\MusicBrainzWrapper\Recording::class . '::get - Error: cached data for identifier is empty', [$mbId]);
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidCacheException(sprintf('Cached data for identifier (%s) is empty', $mbId));
         }
     }
 
@@ -37,9 +37,10 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
                 $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\Recording($rawText);
                 break;
             default:
-                $this->logger->error("\aportela\MusicBrainzWrapper\Recording::parse - Error: invalid API format", [$this->apiFormat]);
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("Invalid API format: {$this->apiFormat->value}");
+                $this->logger->error(\aportela\MusicBrainzWrapper\Recording::class . '::parse - Error: invalid API format', [$this->apiFormat]);
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat('Invalid API format: ' . $this->apiFormat->value);
         }
+        
         $this->raw = $rawText;
         return ($this->parser->parse());
     }

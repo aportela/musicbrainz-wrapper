@@ -13,12 +13,14 @@ class Artist extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseXMLHelper
         if ($artistsXPath === false) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("artist-list xpath not found");
         }
+        
         $results = [];
-        if (is_array($artistsXPath) && count($artistsXPath) > 0) {
+        if (is_array($artistsXPath) && $artistsXPath !== []) {
             foreach ($artistsXPath as $artistXPath) {
                 $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ArtistHelper($artistXPath);
             }
         }
+        
         return ($results);
     }
 }

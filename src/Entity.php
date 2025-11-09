@@ -5,15 +5,19 @@ namespace aportela\MusicBrainzWrapper;
 abstract class Entity
 {
     public const USER_AGENT = "MusicBrainzWrapper - https://github.com/aportela/musicbrainz-wrapper (766f6964+github@gmail.com)";
+    
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
+    
     protected \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
+    
     private readonly \aportela\SimpleThrottle\Throttle $throttle;
 
     /**
      * https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting
      * For "anonymous" user-agents (see below): we allow through (on average) 50 requests per second, and decline (http 503) the rest.
      */
-    private const int MIN_THROTTLE_DELAY_MS = 20; // min allowed: 50 requests per second
+    private const int MIN_THROTTLE_DELAY_MS = 20;
+     // min allowed: 50 requests per second
     public const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
 
     protected mixed $parser = null;
@@ -25,27 +29,31 @@ abstract class Entity
         $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger, self::USER_AGENT);
         $supportedApiFormats = [\aportela\MusicBrainzWrapper\APIFormat::XML, \aportela\MusicBrainzWrapper\APIFormat::JSON];
         if (!in_array($apiFormat, $supportedApiFormats)) {
-            $this->logger->critical("\aportela\MusicBrainzWrapper\Entity::__construct - ERROR: invalid api format", [$apiFormat, [\aportela\MusicBrainzWrapper\APIFormat::XML->value, \aportela\MusicBrainzWrapper\APIFormat::JSON->value]]);
+            $this->logger->critical(\aportela\MusicBrainzWrapper\Entity::class . '::__construct - ERROR: invalid api format', [$apiFormat, [\aportela\MusicBrainzWrapper\APIFormat::XML->value, \aportela\MusicBrainzWrapper\APIFormat::JSON->value]]);
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("supported formats: " . implode(", ", [\aportela\MusicBrainzWrapper\APIFormat::XML->value, \aportela\MusicBrainzWrapper\APIFormat::JSON->value]));
         }
+        
         $this->apiFormat = $apiFormat;
         if ($throttleDelayMS < self::MIN_THROTTLE_DELAY_MS) {
-            $this->logger->critical("\aportela\MusicBrainzWrapper\Entity::__construct - ERROR: invalid throttleDelayMS", [$throttleDelayMS, self::MIN_THROTTLE_DELAY_MS]);
+            $this->logger->critical(\aportela\MusicBrainzWrapper\Entity::class . '::__construct - ERROR: invalid throttleDelayMS', [$throttleDelayMS, self::MIN_THROTTLE_DELAY_MS]);
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidThrottleMsDelayException("min throttle delay ms required: " . self::MIN_THROTTLE_DELAY_MS);
         }
+        
         $this->throttle = new \aportela\SimpleThrottle\Throttle($this->logger, $throttleDelayMS, 5000, 10);
         if ($apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $loadedExtensions = get_loaded_extensions();
             foreach (["libxml", "SimpleXML"] as $requiredExtension) {
                 if (!in_array($requiredExtension, $loadedExtensions)) {
-                    $this->logger->critical("\aportela\MusicBrainzWrapper\Entity::__construct - ERROR: {$requiredExtension} php extension not found", $loadedExtensions);
-                    throw new \aportela\MusicBrainzWrapper\Exception\PHPExtensionMissingException("Missing required php extension: {$requiredExtension}, loaded extensions: " . implode(", ", $loadedExtensions));
+                    $this->logger->critical(sprintf(\aportela\MusicBrainzWrapper\Entity::class . '::__construct - ERROR: %s php extension not found', $requiredExtension), $loadedExtensions);
+                    throw new \aportela\MusicBrainzWrapper\Exception\PHPExtensionMissingException(sprintf('Missing required php extension: %s, loaded extensions: ', $requiredExtension) . implode(", ", $loadedExtensions));
                 }
             }
+            
             // avoids simplexml_load_string warnings
             // https://stackoverflow.com/a/40585185
             libxml_use_internal_errors(true);
         }
+        
         $this->reset();
     }
 
@@ -128,7 +136,7 @@ abstract class Entity
      */
     protected function httpGET(string $url): ?string
     {
-        $this->logger->debug("\aportela\MusicBrainzWrapper\Entity::httpGET - Opening URL", [$url]);
+        $this->logger->debug(\aportela\MusicBrainzWrapper\Entity::class . '::httpGET - Opening URL', [$url]);
         try {
             $this->checkThrottle();
             $response = $this->http->GET($url);
@@ -136,20 +144,20 @@ abstract class Entity
                 $this->resetThrottle();
                 return ($response->body);
             } elseif ($response->code === 404) {
-                $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
-                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException("Error opening URL: {$url}", $response->code);
+                $this->logger->error(\aportela\MusicBrainzWrapper\Entity::class . '::httpGET - Error opening URL', [$url, $response->code, $response->body]);
+                throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException('Error opening URL: ' . $url, $response->code);
             } elseif ($response->code === 503) {
                 $this->incrementThrottle();
-                $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
-                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException("Error opening URL: {$url}", $response->code);
+                $this->logger->error(\aportela\MusicBrainzWrapper\Entity::class . '::httpGET - Error opening URL', [$url, $response->code, $response->body]);
+                throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException('Error opening URL: ' . $url, $response->code);
             } else {
-                $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
-                throw new \aportela\MusicBrainzWrapper\Exception\HTTPException("Error opening URL: {$url}", $response->code);
+                $this->logger->error(\aportela\MusicBrainzWrapper\Entity::class . '::httpGET - Error opening URL', [$url, $response->code, $response->body]);
+                throw new \aportela\MusicBrainzWrapper\Exception\HTTPException('Error opening URL: ' . $url, $response->code);
             }
-        } catch (\aportela\HTTPRequestWrapper\Exception\CurlExecException $e) {
-            $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $e->getCode(), $e->getMessage()]);
+        } catch (\aportela\HTTPRequestWrapper\Exception\CurlExecException $curlExecException) {
+            $this->logger->error(\aportela\MusicBrainzWrapper\Entity::class . '::httpGET - Error opening URL', [$url, $curlExecException->getCode(), $curlExecException->getMessage()]);
             $this->incrementThrottle(); // sometimes api calls return connection error, interpret this as rate limit response
-            throw new \aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException("Error opening URL: {$url}", 0, $e);
+            throw new \aportela\MusicBrainzWrapper\Exception\RemoteAPIServerConnectionException('Error opening URL: ' . $url, 0, $curlExecException);
         }
     }
 }
