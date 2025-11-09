@@ -2,7 +2,7 @@
 
 namespace aportela\MusicBrainzWrapper;
 
-class Entity
+abstract class Entity
 {
     public const USER_AGENT = "MusicBrainzWrapper - https://github.com/aportela/musicbrainz-wrapper (766f6964+github@gmail.com)";
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
@@ -49,9 +49,7 @@ class Entity
         $this->reset();
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     protected function reset(): void
     {

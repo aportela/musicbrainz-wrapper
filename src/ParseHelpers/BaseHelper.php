@@ -2,7 +2,7 @@
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
-class BaseHelper
+abstract class BaseHelper
 {
     public string $mbId;
 }
