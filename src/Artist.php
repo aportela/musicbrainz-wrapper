@@ -24,7 +24,7 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
         $url = sprintf(self::SEARCH_API_URL, urlencode($name), $limit, $this->apiFormat->value);
         $responseBody = $this->httpGET($url);
         $responseBody = $this->httpGET($url);
-        if (! empty($responseBody)) {
+        if (!in_array($responseBody, [null, '', '0'], true)) {
             switch ($this->apiFormat) {
                 case \aportela\MusicBrainzWrapper\APIFormat::XML:
                     $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\Search\Artist($responseBody);
@@ -46,23 +46,20 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
     public function get(string $mbId): \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper
     {
         if (! $this->getCache($mbId)) {
-
             $url = sprintf(self::GET_API_URL, $mbId, $this->apiFormat->value);
             $responseBody = $this->httpGET($url);
-            if (! empty($responseBody)) {
+            if (!in_array($responseBody, [null, '', '0'], true)) {
                 $this->saveCache($mbId, $responseBody);
                 return ($this->parse($responseBody));
             } else {
                 $this->logger->error("\aportela\MusicBrainzWrapper\Artist::get - Error: empty body on API response", [$url]);
                 throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
             }
+        } elseif (!in_array($this->raw, [null, '', '0'], true)) {
+            return ($this->parse($this->raw));
         } else {
-            if (! empty($this->raw)) {
-                return ($this->parse($this->raw));
-            } else {
-                $this->logger->error("\aportela\MusicBrainzWrapper\Artist::get - Error: cached data for identifier is empty", [$mbId]);
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidCacheException("Cached data for identifier ({$mbId}) is empty");
-            }
+            $this->logger->error("\aportela\MusicBrainzWrapper\Artist::get - Error: cached data for identifier is empty", [$mbId]);
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidCacheException("Cached data for identifier ({$mbId}) is empty");
         }
     }
 

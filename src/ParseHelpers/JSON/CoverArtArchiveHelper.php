@@ -8,7 +8,7 @@ class CoverArtArchiveHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\Co
     {
         if (isset($object->release)) {
             $releaseUrl = (string) ($object->release ?? null);
-            if (! empty($releaseUrl)) {
+            if ($releaseUrl !== '' && $releaseUrl !== '0') {
                 $urlParts = explode("/", $releaseUrl);
                 $this->mbId = array_pop($urlParts);
             }

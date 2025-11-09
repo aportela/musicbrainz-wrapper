@@ -6,13 +6,13 @@ class ReleaseCoverArtArchiveHelper extends \aportela\MusicBrainzWrapper\ParseHel
 {
     public function __construct(\SimpleXMLElement $element)
     {
-        if (isset($element->artwork)) {
+        if (property_exists($element, 'artwork') && $element->artwork !== null) {
             $this->artwork = (string)$element->artwork === "true";
         }
-        if (isset($element->front)) {
+        if (property_exists($element, 'front') && $element->front !== null) {
             $this->front = (string)$element->front === "true";
         }
-        if (isset($element->back)) {
+        if (property_exists($element, 'back') && $element->back !== null) {
             $this->back =  (string) $element->back === "true";
         }
     }

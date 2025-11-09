@@ -85,7 +85,7 @@ abstract class Entity
      */
     protected function saveCache(string $mbId, string $raw): bool
     {
-        if ($this->cache !== null) {
+        if ($this->cache instanceof \aportela\SimpleFSCache\Cache) {
             return ($this->cache->set($mbId, $raw));
         } else {
             return (false);
@@ -97,7 +97,7 @@ abstract class Entity
      */
     protected function removeCache(string $mbId): bool
     {
-        if ($this->cache !== null) {
+        if ($this->cache instanceof \aportela\SimpleFSCache\Cache) {
             return ($this->cache->delete($mbId));
         } else {
             return (false);
@@ -110,7 +110,7 @@ abstract class Entity
     protected function getCache(string $mbId): bool
     {
         $this->reset();
-        if ($this->cache !== null) {
+        if ($this->cache instanceof \aportela\SimpleFSCache\Cache) {
             $cacheData = $this->cache->get($mbId, false);
             if (is_string($cacheData)) {
                 $this->raw = $cacheData;
@@ -132,13 +132,13 @@ abstract class Entity
         try {
             $this->checkThrottle();
             $response = $this->http->GET($url);
-            if ($response->code == 200) {
+            if ($response->code === 200) {
                 $this->resetThrottle();
                 return ($response->body);
-            } elseif ($response->code == 404) {
+            } elseif ($response->code === 404) {
                 $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
                 throw new \aportela\MusicBrainzWrapper\Exception\NotFoundException("Error opening URL: {$url}", $response->code);
-            } elseif ($response->code == 503) {
+            } elseif ($response->code === 503) {
                 $this->incrementThrottle();
                 $this->logger->error("\aportela\MusicBrainzWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
                 throw new \aportela\MusicBrainzWrapper\Exception\RateLimitExceedException("Error opening URL: {$url}", $response->code);

@@ -23,7 +23,7 @@ class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ReleaseHel
         }
 
         $mediaList = $element->children()->{"medium-list"};
-        if ($mediaList !== null && $mediaList->attributes() !== null && intval($mediaList->attributes()->count) > 0) {
+        if ($mediaList !== null && $mediaList->attributes() instanceof \SimpleXMLElement && intval($mediaList->attributes()->count) > 0) {
             foreach ($mediaList->children() as $media) {
                 $this->media[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\MediaHelper($media);
             }
