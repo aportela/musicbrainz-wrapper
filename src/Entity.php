@@ -49,8 +49,6 @@ abstract class Entity
         $this->reset();
     }
 
-    public function __destruct() {}
-
     protected function reset(): void
     {
         $this->raw = null;
