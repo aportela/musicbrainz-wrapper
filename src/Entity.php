@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MusicBrainzWrapper;
 
 abstract class Entity
@@ -17,6 +19,7 @@ abstract class Entity
      * For "anonymous" user-agents (see below): we allow through (on average) 50 requests per second, and decline (http 503) the rest.
      */
     private const int MIN_THROTTLE_DELAY_MS = 20;
+
      // min allowed: 50 requests per second
     public const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
 

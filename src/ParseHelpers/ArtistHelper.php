@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MusicBrainzWrapper\ParseHelpers;
 
 class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\BaseHelper

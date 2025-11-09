@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MusicBrainzWrapper\ParseHelpers\XML\Search;
 
 class Artist extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseXMLHelper

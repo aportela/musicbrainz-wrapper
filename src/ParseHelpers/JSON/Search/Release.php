@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MusicBrainzWrapper\ParseHelpers\JSON\Search;
 
 class Release extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseJSONHelper

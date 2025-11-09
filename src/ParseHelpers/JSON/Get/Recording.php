@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get;
 
 class Recording extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseJSONHelper

@@ -43,7 +43,7 @@ final class RecordingTest extends BaseTest
      * Initialize the test case
      * Called for every defined test
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
     }
@@ -51,7 +51,7 @@ final class RecordingTest extends BaseTest
     /**
      * Clean up the test case, called for every defined test
      */
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

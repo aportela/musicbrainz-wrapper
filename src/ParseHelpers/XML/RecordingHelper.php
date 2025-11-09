@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MusicBrainzWrapper\ParseHelpers\XML;
 
 class RecordingHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\RecordingHelper

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MusicBrainzWrapper\ParseHelpers\XML;
 
 class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper
@@ -9,14 +11,14 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
         $this->mbId = (string) $element->attributes()->id;
         $this->type = \aportela\MusicBrainzWrapper\ArtistType::fromString((string)($element->attributes()->type ?? null));
         $this->name = (string) $element->children()->name;
-        $this->country = property_exists($element->children(), 'country') && $element->children()->country !== null ? (empty($country = $element->children()->country) ? null : mb_strtolower($country)) : null;
+        $this->country = property_exists($element->children(), 'country') && $element->children()->country !== null ? (empty($country = $element->children()->country) ? null : mb_strtolower(strval($country))) : null;
 
         $genreList = $element->children()->{"genre-list"};
         if ($genreList !== null && $children = $genreList->children()) {
             foreach ($children as $child) {
-                $this->genres[] = mb_strtolower(mb_trim($child->children()->name));
+                $this->genres[] = mb_strtolower(mb_trim(strval($child->children()->name)));
             }
-            
+
             if ($this->genres !== []) {
                 $this->genres = array_unique($this->genres);
             }

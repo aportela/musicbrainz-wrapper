@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MusicBrainzWrapper;
 
 class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
