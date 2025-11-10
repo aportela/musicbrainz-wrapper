@@ -16,7 +16,7 @@ class ParseJSONHelper
         } elseif (! is_object($obj)) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidJSONException("invalid object");
         }
-        
+
         $this->json = $obj;
     }
 }

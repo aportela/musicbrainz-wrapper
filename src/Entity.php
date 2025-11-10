@@ -7,11 +7,11 @@ namespace aportela\MusicBrainzWrapper;
 abstract class Entity
 {
     public const USER_AGENT = "MusicBrainzWrapper - https://github.com/aportela/musicbrainz-wrapper (766f6964+github@gmail.com)";
-    
+
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
-    
+
     protected \aportela\MusicBrainzWrapper\APIFormat $apiFormat;
-    
+
     private readonly \aportela\SimpleThrottle\Throttle $throttle;
 
     /**
@@ -20,7 +20,7 @@ abstract class Entity
      */
     private const int MIN_THROTTLE_DELAY_MS = 20;
 
-     // min allowed: 50 requests per second
+    // min allowed: 50 requests per second
     public const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
 
     protected mixed $parser = null;
@@ -35,13 +35,13 @@ abstract class Entity
             $this->logger->critical(\aportela\MusicBrainzWrapper\Entity::class . '::__construct - ERROR: invalid api format', [$apiFormat, [\aportela\MusicBrainzWrapper\APIFormat::XML->value, \aportela\MusicBrainzWrapper\APIFormat::JSON->value]]);
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat("supported formats: " . implode(", ", [\aportela\MusicBrainzWrapper\APIFormat::XML->value, \aportela\MusicBrainzWrapper\APIFormat::JSON->value]));
         }
-        
+
         $this->apiFormat = $apiFormat;
         if ($throttleDelayMS < self::MIN_THROTTLE_DELAY_MS) {
             $this->logger->critical(\aportela\MusicBrainzWrapper\Entity::class . '::__construct - ERROR: invalid throttleDelayMS', [$throttleDelayMS, self::MIN_THROTTLE_DELAY_MS]);
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidThrottleMsDelayException("min throttle delay ms required: " . self::MIN_THROTTLE_DELAY_MS);
         }
-        
+
         $this->throttle = new \aportela\SimpleThrottle\Throttle($this->logger, $throttleDelayMS, 5000, 10);
         if ($apiFormat == \aportela\MusicBrainzWrapper\APIFormat::XML) {
             $loadedExtensions = get_loaded_extensions();
@@ -51,12 +51,12 @@ abstract class Entity
                     throw new \aportela\MusicBrainzWrapper\Exception\PHPExtensionMissingException(sprintf('Missing required php extension: %s, loaded extensions: ', $requiredExtension) . implode(", ", $loadedExtensions));
                 }
             }
-            
+
             // avoids simplexml_load_string warnings
             // https://stackoverflow.com/a/40585185
             libxml_use_internal_errors(true);
         }
-        
+
         $this->reset();
     }
 

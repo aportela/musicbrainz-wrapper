@@ -7,7 +7,7 @@ namespace aportela\MusicBrainzWrapper\ParseHelpers;
 class ReleaseHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\BaseHelper
 {
     public string $title;
-    
+
     public ?int $year = null;
 
     /**

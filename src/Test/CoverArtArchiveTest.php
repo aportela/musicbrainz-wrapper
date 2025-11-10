@@ -74,7 +74,7 @@ final class CoverArtArchiveTest extends BaseTest
         } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
             $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
-        
+
         $this->assertSame(self::TEST_RELEASE_MBID, $coverArtArchive->mbId);
         $this->assertTrue($coverArtArchive->images !== []);
     }

@@ -15,14 +15,14 @@ class Release extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseXMLHelper
         if ($releasesXPath === false) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidXMLException("release-list xpath not found");
         }
-        
+
         $results = [];
         if (is_array($releasesXPath) && $releasesXPath !== []) {
             foreach ($releasesXPath as $releaseXPath) {
                 $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\XML\ReleaseHelper($releaseXPath);
             }
         }
-        
+
         return ($results);
     }
 }

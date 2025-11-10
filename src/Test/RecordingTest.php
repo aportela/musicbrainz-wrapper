@@ -9,19 +9,19 @@ require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SE
 final class RecordingTest extends BaseTest
 {
     private const string TEST_ARTIST_NAME = "Imagine Dragons";
-    
+
     private const string TEST_ARTIST_MBID = "012151a8-0f9a-44c9-997f-ebd68b5389f9";
-    
+
     private const \aportela\MusicBrainzWrapper\ArtistType TEST_ARTIST_TYPE = \aportela\MusicBrainzWrapper\ArtistType::GROUP;
-    
+
     private const string TEST_ARTIST_COUNTRY = "us";
 
     private const string TEST_ARTIST_RECORDING_TITLE = "Radioactive";
-    
+
     private const string TEST_ARTIST_RECORDING_MBID = "bd61eda3-eb77-4634-ba66-4a084f7f8455";
 
     private static \aportela\MusicBrainzWrapper\Recording $mbJSON;
-    
+
     private static \aportela\MusicBrainzWrapper\Recording $mbXML;
 
     /**
@@ -74,7 +74,7 @@ final class RecordingTest extends BaseTest
         } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
             $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
-        
+
         $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, $recording->title);
         $this->assertCount(1, $recording->artistCredit);
         $this->assertSame(self::TEST_ARTIST_MBID, $recording->artistCredit[0]->mbId);
@@ -93,7 +93,7 @@ final class RecordingTest extends BaseTest
         } catch (\aportela\MusicBrainzWrapper\Exception\RateLimitExceedException $e) {
             $this->markTestSkipped('API server is limited by rate: ' . $e->getMessage());
         }
-        
+
         $this->assertSame(self::TEST_ARTIST_RECORDING_TITLE, $recording->title);
         $this->assertCount(1, $recording->artistCredit);
         $this->assertSame(self::TEST_ARTIST_MBID, $recording->artistCredit[0]->mbId);
