@@ -40,9 +40,11 @@ class Recording extends \aportela\MusicBrainzWrapper\Entity
                 break;
             default:
                 $this->logger->error(\aportela\MusicBrainzWrapper\Recording::class . '::parse - Error: invalid API format', [$this->apiFormat]);
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat('Invalid API format: ' . $this->apiFormat->value);
+                /** @var string $format */
+                $format = $this->apiFormat->value;
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat('Invalid API format: ' . $format);
         }
-        
+
         $this->raw = $rawText;
         return ($this->parser->parse());
     }

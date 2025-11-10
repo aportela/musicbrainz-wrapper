@@ -7,7 +7,7 @@ namespace aportela\MusicBrainzWrapper;
 class Artist extends \aportela\MusicBrainzWrapper\Entity
 {
     private const string SEARCH_API_URL = "http://musicbrainz.org/ws/2/artist/?query=%s&limit=%d&fmt=%s";
-    
+
     private const string GET_API_URL = "https://musicbrainz.org/ws/2/artist/%s?inc=genres+recordings+releases+release-groups+works+url-rels&fmt=%s";
 
     /**
@@ -37,9 +37,11 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                     break;
                 default:
                     $this->logger->error(\aportela\MusicBrainzWrapper\Artist::class . '::search - Error: invalid API format', [$this->apiFormat]);
-                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat('Invalid API format: ' . $this->apiFormat->value);
+                    /** @var string $format */
+                    $format = $this->apiFormat->value;
+                    throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat('Invalid API format: ' . $format);
             }
-            
+
             return ($this->parser->parse());
         } else {
             $this->logger->error(\aportela\MusicBrainzWrapper\Artist::class . '::search - Error: empty body on API response', [$url]);
@@ -79,9 +81,11 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
                 break;
             default:
                 $this->logger->error(\aportela\MusicBrainzWrapper\Artist::class . '::parse - Error: invalid API format', [$this->apiFormat]);
-                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat('Invalid API format: ' . $this->apiFormat->value);
+                /** @var string $format */
+                $format = $this->apiFormat->value;
+                throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat('Invalid API format: ' . $format);
         }
-        
+
         $this->raw = $rawText;
         return ($this->parser->parse());
     }

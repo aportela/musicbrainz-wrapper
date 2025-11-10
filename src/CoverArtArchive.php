@@ -7,7 +7,7 @@ namespace aportela\MusicBrainzWrapper;
 class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
 {
     private const string DIRECT_IMAGE_URL = "https://coverartarchive.org/release/%s/%s-%s";
-    
+
     private const string GET_API_URL = "https://coverartarchive.org/release/%s/";
 
     public function getReleaseImageURL(string $releaseMbId, \aportela\MusicBrainzWrapper\CoverArtArchiveImageType $coverArtArchiveImageType, \aportela\MusicBrainzWrapper\CoverArtArchiveImageSize $coverArtArchiveImageSize): string
@@ -42,9 +42,11 @@ class CoverArtArchive extends \aportela\MusicBrainzWrapper\Entity
             $this->parser = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\Get\CoverArtArchive($rawText);
         } else {
             $this->logger->error(\aportela\MusicBrainzWrapper\CoverArtArchive::class . '::parse - Error: invalid API format', [$this->apiFormat]);
-            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat('Invalid API format: ' . $this->apiFormat->value);
+            /** @var string $format */
+            $format = $this->apiFormat->value;
+            throw new \aportela\MusicBrainzWrapper\Exception\InvalidAPIFormat('Invalid API format: ' . $format);
         }
-        
+
         $this->raw = $rawText;
         return ($this->parser->parse());
     }
