@@ -11,19 +11,19 @@ class Artist extends \aportela\MusicBrainzWrapper\ParseHelpers\ParseJSONHelper
      */
     public function parse(): array
     {
-        if (! (isset($this->json->count) && isset($this->json->artists))) {
+        if (! (property_exists($this->json, "count") && property_exists($this->json, "artists"))) {
             throw new \aportela\MusicBrainzWrapper\Exception\InvalidJSONException("artists count/array not found");
         }
-        
+
         $results = [];
-        if (isset($this->json->count) && intval($this->json->count) > 0 && is_array($this->json->artists)) {
+        if (is_numeric($this->json->count) && intval($this->json->count) > 0 &&  property_exists($this->json, "artists") && is_array($this->json->artists)) {
             foreach ($this->json->artists as $artistObject) {
                 if (is_object($artistObject)) {
                     $results[] = new \aportela\MusicBrainzWrapper\ParseHelpers\JSON\ArtistHelper($artistObject);
                 }
             }
         }
-        
+
         return ($results);
     }
 }
