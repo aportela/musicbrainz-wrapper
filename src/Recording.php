@@ -6,7 +6,7 @@ namespace aportela\MusicBrainzWrapper;
 
 class Recording extends \aportela\MusicBrainzWrapper\Entity
 {
-    public const GET_API_URL = "https://musicbrainz.org/ws/2/recording/%s?inc=artist-credits&fmt=%s";
+    private const string GET_API_URL = "https://musicbrainz.org/ws/2/recording/%s?inc=artist-credits&fmt=%s";
 
     public function get(string $mbId): \aportela\MusicBrainzWrapper\ParseHelpers\RecordingHelper
     {
