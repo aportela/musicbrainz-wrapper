@@ -14,9 +14,9 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
      * This is a Special Purpose Artist that should only be used if no artist of discographic relevance has been attributed to a piece of work.
      * https://musicbrainz.org/artist/eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61
      */
-    public const NO_ARTIST_MB_ID = "eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61";
+    public const string NO_ARTIST_MB_ID = "eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61";
 
-    public const VARIOUS_ARTISTS_MB_ID = "89ad4ac3-39f7-470e-963a-56509c546377";
+    public const string VARIOUS_ARTISTS_MB_ID = "89ad4ac3-39f7-470e-963a-56509c546377";
 
     public \aportela\MusicBrainzWrapper\ArtistType $type = \aportela\MusicBrainzWrapper\ArtistType::NONE;
 
