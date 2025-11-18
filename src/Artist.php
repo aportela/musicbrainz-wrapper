@@ -16,6 +16,8 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
      */
     public const NO_ARTIST_MB_ID = "eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61";
 
+    public const VARIOUS_ARTISTS_MB_ID = "89ad4ac3-39f7-470e-963a-56509c546377";
+
     public \aportela\MusicBrainzWrapper\ArtistType $type = \aportela\MusicBrainzWrapper\ArtistType::NONE;
 
     /**
@@ -23,7 +25,6 @@ class Artist extends \aportela\MusicBrainzWrapper\Entity
      */
     public function search(string $name, int $limit = 1): array
     {
-
         $url = sprintf(self::SEARCH_API_URL, urlencode($name), $limit, $this->apiFormat->value);
         $responseBody = $this->httpGET($url);
         $responseBody = $this->httpGET($url);
