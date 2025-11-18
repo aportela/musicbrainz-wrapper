@@ -6,7 +6,7 @@ namespace aportela\MusicBrainzWrapper;
 
 abstract class Entity
 {
-    public const USER_AGENT = "MusicBrainzWrapper - https://github.com/aportela/musicbrainz-wrapper (766f6964+github@gmail.com)";
+    public const string USER_AGENT = "MusicBrainzWrapper - https://github.com/aportela/musicbrainz-wrapper (766f6964+github@gmail.com)";
 
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
 
