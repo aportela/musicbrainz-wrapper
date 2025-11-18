@@ -43,9 +43,4 @@ enum ArtistType: string
             default => self::NONE,
         };
     }
-
-    public static function fromString(string $value): ArtistType
-    {
-        return self::tryFrom($value) ?? self::NONE;
-    }
 }

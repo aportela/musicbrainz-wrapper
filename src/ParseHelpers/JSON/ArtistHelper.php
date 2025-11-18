@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace aportela\MusicBrainzWrapper\ParseHelpers\JSON;
 
-use aportela\MusicBrainzWrapper\ArtistType;
-
 class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelper
 {
     public function __construct(object $object)
     {
         $this->mbId = property_exists($object, "id") && is_string($object->id) ? $object->id : "";
-        $this->type = property_exists($object, "type") && is_string($object->type) ? \aportela\MusicBrainzWrapper\ArtistType::fromString($object->type) : ArtistType::NONE;
+        $this->type = property_exists($object, "type") && is_string($object->type) ? \aportela\MusicBrainzWrapper\ArtistType::tryFrom($object->type) ?? \aportela\MusicBrainzWrapper\ArtistType::NONE : \aportela\MusicBrainzWrapper\ArtistType::NONE;
         $this->name = property_exists($object, "name") && is_string($object->name) ? $object->name : "";
         $this->country = property_exists($object, "country") && is_string($object->country) && ($object->country !== '' && $object->country !== '0') ? mb_strtolower($object->country) : null;
         if (property_exists($object, "genres") && is_array(($object->genres))) {
