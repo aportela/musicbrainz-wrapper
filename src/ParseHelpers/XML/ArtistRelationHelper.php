@@ -8,8 +8,8 @@ class ArtistRelationHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\Art
 {
     public function __construct(\SimpleXMLElement $element)
     {
-        $this->typeId = (string)$element->attributes()->{"type-id"};
-        $this->type = (string)$element->attributes()->type;
-        $this->url = (string)$element->children()->target;
+        $this->typeId = (string) $element->attributes()->{"type-id"};
+        $this->type = (string) $element->attributes()->type;
+        $this->url = (string) $element->children()->target;
     }
 }

@@ -16,7 +16,7 @@ class Release extends \aportela\MusicBrainzWrapper\Entity
     public function search(string $title, string $artist, string $year, int $limit = 1): array
     {
         $queryParams = [
-            "release:" . urlencode($title)
+            "release:" . urlencode($title),
         ];
         if ($artist !== '' && $artist !== '0') {
             $queryParams[] = "artistname:" . urlencode($artist);

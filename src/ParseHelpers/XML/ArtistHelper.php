@@ -9,7 +9,7 @@ class ArtistHelper extends \aportela\MusicBrainzWrapper\ParseHelpers\ArtistHelpe
     public function __construct(\SimpleXMLElement $element)
     {
         $this->mbId = (string) $element->attributes()->id;
-        $this->type = \aportela\MusicBrainzWrapper\ArtistType::tryFrom((string)($element->attributes()->type ?? null)) ?? \aportela\MusicBrainzWrapper\ArtistType::NONE;
+        $this->type = \aportela\MusicBrainzWrapper\ArtistType::tryFrom((string) ($element->attributes()->type ?? null)) ?? \aportela\MusicBrainzWrapper\ArtistType::NONE;
         $this->name = (string) $element->children()->name;
         $this->country = property_exists($element->children(), 'country') && $element->children()->country !== null ? (empty($country = $element->children()->country) ? null : mb_strtolower(strval($country))) : null;
 

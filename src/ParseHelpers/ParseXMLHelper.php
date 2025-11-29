@@ -42,7 +42,7 @@ class ParseXMLHelper
     /**
      * @return array<\SimpleXMLElement>|null|false
      */
-    protected function getXPath(string $path): array|null|false
+    protected function getXPath(string $path): array|false|null
     {
         return ($this->xml->xpath($path));
     }

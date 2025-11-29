@@ -10,11 +10,17 @@ namespace aportela\MusicBrainzWrapper;
 enum ArtistType: string
 {
     case NONE = "None";
+
     case PERSON = "Person";
+
     case GROUP = "Group";
+
     case ORCHESTA = "Orchestra";
+
     case CHOIR = "Choir";
+
     case CHARACTER = "Character";
+
     case OTHER = "Other";
 
     public function toInt(): int
